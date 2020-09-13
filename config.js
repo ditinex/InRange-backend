@@ -1,6 +1,10 @@
-const dotenv=require('dotenv').config()
+const path = require('path')
+const dotenv = require('dotenv').config()
+const dotenvExample = require('dotenv').config({path: path.resolve(process.cwd(), '.env.example')})
 
-console.log(process.env.example)
+if (JSON.stringify(Object.keys(dotenv.parsed)) !== JSON.stringify(Object.keys(dotenvExample.parsed))) {
+    throw Error ('Missing values in .env. Please refer to .env.example')
+}
 
 module.exports = {
 
