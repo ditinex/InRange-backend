@@ -98,6 +98,7 @@ const HandleServerError = (res,data,message) => {
 
 exports.Insert = Insert
 exports.Find = Find
+exports.ValidateEmail=ValidateEmail
 exports.UnauthorizedError = UnauthorizedError
 exports.HandleServerError = HandleServerError
 exports.HandleError = HandleError
