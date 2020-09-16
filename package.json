@@ -1,20 +1,25 @@
 {
   "name": "inrange_backend",
   "version": "1.0.0",
-  "description": "",
+  "description": "InRangeIt",
   "main": "app.js",
+  "apidoc": {
+    "title": "InRangeIt API docs",
+    "url" : "http://localhost:3001"
+  },
   "scripts": {
-    "test": "jest --watchAll",
-    "start": "nodemon server.js"
+    "test": "jest",
+    "start": "nodemon server.js",
+    "apidoc": "apidoc -i controllers/ -o public/apidoc/"
   },
   "jest": {
     "testEnvironment": "node"
-  },  
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/ditinex/InRange-backend.git"
   },
-  "author": "Ruparna",
+  "author": "Ditinex",
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/ditinex/InRange-backend/issues"

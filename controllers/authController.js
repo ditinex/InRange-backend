@@ -10,6 +10,38 @@ const {
 
 
 module.exports = {
+	/**
+	 * @api {post} /admins/signup Add admin account
+	 * @apiName AdminSignup
+	 * @apiGroup Admin
+	 *
+	 * @apiParam {String} email Admins unique email.
+	 * @apiParam {String} name Name contains alphabets only.
+	 * @apiParam {String} password Password must contain atleast one number, one capital alphabet, one small alphabet, one special character and between 8-24 character.
+	 * @apiParam {String} type Admin type as ENUM[ admin, analyst ].
+	 *
+	 *
+	 * @apiSuccessExample Success-Response:
+	 *     HTTP/1.1 200 OK
+	 *     {
+	 *			"status": "success",
+	 *			"data": {
+	 *				"_id": "5f62722a4bf8b92249c9caa6",
+	 *				"name": "Demo Admin",
+	 *				"email": "demo@demo.com",
+	 *				"type": "admin",
+	 *				"createdAt": "2020-09-16T20:14:34.112Z",
+	 *				"updatedAt": "2020-09-16T20:14:34.112Z"
+	 *			}
+	 *	}
+	 *
+	 *
+	 * @apiErrorExample Error-Response:
+	 *     HTTP/1.1 202 Error
+	 *     {
+	 *       "status": "failed", message: "Email already exists.",
+	 *     }
+	 */
 	AdminSignup: async (req, res, next) => {
 		try {
 			let name = req.body.name || ''
@@ -52,7 +84,7 @@ module.exports = {
 
 	AdminLogin: async (req, res, next) => {
 		try {
-			console.log({method: res.method, url: res.originalUrl, params: req.params, query: req.query, post: req.body, error: err })
+			console.log({ method: res.method, url: res.originalUrl, params: req.params, query: req.query, post: req.body, error: err })
 
 			let email = req.body.email || ''
 			let password = req.body.password || ''
