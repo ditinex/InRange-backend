@@ -2,7 +2,7 @@ const mongoose = require('mongoose')
 const Schema = mongoose.Schema
 
 const UserSchema = new Schema({
-	mobile: { type: String, required: true, trim: true },
+	mobile: { type: Number, required: true, trim: true, unique: true },
 	name: { type: String, required: true, trim: true },
 	profile_picture: { type: String, required: true, trim: true },
 	gender: { type: String, required: true, enum: ['male', 'female'], trim: true },

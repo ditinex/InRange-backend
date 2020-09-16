@@ -19,13 +19,13 @@ module.exports = {
 			email = email.toLowerCase()
 			let validateError = null
 			if (!ValidateEmail(email))
-				validateError = 'Invalid Email.'
+				validateError = 'Invalid email.'
 			else if (name == '')
-				validateError = 'Name required.'
+				validateError = 'Name is required.'
 			else if (type == '')
 				validateError = 'Select service type.'
 			else if (!PasswordStrength(password))
-				validateError = 'Please enter a Password.'
+				validateError = 'Please enter a password containing atleast one number, one capital alphabet, one small alphabet, one special character and between 8-24 character.'
 			if (validateError)
 				return HandleError(res, validateError)
 

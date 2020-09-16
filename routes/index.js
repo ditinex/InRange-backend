@@ -19,7 +19,7 @@ router.use((req, res, next) => {
 //Server Test API
 router.get('/', (req, res) => {
   res.status(200);
-  res.json({ success: 'API Server Running.' });
+  res.json({ status: 'success', message: 'API Server Running.' });
 });
 
 
