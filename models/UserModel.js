@@ -9,6 +9,8 @@ const UserSchema = new Schema({
 	status: { type: String, required: true, trim: true, enum: ['pending', 'approved', 'suspended'] },
 	is_switched_provider: { type: Boolean, required: true, default: false },
 	address: { type: String },
+	isOnline: { type: Boolean, default: false },
+	active_session: { type: String, required: true },
 	location: {
 		type: {
 			type: String,

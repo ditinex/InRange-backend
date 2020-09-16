@@ -30,7 +30,11 @@ app.use(express.static('public'))
 
 // importing routes
 app.use('/', routes);
-
+// Handle 404 not found 
+app.use((req, res)=>{
+  res.status(404);
+  res.json({ status: 'failed', error: 'Router not found.' });
+});
 
 
 

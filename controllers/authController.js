@@ -45,15 +45,15 @@ module.exports = {
 
 
 		} catch (err) {
-			errLog = { module: 'Signup', params: req.params, query: req.query, post: req.body, error: err }
-			HandleServerError(res, errLog, 'Failed to signup.')
-			next(err);
+			HandleServerError(res, req, err)
 		}
 
 	},
 
 	AdminLogin: async (req, res, next) => {
 		try {
+			console.log({method: res.method, url: res.originalUrl, params: req.params, query: req.query, post: req.body, error: err })
+
 			let email = req.body.email || ''
 			let password = req.body.password || ''
 			email = email.toLowerCase()
@@ -88,9 +88,7 @@ module.exports = {
 
 
 		} catch (err) {
-			errLog = { module: 'Login', params: req.params, query: req.query, post: req.body, error: err }
-			HandleServerError(res, errLog, 'Failed to login. Unexpected error.')
-			next(err);
+			HandleServerError(res, req, err)
 		}
 
 	}
