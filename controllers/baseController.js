@@ -54,6 +54,10 @@ const ValidateEmail = email => {
 	return re.test(String(email).toLowerCase());
 }
 
+const PasswordStrength = password => {
+	let re = /^(?=.*[a-z])(?=.*[A-Z])(?=.{8,24})(?=.*[0-9])(?=.*[@$!%*#?&])/
+	return re.test(password);
+}
 
 /*
  * Error Handling methods below
@@ -99,6 +103,7 @@ const HandleServerError = (res,data,message) => {
 exports.Insert = Insert
 exports.Find = Find
 exports.ValidateEmail=ValidateEmail
+exports.PasswordStrength = PasswordStrength
 exports.UnauthorizedError = UnauthorizedError
 exports.HandleServerError = HandleServerError
 exports.HandleError = HandleError
