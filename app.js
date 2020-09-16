@@ -7,7 +7,7 @@ const config = require('./config.js');
 const routes = require('./routes');
 
 //Init DB Connection
-mongoose.connect(config.mongodb.connectionString, { auth:{authdb:"admin"}, useNewUrlParser: true, useUnifiedTopology: true, useCreateIndex: true, useFindAndModify: false })
+mongoose.connect(config.mongodb.connectionString, { auth:{authdb:"admin"}, useNewUrlParser: true, useUnifiedTopology: true, autoIndex: true, useCreateIndex: true, useFindAndModify: false })
 .then((e) => console.log('DB Connected.'))
 .catch(error => { console.log(error) });
 

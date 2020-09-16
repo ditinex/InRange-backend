@@ -7,21 +7,90 @@ exports.Test = () => {
         
   });
 
-  it("New admin account.", async () => {
-    app.get("/admins/signup")
+/*
+ * Admin Auth
+ */
+
+  it("Auth - Check whether account already exists.", async (done) => {
+    app.post("/admins/signup")
       .send({name: 'Demo', email: 'demo@demo.com', password: 'Demo#123', type: 'admin'})
-      .expect(200)
+      .expect(202)
       .end((err, res) => {
         if (err) {
           return done(err);
         }
-        expect(res.body.status).toEqual("success");
+        expect(res.body.status).toEqual("failed");
         return done();
       });
   });
 
-  it("Account already exists.", async () => {
-    app.get("/admins/signup")
+  it("Auth - Invalid email check.", async (done) => {
+    app.post("/admins/signup")
+      .send({name: 'Demo', email: 'demodemo.com', password: 'Demo#123', type: 'admin'})
+      .expect(202)
+      .end((err, res) => {
+        if (err) {
+          return done(err);
+        }
+        expect(res.body.status).toEqual("failed");
+        return done();
+      });
+  });
+
+  it("Auth - Weak Password check.", async (done) => {
+    app.post("/admins/signup")
+      .send({name: 'Demo', email: 'demo@demo.com', password: '12345', type: 'admin'})
+      .expect(202)
+      .end((err, res) => {
+        if (err) {
+          return done(err);
+        }
+        expect(res.body.status).toEqual("failed");
+        return done();
+      });
+  });
+
+  it("Auth - Invalid name check (containing special character).", async (done) => {
+    app.post("/admins/signup")
+      .send({name: '@', email: 'demo@demo.com', password: '12345', type: 'admin'})
+      .expect(202)
+      .end((err, res) => {
+        if (err) {
+          return done(err);
+        }
+        expect(res.body.status).toEqual("failed");
+        return done();
+      });
+  });
+
+  it("Auth - Invalid name check (containing only space).", async (done) => {
+    app.post("/admins/signup")
+      .send({name: ' ', email: 'demo@demo.com', password: '12345', type: 'admin'})
+      .expect(202)
+      .end((err, res) => {
+        if (err) {
+          return done(err);
+        }
+        expect(res.body.status).toEqual("failed");
+        return done();
+      });
+  });
+
+  it("Auth - Invalid name check (empty string).", async (done) => {
+    app.post("/admins/signup")
+      .send({name: '', email: 'demo@demo.com', password: '12345', type: 'admin'})
+      .expect(202)
+      .end((err, res) => {
+        if (err) {
+          return done(err);
+        }
+        expect(res.body.status).toEqual("failed");
+        return done();
+      });
+  });
+
+  it("Auth - New admin account.", async (done) => {
+    app.post("/admins/signup")
       .send({name: 'Demo', email: 'demo@demo.com', password: 'Demo#123', type: 'admin'})
       .expect(200)
       .end((err, res) => {

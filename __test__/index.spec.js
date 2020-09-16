@@ -4,4 +4,4 @@ global.config = {
 }
 
 describe("\n\n--- Setting Test Environment. ---", require('./setup').Test)
-//describe("\n\n--- Admin API tests. ---", require('./admin').Test)
+describe("\n\n--- Admin API tests. ---", require('./admin').Test)
