@@ -1,9 +1,7 @@
 const express = require('express');
 const router = express.Router();
 
-const Controllers = require('../controllers')
 //const { VerifyToken } = require('../middlewares');
-const Auth = Controllers.Auth
 
 router.use((req, res, next)=>{
 	res.setHeader('Access-Control-Allow-Origin', '*');
@@ -18,7 +16,29 @@ router.use((req, res, next)=>{
     }
 });
 
-router.post('/admins/signup',Auth.AdminSignup);
-router.post('/admins/login',Auth.AdminLogin);
+//Server Test API
+router.get('/',(req, res) => {
+  res.status(200);
+  res.json({success:'API Server Running.'});
+});
+
+
+//Import APIs
+router.use('/admins',require('./admins'));
+
+
+
+
+//Global error handler
+router.use((err, req, res, next) => {
+  if (! err) {
+      return next();
+  }
+  if (res.headersSent) {
+  return next(err)
+}
+  res.status(500);
+  res.json({error:'500 Internal server error'});
+});
 
 module.exports = router;

@@ -74,7 +74,7 @@ const HandleSuccess = (res, data) => {
 
 const HandleError = (res,message) => {
 	res.status(202).json({
-		status: 'fail',
+		status: 'failed',
 		error: message
 	});
 	res.end();
