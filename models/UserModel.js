@@ -10,7 +10,8 @@ const UserSchema = new Schema({
 	is_switched_provider: { type: Boolean, required: true, default: false },
 	address: { type: String },
 	isOnline: { type: Boolean, default: false },
-	active_session: { type: String, required: true },
+	active_session_refresh_token: { type: String, required: true },
+	access_token: { type: String },
 	location: {
 		type: {
 			type: String,
@@ -23,7 +24,7 @@ const UserSchema = new Schema({
 		}
 	},
 	provider: {
-		service: { type: String, required: true, trim: true },
+		service: { type: String, trim: true },
 		description: { type: String, trim: true },
 		verificationDocument: { type: String, trim: true, default: null },
 	}

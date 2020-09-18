@@ -5,7 +5,8 @@ const { Admin, AdminDetails } = require('../models')
 
 const {
 	Insert, Find,
-	HandleSuccess, HandleError, HandleServerError, ValidateEmail, PasswordStrength
+	HandleSuccess, HandleError, HandleServerError,
+	ValidateEmail, PasswordStrength,ValidateAlphanumeric,ValidateLength
 } = require('./baseController');
 
 
@@ -51,11 +52,11 @@ module.exports = {
 			email = email.toLowerCase()
 			let validateError = null
 			if (!ValidateEmail(email))
-				validateError = 'Invalid email.'
-			else if (name == '')
-				validateError = 'Name is required.'
+				validateError = 'Please enter a valid email.'
+			else if (!ValidateAlphanumeric(name) || ValidateLength(name))
+				validateError = 'Please enter a valid name without any special character and less than 25 character.'
 			else if (type == '')
-				validateError = 'Select service type.'
+				validateError = 'Please select service type.'
 			else if (!PasswordStrength(password))
 				validateError = 'Please enter a password containing atleast one number, one capital alphabet, one small alphabet, one special character and between 8-24 character.'
 			if (validateError)
@@ -84,7 +85,6 @@ module.exports = {
 
 	AdminLogin: async (req, res, next) => {
 		try {
-			console.log({ method: res.method, url: res.originalUrl, params: req.params, query: req.query, post: req.body, error: err })
 
 			let email = req.body.email || ''
 			let password = req.body.password || ''

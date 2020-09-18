@@ -25,6 +25,7 @@ router.get('/', (req, res) => {
 
 //Import APIs
 router.use('/admins', require('./admins'));
+router.use('/auth', require('./auth'));
 
 
 

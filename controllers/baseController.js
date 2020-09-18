@@ -54,6 +54,15 @@ const ValidateEmail = email => {
 	return re.test(String(email).toLowerCase());
 }
 
+const ValidateAlphanumeric = text => {
+	let re = /^[a-zA-Z0-9\s]+$/
+	return re.test(String(text));
+}
+
+const ValidateLength = (text,max=25,min=1) => {
+	return (text.length>=min && text.length<=max)?true:false;
+}
+
 const PasswordStrength = password => {
 	let re = /^(?=.*[a-z])(?=.*[A-Z])(?=.{8,24})(?=.*[0-9])(?=.*[@$!%*#?&])/
 	return re.test(password);
@@ -108,6 +117,8 @@ exports.Insert = Insert
 exports.Find = Find
 exports.ValidateEmail=ValidateEmail
 exports.PasswordStrength = PasswordStrength
+exports.ValidateAlphanumeric = ValidateAlphanumeric
+exports.ValidateLength = ValidateLength
 exports.UnauthorizedError = UnauthorizedError
 exports.HandleServerError = HandleServerError
 exports.HandleError = HandleError
