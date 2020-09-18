@@ -3,7 +3,7 @@ const Schema = mongoose.Schema
 
 const OtpSchema=new Schema({
     otp: { type: Number, required: true },
-    user_id: { type: Schema.Types.ObjectId, ref: 'users', required: true },
+    mobile: { type: Number, required: true }
 },{ timestamps: true })
 
 const OtpModel = mongoose.model('otps', OtpSchema)
