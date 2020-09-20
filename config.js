@@ -14,5 +14,6 @@ module.exports = {
 	},
 	secret: process.env.JWT_SECRET,
 	publicImagePath: 'public/images/',
-
+	tokenExpiryLimit: 86400,
+	otpExpiryLimit: 3,
 }

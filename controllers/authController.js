@@ -6,7 +6,7 @@ const { Admin, Otp, User } = require('../models')
 
 
 const {
-	Insert, Find, CompressImageAndUpload, FindAndUpdate,
+	IsExists, Insert, Find, CompressImageAndUpload, FindAndUpdate, Delete,
 	HandleSuccess, HandleError, HandleServerError,
 	ValidateEmail, PasswordStrength, ValidateAlphanumeric, ValidateLength, ValidateMobile, GeneratePassword
 } = require('./baseController');
@@ -138,16 +138,41 @@ module.exports = {
 	 *
 	 * @apiSuccessExample Success-Response:
 	 *     HTTP/1.1 200 OK
-	 *     {
-	 *			
-	 *	   }
+	 *     
+{
+    "status": "success",
+    "data": {
+        "_id": "5f67ac2e9a599b177fba55b5",
+        "provider": {
+            "verification_document": null,
+            "service": "",
+            "description": ""
+        },
+        "is_switched_provider": false,
+        "is_available": true,
+        "name": "Demo",
+        "gender": "male",
+        "mobile": "919903614706",
+        "address": "kjhkd kjdhfbk",
+        "status": "approved",
+        "location": {
+            "type": "Point",
+            "coordinates": [
+                -110.8571443,
+                32.4586858
+            ]
+        },
+        "active_session_refresh_token": "5OwDBqzHLUFj54TJ",
+        "profile_picture": "/images/1600629806826.jpg",
+        "createdAt": "2020-09-20T19:23:26.855Z",
+        "updatedAt": "2020-09-20T19:26:52.477Z",
+        "__v": 0,
+        "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjVmNjdhYzJlOWE1OTliMTc3ZmJhNTViNSIsIm1vYmlsZSI6IjkxOTkwMzYxNDcwNiIsIm5hbWUiOiJEZW1vIiwiaWF0IjoxNjAwNjMwMDc0LCJleHAiOjE2MDA3MTY0NzR9.FMZe0ttT1qtzvXbCbO_uKLj_EHwIDslDO4uq_IVw2_E",
+        "isUserExists": true
+    }
+}
 	 *
 	 *
-	 * @apiErrorExample Error-Response:
-	 *     HTTP/1.1 202 Error
-	 *     {
-	 *       "status": "failed", message: "Email already exists.",
-	 *     }
 	 */
 	Login: async (req, res, next) => {
 		try {
@@ -160,16 +185,46 @@ module.exports = {
 			if (validateError)
 				return HandleError(res, validateError)
 
+			let expiry = new Date ();
+			expiry.setMinutes ( expiry.getMinutes() - Config.otpExpiryLimit );
+
 			if (otp) {
 				//Validate OTP and Login
-				//Generate session
+				let isOtpExists = await IsExists(Otp, { mobile: mobile, otp: otp, createdAt: { $gt: expiry } })
+				let isUserExists = await IsExists(User, { mobile: mobile })
+				console.log(otp,mobile,isOtpExists,isUserExists)
+				if(!isOtpExists)
+					return HandleError(res, 'Failed to verify OTP.')
+				else if(isOtpExists && isUserExists){
+					Delete(Otp,{ mobile: mobile })
+					let user = {... isUserExists[0]}
+					const active_session_refresh_token = GeneratePassword()
+					const access_token = jwt.sign({ id: user._id, mobile: user.mobile, name: user.name }, Config.secret, {
+						expiresIn: Config.tokenExpiryLimit // 86400 expires in 24 hours -- It should be 1 hour in production
+					});
+		
+					let updated = await FindAndUpdate(User, {_id: user._id}, {access_token: access_token, active_session_refresh_token: active_session_refresh_token})
+					if(!updated)
+						return HandleError(res, 'Failed to generate access token.')
+					user.access_token = access_token
+					user.active_session_refresh_token = active_session_refresh_token
+					user.isUserExists = true
+					return HandleSuccess(res, user)
+				}
 
 				//If no user found
 				return HandleSuccess(res, { isUserExists: false })
 			}
+			// Send OTP
+			let isOtpExists = await IsExists(Otp, { mobile: mobile, createdAt: { $gt: expiry } })
+			if(isOtpExists)
+				return HandleError(res, 'Too many OTP requests. Please try after sometime.')
 
-			const isOtpExists = await Find(Otp, { mobile: mobile })
-			//Send otp if otp limit not reached
+			const otpValue = Math.floor(1000 + Math.random() * 9000);
+			const inserted = await Insert(Otp,{otp: otpValue, mobile: mobile})
+			if(!inserted)
+				return HandleError(res, 'Failed to send OTP.')
+			return HandleSuccess(res, { otp: otpValue })
 
 
 		} catch (err) {
@@ -290,7 +345,7 @@ module.exports = {
 
 			inserted = { ...inserted._doc }
 			const access_token = jwt.sign({ id: inserted._id, mobile: inserted.mobile, name: inserted.name }, Config.secret, {
-				expiresIn: 86400 // 86400 expires in 24 hours -- It should be 1 hour in production
+				expiresIn: Config.tokenExpiryLimit // 86400 expires in 24 hours -- It should be 1 hour in production
 			});
 
 			let updated = await FindAndUpdate(User, {_id: inserted._id}, {access_token: access_token})
@@ -302,7 +357,98 @@ module.exports = {
 		} catch (err) {
 			HandleServerError(res, req, err)
 		}
+	},
 
+	/**
+	 * @api {get} /auth/refresh-token/:mobile/:token Refresh access token
+	 * @apiName RefreshToken
+	 * @apiGroup Auth
+	 *
+	 * @apiParam {String} token Refresh token of the user.
+	 * @apiParam {Number} mobile Registered mobile number.
+	 *
+	 *
+	 *
+	 * @apiSuccessExample Success-Response:
+	 *     HTTP/1.1 200 OK
+	 *     
+{
+ 
+}
+	 *
+	 *
+	 * @apiErrorExample Error-Response:
+	 *     HTTP/1.1 202 Error
+	 *     {
+	 *       "status": "failed", message: "Email already exists.",
+	 *     }
+	 */
+	Signup: async (req, res, next) => {
+		try {
+			const { name = '', gender = '', mobile = '', location = '', address = '', service = '', description = '' } = req.body
+			const { profile_picture = null, verification_document = null } = req.files
+
+			//Check service & verifydoc form submission in frontend
+
+			let validateError = null
+			if (!ValidateAlphanumeric(name.trim()) || !ValidateLength(name.trim()))
+				validateError = 'Please enter a valid name without any special character and less than 25 character.'
+			else if (gender.trim() == '')
+				validateError = 'Please select gender.'
+			else if (location == '')
+				validateError = 'Failed to access location. Please restart the app and allow all permissions.'
+			else if (!profile_picture)
+				validateError = 'Please upload a profile picture.'
+
+			if (validateError)
+				return HandleError(res, validateError)
+
+			let coordinates = {}
+			try {
+				coordinates = JSON.parse(location)
+			}
+			catch (e) {
+				return HandleError(res, 'Invalid location cooridnates.')
+			}
+
+			let data = { name, gender, mobile, address, status: 'approved', location: { type: 'Point', coordinates: [coordinates.longitude, coordinates.lattitude] }, provider: { service: service, description: description } }
+			data.active_session_refresh_token = GeneratePassword()
+
+			if (service) {
+				data.is_switched_provider = true
+			}
+
+			let isUploaded = await CompressImageAndUpload(profile_picture)
+			if(!isUploaded)
+				return HandleError(res,"Failed to upload profile pic.")
+			data.profile_picture = isUploaded.path
+			
+			if(verification_document){
+				isUploaded = await CompressImageAndUpload(verification_document)
+				if(!isUploaded)
+					return HandleError(res,"Failed to upload verification document.")
+				data.provider.verificationDocument = isUploaded.path
+				data.status = 'pending'
+			}
+
+			let inserted = await Insert(User, data)
+			if (!inserted)
+				return HandleError(res, 'Failed to create account. Please contact system admin.')
+
+			inserted = { ...inserted._doc }
+			const access_token = jwt.sign({ id: inserted._id, mobile: inserted.mobile, name: inserted.name }, Config.secret, {
+				expiresIn: Config.tokenExpiryLimit // 86400 expires in 24 hours -- It should be 1 hour in production
+			});
+
+			let updated = await FindAndUpdate(User, {_id: inserted._id}, {access_token: access_token})
+			if(!updated)
+				return HandleError(res, 'Failed to update access token.')
+			
+			return HandleSuccess(res, updated)
+
+		} catch (err) {
+			HandleServerError(res, req, err)
+		}
 	},
 }
 
