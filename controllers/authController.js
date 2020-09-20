@@ -55,7 +55,7 @@ module.exports = {
 			let validateError = null
 			if (!ValidateEmail(email))
 				validateError = 'Please enter a valid email.'
-			else if (!ValidateAlphanumeric(name) || ValidateLength(name))
+			else if (!ValidateAlphanumeric(name) || !ValidateLength(name))
 				validateError = 'Please enter a valid name without any special character and less than 25 character.'
 			else if (type == '')
 				validateError = 'Please select service type.'
