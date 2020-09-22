@@ -373,78 +373,32 @@ module.exports = {
 	 *     HTTP/1.1 200 OK
 	 *     
 {
- 
+    "status": "success",
+    "data": {
+        "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjVmNjdhYzJlOWE1OTliMTc3ZmJhNTViNSIsIm1vYmlsZSI6IjkxOTkwMzYxNDcwNiIsIm5hbWUiOiJEZW1vIiwiaWF0IjoxNjAwNjMyMDgxLCJleHAiOjE2MDA3MTg0ODF9.Uj642GC9-b_dkoTR1lrq2Z3PouybDz1Q-gzAw2TRCCI"
+    }
 }
 	 *
-	 *
-	 * @apiErrorExample Error-Response:
-	 *     HTTP/1.1 202 Error
-	 *     {
-	 *       "status": "failed", message: "Email already exists.",
-	 *     }
 	 */
-	Signup: async (req, res, next) => {
+	RefreshToken: async (req, res, next) => {
 		try {
-			const { name = '', gender = '', mobile = '', location = '', address = '', service = '', description = '' } = req.body
-			const { profile_picture = null, verification_document = null } = req.files
-
-			//Check service & verifydoc form submission in frontend
-
-			let validateError = null
-			if (!ValidateAlphanumeric(name.trim()) || !ValidateLength(name.trim()))
-				validateError = 'Please enter a valid name without any special character and less than 25 character.'
-			else if (gender.trim() == '')
-				validateError = 'Please select gender.'
-			else if (location == '')
-				validateError = 'Failed to access location. Please restart the app and allow all permissions.'
-			else if (!profile_picture)
-				validateError = 'Please upload a profile picture.'
-
-			if (validateError)
-				return HandleError(res, validateError)
-
-			let coordinates = {}
-			try {
-				coordinates = JSON.parse(location)
-			}
-			catch (e) {
-				return HandleError(res, 'Invalid location cooridnates.')
-			}
-
-			let data = { name, gender, mobile, address, status: 'approved', location: { type: 'Point', coordinates: [coordinates.longitude, coordinates.lattitude] }, provider: { service: service, description: description } }
-			data.active_session_refresh_token = GeneratePassword()
-
-			if (service) {
-				data.is_switched_provider = true
-			}
-
-			let isUploaded = await CompressImageAndUpload(profile_picture)
-			if(!isUploaded)
-				return HandleError(res,"Failed to upload profile pic.")
-			data.profile_picture = isUploaded.path
+			const { token='', mobile='' } = req.params
+			if(!token.trim() || !mobile.trim())
+				return HandleError(res, 'Invalid mobile or token.')
 			
-			if(verification_document){
-				isUploaded = await CompressImageAndUpload(verification_document)
-				if(!isUploaded)
-					return HandleError(res,"Failed to upload verification document.")
-				data.provider.verificationDocument = isUploaded.path
-				data.status = 'pending'
-			}
+			const isUserExists = await IsExists(User,{mobile: mobile, active_session_refresh_token: token})
+			if(!isUserExists)
+				return HandleError(res, 'User doesn\'t exists.')
 
-			let inserted = await Insert(User, data)
-			if (!inserted)
-				return HandleError(res, 'Failed to create account. Please contact system admin.')
-
-			inserted = { ...inserted._doc }
-			const access_token = jwt.sign({ id: inserted._id, mobile: inserted.mobile, name: inserted.name }, Config.secret, {
+			const access_token = jwt.sign({ id: isUserExists[0]._id, mobile: isUserExists[0].mobile, name: isUserExists[0].name }, Config.secret, {
 				expiresIn: Config.tokenExpiryLimit // 86400 expires in 24 hours -- It should be 1 hour in production
 			});
 
-			let updated = await FindAndUpdate(User, {_id: inserted._id}, {access_token: access_token})
-			if(!updated)
-				return HandleError(res, 'Failed to update access token.')
-			
-			return HandleSuccess(res, updated)
+			let updated = await FindAndUpdate(User, { _id: isUserExists[0]._id }, { access_token: access_token })
+			if (!updated)
+				return HandleError(res, 'Failed to generate access token.')
+
+			return HandleSuccess(res, {access_token: access_token})
 
 		} catch (err) {
 			HandleServerError(res, req, err)
