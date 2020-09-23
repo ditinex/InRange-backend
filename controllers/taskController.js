@@ -2,7 +2,7 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const Config = require('../config.js');
 const fs = require('fs');
-const { Admin, Otp, User, Task, Mongoose } = require('../models')
+const { Admin, Otp, User, Task, Mongoose, Review } = require('../models')
 
 const {
 	IsExists, Insert, Find, CompressImageAndUpload, FindAndUpdate, Delete,
@@ -216,6 +216,56 @@ module.exports = {
 			HandleServerError(res, req, err)
 		}
 	},
+
+	/**
+	 * @api {post} /provider/sendproposal Send Proposal
+	 * @apiName Send Proposal
+	 * @apiGroup Task
+	 *
+	 * @apiParam {ObjectId} task_id Id of the task.
+	 * @apiParam {ObjectId} provider Id of the provider.
+	 * @apiParam {Sting} cover_letter Proposal letter in text.
+	 *
+	 *
+	 * @apiSuccessExample Success-Response:
+	 *     HTTP/1.1 200 OK
+
+	 *
+	 *
+	 */
+
+	Review: async (req, res, next) => {
+		try {
+			const { rating = 1, provider = '', username = '', feedback= '' } = req.body
+			
+			if(username.trim()=='')
+				return HandleError(res, 'Invalid username.')
+			else if(provider=='')
+				return HandleError(res, 'Invalid provider.')
+			else if(!rating>=1 && !rating<=5)
+				return HandleError(res, 'Rating must be between 1 to 5.')
+			
+			const isProviderExists = await IsExists(User,{_id: provider})
+			const isUserExists = await IsExists(User,{name: username})
+
+			if(!isProviderExists)
+				return HandleError(res, 'Provider doesn\'t exists.')
+			else if(!isUserExists)
+				return HandleError(res, 'User doesn\'t exists.')
+
+			let data = { rating, provider, username, feedback }
+
+			let inserted = await Insert(Review, data)
+			if (!inserted)
+				return HandleError(res, 'Failed to send review. Please contact system admin.')
+
+			return HandleSuccess(res, inserted)
+
+		} catch (err) {
+			HandleServerError(res, req, err)
+		}
+	},
+
 
 }
 
