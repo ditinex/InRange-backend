@@ -4,7 +4,7 @@ const router = express.Router();
 const Controllers = require('../controllers')
 const Task = Controllers.Task
 
-//router.post('/signup',Auth.Signup);
+router.post('/createtask',Task.CreateTask);
 
 
 module.exports = router;
