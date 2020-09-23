@@ -2,14 +2,14 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const Config = require('../config.js');
 const fs = require('fs');
-const { Admin, Otp, User, Task } = require('../models')
-
+const { Admin, Otp, User, Task, Mongoose } = require('../models')
 
 const {
 	IsExists, Insert, Find, CompressImageAndUpload, FindAndUpdate, Delete,
 	HandleSuccess, HandleError, HandleServerError,
 	ValidateEmail, PasswordStrength, ValidateAlphanumeric, ValidateLength, ValidateMobile, GeneratePassword
 } = require('./baseController');
+const { query } = require('express');
 
 
 module.exports = {
@@ -72,7 +72,7 @@ module.exports = {
 	 */
 	CreateTask: async (req, res, next) => {
 		try {
-			const { service = '', description = '', instruction = '', mobile = '', status = '',address='',location='' } = req.body
+			const { service = '', description = '', instruction = 'Not specified', mobile = '',address='',location='' } = req.body
 			const name = req.body.name?req.body.name.trim() : ''
 			const title = req.body.title?req.body.title.trim() : ''
 			//Check images of task in frontend
@@ -119,6 +119,98 @@ module.exports = {
 				return HandleError(res, 'Failed to create task. Please contact system admin.')
 			
 			return HandleSuccess(res, inserted)
+
+		} catch (err) {
+			HandleServerError(res, req, err)
+		}
+	},
+
+	/**
+	 * @api {post} /provider/sendproposal Send Proposal
+	 * @apiName Send Proposal
+	 * @apiGroup Task
+	 *
+	 * @apiParam {ObjectId} task_id Id of the task.
+	 * @apiParam {ObjectId} provider Id of the provider.
+	 * @apiParam {Sting} cover_letter Proposal letter in text.
+	 *
+	 *
+	 * @apiSuccessExample Success-Response:
+	 *     HTTP/1.1 200 OK
+		{
+			"status": "success",
+			"data": {
+				"location": {
+					"type": "Point",
+					"coordinates": [
+						-110.8571443,
+						32.4586858
+					]
+				},
+				"cost": {
+					"service_cost": 0,
+					"other_cost": 0,
+					"discount": 0,
+					"total": 0
+				},
+				"images": [
+					"/images/1600840282151.jpg",
+					"/images/1600840282166.jpg"
+				],
+				"_id": "5f6ae25a9647803978867259",
+				"title": "Tap Repair test",
+				"service": "repair",
+				"description": "broken tap",
+				"instruction": "Not specified",
+				"name": "souradeep",
+				"mobile": "919804985304",
+				"status": "Hiring",
+				"address": "india",
+				"proposals": [
+					{
+						"_id": "5f6ae76860814f139cc9feb4",
+						"provider": "5f67ac2e9a599b177fba55b5",
+						"cover_letter": "hi"
+					},
+					{
+						"_id": "5f6b28f1039e8158f879431b",
+						"provider": "5f67ac2e9a599b177fba55b5",
+						"cover_letter": "hi"
+					}
+				],
+				"createdAt": "2020-09-23T05:51:22.187Z",
+				"updatedAt": "2020-09-23T10:52:33.909Z",
+				"__v": 0
+			}
+		}
+	 *
+	 *
+	 */
+	SendProposal: async (req, res, next) => {
+		try {
+			const { task_id = '', provider = '', cover_letter = '' } = req.body
+
+			if(cover_letter.trim()=='')
+				return HandleError(res, 'Cover letter is empty.')
+			else if(provider=='' || task_id == '')
+				return HandleError(res, 'Failed to send proposal.')
+			
+			const isProviderExists = await IsExists(User,{_id: provider})
+			const isTaskExists = await IsExists(Task,{_id: task_id})
+
+			if(!isProviderExists)
+				return HandleError(res, 'Provider doesn\'t exists.')
+			else if(!isTaskExists)
+				return HandleError(res, 'Task doesn\'t exists.')
+
+			const where = { _id: task_id }
+			const query = { $push: { proposals: {provider: Mongoose.Types.ObjectId(provider),cover_letter: cover_letter}}}
+
+			let updated = await FindAndUpdate(Task,where,query,true)
+			if (!updated)
+				return HandleError(res, 'Failed to send proposal.')
+
+			return HandleSuccess(res, updated)
 
 		} catch (err) {
 			HandleServerError(res, req, err)

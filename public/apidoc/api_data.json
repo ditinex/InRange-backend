@@ -358,5 +358,51 @@
     "version": "0.0.0",
     "filename": "InRange-backend/controllers/taskController.js",
     "groupTitle": "Task"
+  },
+  {
+    "type": "post",
+    "url": "/provider/sendproposal",
+    "title": "Send Proposal",
+    "name": "Send_Proposal",
+    "group": "Task",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "ObjectId",
+            "optional": false,
+            "field": "task_id",
+            "description": "<p>Id of the task.</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "ObjectId",
+            "optional": false,
+            "field": "provider",
+            "description": "<p>Id of the provider.</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Sting",
+            "optional": false,
+            "field": "cover_letter",
+            "description": "<p>Proposal letter in text.</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "examples": [
+        {
+          "title": "Success-Response:",
+          "content": "    HTTP/1.1 200 OK\n\t\t{\n\t\t\t\"status\": \"success\",\n\t\t\t\"data\": {\n\t\t\t\t\"location\": {\n\t\t\t\t\t\"type\": \"Point\",\n\t\t\t\t\t\"coordinates\": [\n\t\t\t\t\t\t-110.8571443,\n\t\t\t\t\t\t32.4586858\n\t\t\t\t\t]\n\t\t\t\t},\n\t\t\t\t\"cost\": {\n\t\t\t\t\t\"service_cost\": 0,\n\t\t\t\t\t\"other_cost\": 0,\n\t\t\t\t\t\"discount\": 0,\n\t\t\t\t\t\"total\": 0\n\t\t\t\t},\n\t\t\t\t\"images\": [\n\t\t\t\t\t\"/images/1600840282151.jpg\",\n\t\t\t\t\t\"/images/1600840282166.jpg\"\n\t\t\t\t],\n\t\t\t\t\"_id\": \"5f6ae25a9647803978867259\",\n\t\t\t\t\"title\": \"Tap Repair test\",\n\t\t\t\t\"service\": \"repair\",\n\t\t\t\t\"description\": \"broken tap\",\n\t\t\t\t\"instruction\": \"Not specified\",\n\t\t\t\t\"name\": \"souradeep\",\n\t\t\t\t\"mobile\": \"919804985304\",\n\t\t\t\t\"status\": \"Hiring\",\n\t\t\t\t\"address\": \"india\",\n\t\t\t\t\"proposals\": [\n\t\t\t\t\t{\n\t\t\t\t\t\t\"_id\": \"5f6ae76860814f139cc9feb4\",\n\t\t\t\t\t\t\"provider\": \"5f67ac2e9a599b177fba55b5\",\n\t\t\t\t\t\t\"cover_letter\": \"hi\"\n\t\t\t\t\t},\n\t\t\t\t\t{\n\t\t\t\t\t\t\"_id\": \"5f6b28f1039e8158f879431b\",\n\t\t\t\t\t\t\"provider\": \"5f67ac2e9a599b177fba55b5\",\n\t\t\t\t\t\t\"cover_letter\": \"hi\"\n\t\t\t\t\t}\n\t\t\t\t],\n\t\t\t\t\"createdAt\": \"2020-09-23T05:51:22.187Z\",\n\t\t\t\t\"updatedAt\": \"2020-09-23T10:52:33.909Z\",\n\t\t\t\t\"__v\": 0\n\t\t\t}\n\t\t}",
+          "type": "json"
+        }
+      ]
+    },
+    "version": "0.0.0",
+    "filename": "InRange-backend/controllers/taskController.js",
+    "groupTitle": "Task"
   }
 ]

@@ -27,6 +27,7 @@ router.get('/', (req, res) => {
 router.use('/admins', require('./admins'));
 router.use('/auth', require('./auth'));
 router.use('/consumer', require('./consumer'));
+router.use('/provider', require('./provider'));
 
 
 
