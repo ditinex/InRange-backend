@@ -299,14 +299,14 @@ define({ "api": [
             "type": "Sting",
             "optional": false,
             "field": "service",
-            "description": "<p>Service type in text (optional).</p>"
+            "description": "<p>Service type in text.</p>"
           },
           {
             "group": "Parameter",
             "type": "String",
             "optional": false,
             "field": "description",
-            "description": "<p>Description in text (optional).</p>"
+            "description": "<p>Description in text.</p>"
           },
           {
             "group": "Parameter",
@@ -320,7 +320,7 @@ define({ "api": [
             "type": "String",
             "optional": false,
             "field": "address",
-            "description": "<p>Address in text (optional).</p>"
+            "description": "<p>Address in text.</p>"
           },
           {
             "group": "Parameter",

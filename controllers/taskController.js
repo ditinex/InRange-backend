@@ -21,10 +21,10 @@ module.exports = {
 	 * @apiParam {String} name Contact name without extra spaces and within 25 length
 	 * @apiParam {String} title	Title without extra spaces and within 25 length
 	 * @apiParam {Number} mobile Users unique mobile with ISD code i.e 919903614705.
-	 * @apiParam {Sting} service Service type in text (optional).
-	 * @apiParam {String} description Description in text (optional).
+	 * @apiParam {Sting} service Service type in text.
+	 * @apiParam {String} description Description in text.
 	 * @apiParam {String} instruction Service instruction (optional).
-	 * @apiParam {String} address Address in text (optional).
+	 * @apiParam {String} address Address in text.
 	 * @apiParam {Sting} status ENUM['Hiring', 'In-progress', 'Completed', 'Cancelled'].
 	 * @apiParam {String} location JSON stringify string with coordinates i.e {"longitude":"-110.8571443","lattitude":"32.4586858"}.
 	 * @apiParam {Files} images Service images (optional).
@@ -87,7 +87,7 @@ module.exports = {
 				validateError = 'Please enter valid mobile number.'
 			else if (location == '')
 				validateError = 'Failed to access location. Please restart the app and allow all permissions.'
-			else if (description.trim() == '' || service.trim() == '')
+			else if (description.trim() == '' || service.trim() == '' || address.trim() =='')
 				validateError = 'Required field should not be empty.'
 
 			if (validateError)
