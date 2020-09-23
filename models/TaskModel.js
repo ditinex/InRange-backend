@@ -10,7 +10,7 @@ const TaskSchema = new Schema({
     mobile: { type: String, required: true, trim: true },
 	images: {type: Array, default: []},
     status: { type: String, required: true, trim: true, enum: ['Hiring', 'In-progress', 'Completed', 'Cancelled'] },
-    address: { type: String },
+    address: { type: String, required: true, trim: true },
 	location: {
 		type: {
 			type: String,
