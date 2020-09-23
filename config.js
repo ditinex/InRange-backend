@@ -16,4 +16,7 @@ module.exports = {
 	publicImagePath: 'public/images/',
 	tokenExpiryLimit: 86400,
 	otpExpiryLimit: 3,
+	twilio_sid: process.env.TWILIO_SID,
+	twilio_token: process.env.TWILIO_TOKEN,
+	twilio_number: '+15005550006'
 }

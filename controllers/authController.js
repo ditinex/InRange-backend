@@ -1,7 +1,8 @@
-const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
-const Config = require('../config.js');
-const fs = require('fs');
+const bcrypt = require('bcryptjs')
+const jwt = require('jsonwebtoken')
+const Config = require('../config.js')
+const fs = require('fs')
+const { SendSMS } = require('../services')
 const { Admin, Otp, User } = require('../models')
 
 
@@ -221,6 +222,8 @@ module.exports = {
 				return HandleError(res, 'Too many OTP requests. Please try after sometime.')
 
 			const otpValue = Math.floor(1000 + Math.random() * 9000);
+			const smsStatus = await SendSMS('+'+mobile,'Your InRangeIt One Time Password is '+otpValue)
+			//console.log(smsStatus)
 			const inserted = await Insert(Otp,{otp: otpValue, mobile: mobile})
 			if(!inserted)
 				return HandleError(res, 'Failed to send OTP.')
