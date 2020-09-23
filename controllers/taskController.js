@@ -18,11 +18,11 @@ module.exports = {
 	 * @apiName Create Task
 	 * @apiGroup Task
 	 *
-	 * @apiParam {String} name
-	 * @apiParam {String} title
+	 * @apiParam {String} name Contact name without extra spaces and within 25 length
+	 * @apiParam {String} title	Title without extra spaces and within 25 length
 	 * @apiParam {Number} mobile Users unique mobile with ISD code i.e 919903614705.
-	 * @apiParam {Sting} service Service type.
-	 * @apiParam {String} description Service description.
+	 * @apiParam {Sting} service Service type in text (optional).
+	 * @apiParam {String} description Description in text (optional).
 	 * @apiParam {String} instruction Service instruction (optional).
 	 * @apiParam {String} address Address in text (optional).
 	 * @apiParam {Sting} status ENUM['Hiring', 'In-progress', 'Completed', 'Cancelled'].
