@@ -218,13 +218,10 @@ module.exports = {
 	},
 
 	/**
-	 * @api {post} /provider/sendproposal Send Proposal
-	 * @apiName Send Proposal
+	 * @api {post} /provider/review Send Review
+	 * @apiName Send Review
 	 * @apiGroup Task
 	 *
-	 * @apiParam {ObjectId} task_id Id of the task.
-	 * @apiParam {ObjectId} provider Id of the provider.
-	 * @apiParam {Sting} cover_letter Proposal letter in text.
 	 *
 	 *
 	 * @apiSuccessExample Success-Response:
@@ -237,7 +234,7 @@ module.exports = {
 	Review: async (req, res, next) => {
 		try {
 			const { rating = 1, provider = '', username = '', feedback= '' } = req.body
-			
+
 			if(username.trim()=='')
 				return HandleError(res, 'Invalid username.')
 			else if(provider=='')
