@@ -486,7 +486,7 @@ module.exports = {
 
 	GetTasksProvider: async (req, res, next) => {
 		try{
-			let user_id = (req.body.user_id)?req.body.user_id:''
+			let user_id = req.body.user_id || ''
 			let validateError = ''
 	
 			if(user_id === '')
@@ -592,7 +592,7 @@ module.exports = {
 
 	GetTaskById: async (req, res, next) => {
 		try{
-			let _id = (req.body.id)?req.body.id:''
+			let _id = req.body.id || ''
 			let validateError = ''
 	
 			if(_id === '')
