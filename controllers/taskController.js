@@ -74,7 +74,7 @@ module.exports = {
 	 */
 	CreateTask: async (req, res, next) => {
 		try {
-			const { service = '', description = '', instruction = 'Not specified', mobile = '',address='',location='',user_id='' } = req.body
+			const { service = '', description = '', instruction = '', mobile = '',address='',location='',user_id='' } = req.body
 			const name = req.body.name?req.body.name.trim() : ''
 			const title = req.body.title?req.body.title.trim() : ''
 			//Check images of task in frontend

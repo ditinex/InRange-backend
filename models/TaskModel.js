@@ -5,7 +5,7 @@ const TaskSchema = new Schema({
     title: { type: String, trim: true, required: true },
     service: { type: String, trim: true, required: true },
     description: { type: String, trim: true, required: true },
-    instruction: { type: String, trim: true, required: true },
+    instruction: { type: String, trim: true },
     name: { type: String, required: true, trim: true },
     mobile: { type: String, required: true, trim: true },
 	images: {type: Array, default: []},
