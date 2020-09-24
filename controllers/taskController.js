@@ -592,7 +592,7 @@ module.exports = {
 
 	GetTaskById: async (req, res, next) => {
 		try{
-			let _id = (req.body.id)?req.body.id:''
+			let _id = req.body.id || ''
 			let validateError = ''
 	
 			if(_id === '')
