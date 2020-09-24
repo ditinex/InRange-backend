@@ -218,20 +218,35 @@ module.exports = {
 	},
 
 	/**
-	 * @api {post} /provider/review Send Review
+	 * @api {post} /provider/sendreview Send Review
 	 * @apiName Send Review
 	 * @apiGroup Task
 	 *
-	 *
+	 * @apiParam {Number} rating Rating value between 1 and 5
+	 * @apiParam {ObjectId} provider Id of the provider.
+	 * @apiParam {String} username Name of user in text.
+	 * @apiParam {String} feedback Feedback in text.
 	 *
 	 * @apiSuccessExample Success-Response:
 	 *     HTTP/1.1 200 OK
 
-	 *
+	 *	{
+			"status": "success",
+			"data": {
+				"rating": 2,
+				"_id": "5f6c381085dad029f085cc8e",
+				"provider": "5f67ac2e9a599b177fba55b5",
+				"username": "Demo",
+				"feedback": "Good Boy",
+				"createdAt": "2020-09-24T06:09:20.464Z",
+				"updatedAt": "2020-09-24T06:09:20.464Z",
+				"__v": 0
+			}
+		}
 	 *
 	 */
 
-	Review: async (req, res, next) => {
+	SendReview: async (req, res, next) => {
 		try {
 			const { rating = 1, provider = '', username = '', feedback= '' } = req.body
 
@@ -263,7 +278,43 @@ module.exports = {
 		}
 	},
 
+	/**
+	 * @api {post} /provider/sendreview Send Review
+	 * @apiName Send Review
+	 * @apiGroup Task
+	 *
+	 * @apiParam {Number} rating Rating value between 1 and 5
+	 * @apiParam {ObjectId} provider Id of the provider.
+	 * @apiParam {String} username Name of user in text.
+	 * @apiParam {String} feedback Feedback in text.
+	 *
+	 * @apiSuccessExample Success-Response:
+	 *     HTTP/1.1 200 OK
 
+	 *	{
+			"status": "success",
+			"data": {
+				"rating": 2,
+				"_id": "5f6c381085dad029f085cc8e",
+				"provider": "5f67ac2e9a599b177fba55b5",
+				"username": "Demo",
+				"feedback": "Good Boy",
+				"createdAt": "2020-09-24T06:09:20.464Z",
+				"updatedAt": "2020-09-24T06:09:20.464Z",
+				"__v": 0
+			}
+		}
+	 *
+	 */
+
+	GetTasksOfConsumer: async (req, res, next) => {
+		try {
+			
+
+		} catch (err) {
+			HandleServerError(res, req, err)
+		}
+	},
 }
 
 

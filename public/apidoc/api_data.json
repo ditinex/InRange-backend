@@ -404,5 +404,58 @@
     "version": "0.0.0",
     "filename": "InRange-backend/controllers/taskController.js",
     "groupTitle": "Task"
+  },
+  {
+    "type": "post",
+    "url": "/provider/review",
+    "title": "Send Review",
+    "name": "Send_Review",
+    "group": "Task",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "Number",
+            "optional": false,
+            "field": "rating",
+            "description": "<p>Rating value between 1 and 5</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "ObjectId",
+            "optional": false,
+            "field": "provider",
+            "description": "<p>Id of the provider.</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "username",
+            "description": "<p>Name of user in text.</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "feedback",
+            "description": "<p>Feedback in text.</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "examples": [
+        {
+          "title": "Success-Response:",
+          "content": "    HTTP/1.1 200 OK\n\t{\n\t\t\t\"status\": \"success\",\n\t\t\t\"data\": {\n\t\t\t\t\"rating\": 2,\n\t\t\t\t\"_id\": \"5f6c381085dad029f085cc8e\",\n\t\t\t\t\"provider\": \"5f67ac2e9a599b177fba55b5\",\n\t\t\t\t\"username\": \"Demo\",\n\t\t\t\t\"feedback\": \"Good Boy\",\n\t\t\t\t\"createdAt\": \"2020-09-24T06:09:20.464Z\",\n\t\t\t\t\"updatedAt\": \"2020-09-24T06:09:20.464Z\",\n\t\t\t\t\"__v\": 0\n\t\t\t}\n\t\t}",
+          "type": "json"
+        }
+      ]
+    },
+    "version": "0.0.0",
+    "filename": "InRange-backend/controllers/taskController.js",
+    "groupTitle": "Task"
   }
 ]
