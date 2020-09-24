@@ -266,6 +266,45 @@ define({ "api": [
   },
   {
     "type": "post",
+    "url": "/consumer/acceptproposal",
+    "title": "Accept Proposal",
+    "name": "Accept_Proposal",
+    "group": "Task",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "ObjectId",
+            "optional": false,
+            "field": "task_id",
+            "description": "<p>Id of the task.</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "ObjectId",
+            "optional": false,
+            "field": "provider_id",
+            "description": "<p>Id of the provider.</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "examples": [
+        {
+          "title": "Success-Response:",
+          "content": "    HTTP/1.1 200 OK\n\t\t{\n\t\t\t\"status\": \"success\",\n\t\t\t\"data\": {\n\t\t\t\t\"location\": {\n\t\t\t\t\t\"type\": \"Point\",\n\t\t\t\t\t\"coordinates\": [\n\t\t\t\t\t\t-110.8571443,\n\t\t\t\t\t\t32.4586858\n\t\t\t\t\t]\n\t\t\t\t},\n\t\t\t\t\"cost\": {\n\t\t\t\t\t\"service_cost\": 0,\n\t\t\t\t\t\"other_cost\": 0,\n\t\t\t\t\t\"discount\": 0,\n\t\t\t\t\t\"total\": 0\n\t\t\t\t},\n\t\t\t\t\"images\": [\n\t\t\t\t\t\"/images/1600954873857.jpg\",\n\t\t\t\t\t\"/images/1600954873978.jpg\"\n\t\t\t\t],\n\t\t\t\t\"_id\": \"5f6ca1f95700d45738d6c86c\",\n\t\t\t\t\"title\": \"Tap Repair\",\n\t\t\t\t\"service\": \"repair\",\n\t\t\t\t\"description\": \"broken tap\",\n\t\t\t\t\"instruction\": \"Not specified\",\n\t\t\t\t\"name\": \"souradeep\",\n\t\t\t\t\"mobile\": \"919804985304\",\n\t\t\t\t\"status\": \"Hiring\",\n\t\t\t\t\"address\": \"india\",\n\t\t\t\t\"consumer\": \"5f67ac2e9a599b177fba55b5\",\n\t\t\t\t\"proposals\": [],\n\t\t\t\t\"createdAt\": \"2020-09-24T13:41:14.000Z\",\n\t\t\t\t\"updatedAt\": \"2020-09-24T14:34:24.676Z\",\n\t\t\t\t\"__v\": 0,\n\t\t\t\t\"provider\": \"5f67ac2e9a599b177fba55b5\"\n\t\t\t}\n\t\t}",
+          "type": "json"
+        }
+      ]
+    },
+    "version": "0.0.0",
+    "filename": "InRange-backend/controllers/taskController.js",
+    "groupTitle": "Task"
+  },
+  {
+    "type": "post",
     "url": "/consumer/createtask",
     "title": "Create Task",
     "name": "Create_Task",
@@ -342,6 +381,13 @@ define({ "api": [
             "optional": false,
             "field": "images",
             "description": "<p>Service images (optional).</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "ObjectId",
+            "optional": false,
+            "field": "user_id",
+            "description": "<p>Id of the consumer.</p>"
           }
         ]
       }
@@ -350,7 +396,136 @@ define({ "api": [
       "examples": [
         {
           "title": "Success-Response:",
-          "content": "    HTTP/1.1 200 OK\n    {\n\t\t\"status\": \"success\",\n\t\t\"data\": {\n\t\t\t\"cost\": {\n\t\t\t\t\"service_cost\": 0,\n\t\t\t\t\"other_cost\": 0,\n\t\t\t\t\"discount\": 0,\n\t\t\t\t\"total\": 0\n\t\t\t},\n\t\t\t\t\"images\": [\n\t\t\t\t\t\"/images/1600831745264.jpg\",\n\t\t\t\t\t\"/images/1600831745479.jpg\"\n\t\t\t\t],\n\t\t\t\t\"_id\": \"5f6ac1019b088f4c6cc2ed48\",\n\t\t\t\t\"title\": \"Tap need\",\n\t\t\t\t\"service\": \"Tap repair\",\n\t\t\t\t\"description\": \"Good Task\",\n\t\t\t\t\"instruction\": \"Need Faster\",\n\t\t\t\t\"name\": \"Test\",\n\t\t\t\t\"mobile\": \"919804985304\",\n\t\t\t\t\"status\": \"Hiring\",\n\t\t\t\t\"address\": \"India\",\n\t\t\t\t\"location\": {\n\t\t\t\t\t\"type\": \"Point\",\n\t\t\t\t\t\"coordinates\": [\n\t\t\t\t\t\t-110.8571443,\n\t\t\t\t\t\t32.4586858\n\t\t\t\t\t]\n\t\t\t\t},\n\t\t\t\t\"proposals\": [],\n\t\t\t\t\"createdAt\": \"2020-09-23T03:29:05.501Z\",\n\t\t\t\t\"updatedAt\": \"2020-09-23T03:29:05.501Z\",\n\t\t\t\t\"__v\": 0\n\t\t\t}\n\t\t}",
+          "content": "    HTTP/1.1 200 OK\n\t\t{\n\t\t\t\"status\": \"success\",\n\t\t\t\"data\": {\n\t\t\t\t\"cost\": {\n\t\t\t\t\t\"service_cost\": 0,\n\t\t\t\t\t\"other_cost\": 0,\n\t\t\t\t\t\"discount\": 0,\n\t\t\t\t\t\"total\": 0\n\t\t\t\t},\n\t\t\t\t\"images\": [\n\t\t\t\t\t\"/images/1600954873857.jpg\",\n\t\t\t\t\t\"/images/1600954873978.jpg\"\n\t\t\t\t],\n\t\t\t\t\"_id\": \"5f6ca1f95700d45738d6c86c\",\n\t\t\t\t\"title\": \"Tap Repair\",\n\t\t\t\t\"service\": \"repair\",\n\t\t\t\t\"description\": \"broken tap\",\n\t\t\t\t\"instruction\": \"Not specified\",\n\t\t\t\t\"name\": \"souradeep\",\n\t\t\t\t\"mobile\": \"919804985304\",\n\t\t\t\t\"status\": \"Hiring\",\n\t\t\t\t\"address\": \"india\",\n\t\t\t\t\"location\": {\n\t\t\t\t\t\"type\": \"Point\",\n\t\t\t\t\t\"coordinates\": [\n\t\t\t\t\t\t-110.8571443,\n\t\t\t\t\t\t32.4586858\n\t\t\t\t\t]\n\t\t\t\t},\n\t\t\t\t\"consumer\": \"5f67ac2e9a599b177fba55b5\",\n\t\t\t\t\"proposals\": [],\n\t\t\t\t\"createdAt\": \"2020-09-24T13:41:14.000Z\",\n\t\t\t\t\"updatedAt\": \"2020-09-24T13:41:14.000Z\",\n\t\t\t\t\"__v\": 0\n\t\t\t}\n\t\t}",
+          "type": "json"
+        }
+      ]
+    },
+    "version": "0.0.0",
+    "filename": "InRange-backend/controllers/taskController.js",
+    "groupTitle": "Task"
+  },
+  {
+    "type": "post",
+    "url": "/consumer/deletetask",
+    "title": "Delete Task",
+    "name": "Delete_Task",
+    "group": "Task",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "ObjectId",
+            "optional": false,
+            "field": "id",
+            "description": "<p>Id of the task.</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "examples": [
+        {
+          "title": "Success-Response:",
+          "content": "    HTTP/1.1 200 OK\n\t\t{\n\t\t\t\"status\": \"success\",\n\t\t\t\"data\": true\n\t\t}",
+          "type": "json"
+        }
+      ]
+    },
+    "version": "0.0.0",
+    "filename": "InRange-backend/controllers/taskController.js",
+    "groupTitle": "Task"
+  },
+  {
+    "type": "post",
+    "url": "/provider/gettaskbyid",
+    "title": "Get Task By Id",
+    "name": "Get_Task_By_Id",
+    "group": "Task",
+    "description": "<p>use /consumer/gettaskbyid for consumer</p>",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "ObjectId",
+            "optional": false,
+            "field": "id",
+            "description": "<p>Id of the task.</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "examples": [
+        {
+          "title": "Success-Response:",
+          "content": "    HTTP/1.1 200 OK\n\t\t{\n\t\t\t\"status\": \"success\",\n\t\t\t\"data\": [\n\t\t\t\t{\n\t\t\t\t\t\"_id\": \"5f6ac1019b088f4c6cc2ed48\",\n\t\t\t\t\t\"cost\": {\n\t\t\t\t\t\t\"service_cost\": 0,\n\t\t\t\t\t\t\"other_cost\": 0,\n\t\t\t\t\t\t\"discount\": 0,\n\t\t\t\t\t\t\"total\": 0\n\t\t\t\t\t},\n\t\t\t\t\t\"images\": [\n\t\t\t\t\t\t\"/images/1600831745264.jpg\",\n\t\t\t\t\t\t\"/images/1600831745479.jpg\"\n\t\t\t\t\t],\n\t\t\t\t\t\"title\": \"Tap need\",\n\t\t\t\t\t\"service\": \"Tap repair\",\n\t\t\t\t\t\"description\": \"Good Task\",\n\t\t\t\t\t\"instruction\": \"Need Faster\",\n\t\t\t\t\t\"name\": \"Test\",\n\t\t\t\t\t\"mobile\": \"919804985304\",\n\t\t\t\t\t\"status\": \"Hiring\",\n\t\t\t\t\t\"address\": \"India\",\n\t\t\t\t\t\"location\": {\n\t\t\t\t\t\t\"type\": \"Point\",\n\t\t\t\t\t\t\"coordinates\": [\n\t\t\t\t\t\t\t-110.8571443,\n\t\t\t\t\t\t\t32.4586858\n\t\t\t\t\t\t]\n\t\t\t\t\t},\n\t\t\t\t\t\"proposals\": [],\n\t\t\t\t\t\"createdAt\": \"2020-09-23T03:29:05.501Z\",\n\t\t\t\t\t\"updatedAt\": \"2020-09-23T03:29:05.501Z\",\n\t\t\t\t\t\"__v\": 0\n\t\t\t\t},\n\t\t\t\t{\n\t\t\t\t\t\"_id\": \"5f6ca1f95700d45738d6c86c\",\n\t\t\t\t\t\"cost\": {\n\t\t\t\t\t\t\"service_cost\": 0,\n\t\t\t\t\t\t\"other_cost\": 0,\n\t\t\t\t\t\t\"discount\": 0,\n\t\t\t\t\t\t\"total\": 0\n\t\t\t\t\t},\n\t\t\t\t\t\"images\": [\n\t\t\t\t\t\t\"/images/1600954873857.jpg\",\n\t\t\t\t\t\t\"/images/1600954873978.jpg\"\n\t\t\t\t\t],\n\t\t\t\t\t\"title\": \"Tap Repair\",\n\t\t\t\t\t\"service\": \"repair\",\n\t\t\t\t\t\"description\": \"broken tap\",\n\t\t\t\t\t\"instruction\": \"Not specified\",\n\t\t\t\t\t\"name\": \"souradeep\",\n\t\t\t\t\t\"mobile\": \"919804985304\",\n\t\t\t\t\t\"status\": \"Hiring\",\n\t\t\t\t\t\"address\": \"india\",\n\t\t\t\t\t\"location\": {\n\t\t\t\t\t\t\"type\": \"Point\",\n\t\t\t\t\t\t\"coordinates\": [\n\t\t\t\t\t\t\t-110.8571443,\n\t\t\t\t\t\t\t32.4586858\n\t\t\t\t\t\t]\n\t\t\t\t\t},\n\t\t\t\t\t\"consumer\": \"5f67ac2e9a599b177fba55b5\",\n\t\t\t\t\t\"proposals\": [],\n\t\t\t\t\t\"createdAt\": \"2020-09-24T13:41:14.000Z\",\n\t\t\t\t\t\"updatedAt\": \"2020-09-24T14:34:24.676Z\",\n\t\t\t\t\t\"__v\": 0,\n\t\t\t\t\t\"provider\": \"5f67ac2e9a599b177fba55b5\"\n\t\t\t\t}\n\t\t\t]\n\t\t}",
+          "type": "json"
+        }
+      ]
+    },
+    "version": "0.0.0",
+    "filename": "InRange-backend/controllers/taskController.js",
+    "groupTitle": "Task"
+  },
+  {
+    "type": "post",
+    "url": "/consumer/gettasks",
+    "title": "List Tasks Consumer",
+    "name": "List_Tasks_Consumer",
+    "group": "Task",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "ObjectId",
+            "optional": false,
+            "field": "user_id",
+            "description": "<p>Id of the consumer.</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "examples": [
+        {
+          "title": "Success-Response:",
+          "content": "    HTTP/1.1 200 OK\n\t\t{\n\t\t\t\"status\": \"success\",\n\t\t\t\"data\": [\n\t\t\t\t{\n\t\t\t\t\t\"_id\": \"5f6ca1f95700d45738d6c86c\",\n\t\t\t\t\t\"cost\": {\n\t\t\t\t\t\t\"service_cost\": 0,\n\t\t\t\t\t\t\"other_cost\": 0,\n\t\t\t\t\t\t\"discount\": 0,\n\t\t\t\t\t\t\"total\": 0\n\t\t\t\t\t},\n\t\t\t\t\t\"images\": [\n\t\t\t\t\t\t\"/images/1600954873857.jpg\",\n\t\t\t\t\t\t\"/images/1600954873978.jpg\"\n\t\t\t\t\t],\n\t\t\t\t\t\"title\": \"Tap Repair\",\n\t\t\t\t\t\"service\": \"repair\",\n\t\t\t\t\t\"description\": \"broken tap\",\n\t\t\t\t\t\"instruction\": \"Not specified\",\n\t\t\t\t\t\"name\": \"souradeep\",\n\t\t\t\t\t\"mobile\": \"919804985304\",\n\t\t\t\t\t\"status\": \"Hiring\",\n\t\t\t\t\t\"address\": \"india\",\n\t\t\t\t\t\"location\": {\n\t\t\t\t\t\t\"type\": \"Point\",\n\t\t\t\t\t\t\"coordinates\": [\n\t\t\t\t\t\t\t-110.8571443,\n\t\t\t\t\t\t\t32.4586858\n\t\t\t\t\t\t]\n\t\t\t\t\t},\n\t\t\t\t\t\"consumer\": \"5f67ac2e9a599b177fba55b5\",\n\t\t\t\t\t\"proposals\": [],\n\t\t\t\t\t\"createdAt\": \"2020-09-24T13:41:14.000Z\",\n\t\t\t\t\t\"updatedAt\": \"2020-09-24T13:41:14.000Z\",\n\t\t\t\t\t\"__v\": 0\n\t\t\t\t}\n\t\t\t]\n\t\t}",
+          "type": "json"
+        }
+      ]
+    },
+    "version": "0.0.0",
+    "filename": "InRange-backend/controllers/taskController.js",
+    "groupTitle": "Task"
+  },
+  {
+    "type": "post",
+    "url": "/provider/gettasks",
+    "title": "List Tasks Provider",
+    "name": "List_Tasks_Provider",
+    "group": "Task",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "ObjectId",
+            "optional": false,
+            "field": "user_id",
+            "description": "<p>Id of the consumer.</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "examples": [
+        {
+          "title": "Success-Response:",
+          "content": "HTTP/1.1 200 OK",
           "type": "json"
         }
       ]
@@ -407,7 +582,7 @@ define({ "api": [
   },
   {
     "type": "post",
-    "url": "/provider/review",
+    "url": "/consumer/sendreview",
     "title": "Send Review",
     "name": "Send_Review",
     "group": "Task",

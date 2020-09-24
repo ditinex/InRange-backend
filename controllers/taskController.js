@@ -28,51 +28,53 @@ module.exports = {
 	 * @apiParam {Sting} status ENUM['Hiring', 'In-progress', 'Completed', 'Cancelled'].
 	 * @apiParam {String} location JSON stringify string with coordinates i.e {"longitude":"-110.8571443","lattitude":"32.4586858"}.
 	 * @apiParam {Files} images Service images (optional).
+	 * @apiParam {ObjectId} user_id Id of the consumer.
 	 *
 	 *
 	 * @apiSuccessExample Success-Response:
 	 *     HTTP/1.1 200 OK
-	 *     {
-	 *		"status": "success",
-	 *		"data": {
-	 *			"cost": {
-	 *				"service_cost": 0,
-	 *				"other_cost": 0,
-	 *				"discount": 0,
-	 *				"total": 0
-	 *			},
-	 *				"images": [
-	 *					"/images/1600831745264.jpg",
-	 *					"/images/1600831745479.jpg"
-	 *				],
-	 *				"_id": "5f6ac1019b088f4c6cc2ed48",
-	 *				"title": "Tap need",
-	 *				"service": "Tap repair",
-	 *				"description": "Good Task",
-	 *				"instruction": "Need Faster",
-	 *				"name": "Test",
-	 *				"mobile": "919804985304",
-	 *				"status": "Hiring",
-     *				"address": "India",
-     *				"location": {
-     *					"type": "Point",
-     *					"coordinates": [
-     *						-110.8571443,
-     *						32.4586858
-     *					]
-     *				},
-     *				"proposals": [],
-     *				"createdAt": "2020-09-23T03:29:05.501Z",
-     *				"updatedAt": "2020-09-23T03:29:05.501Z",
-     *				"__v": 0
-     *			}
-     *		}
+		{
+			"status": "success",
+			"data": {
+				"cost": {
+					"service_cost": 0,
+					"other_cost": 0,
+					"discount": 0,
+					"total": 0
+				},
+				"images": [
+					"/images/1600954873857.jpg",
+					"/images/1600954873978.jpg"
+				],
+				"_id": "5f6ca1f95700d45738d6c86c",
+				"title": "Tap Repair",
+				"service": "repair",
+				"description": "broken tap",
+				"instruction": "Not specified",
+				"name": "souradeep",
+				"mobile": "919804985304",
+				"status": "Hiring",
+				"address": "india",
+				"location": {
+					"type": "Point",
+					"coordinates": [
+						-110.8571443,
+						32.4586858
+					]
+				},
+				"consumer": "5f67ac2e9a599b177fba55b5",
+				"proposals": [],
+				"createdAt": "2020-09-24T13:41:14.000Z",
+				"updatedAt": "2020-09-24T13:41:14.000Z",
+				"__v": 0
+			}
+		}
 	 *
 	 *
 	 */
 	CreateTask: async (req, res, next) => {
 		try {
-			const { service = '', description = '', instruction = 'Not specified', mobile = '',address='',location='' } = req.body
+			const { service = '', description = '', instruction = 'Not specified', mobile = '',address='',location='',user_id='' } = req.body
 			const name = req.body.name?req.body.name.trim() : ''
 			const title = req.body.title?req.body.title.trim() : ''
 			//Check images of task in frontend
@@ -89,6 +91,8 @@ module.exports = {
 				validateError = 'Failed to access location. Please restart the app and allow all permissions.'
 			else if (description.trim() == '' || service.trim() == '' || address.trim() =='')
 				validateError = 'Required field should not be empty.'
+			else if(user_id=='')
+				validateError = 'Consumer id should not be empty.'
 
 			if (validateError)
 				return HandleError(res, validateError)
@@ -101,7 +105,7 @@ module.exports = {
 				return HandleError(res, 'Invalid location cooridnates.')
 			}
 
-			let data = { title, service, description, instruction, name, mobile, status: 'Hiring', address, location: { type: 'Point', coordinates: [coordinates.longitude, coordinates.lattitude] } }
+			let data = { title, service, description, instruction, name, mobile, status: 'Hiring', address, location: { type: 'Point', coordinates: [coordinates.longitude, coordinates.lattitude] }, consumer: user_id }
 
 			if(images)
 			{
@@ -125,6 +129,45 @@ module.exports = {
 		}
 	},
 
+	/**
+	 * @api {post} /consumer/deletetask Delete Task
+	 * @apiName Delete Task
+	 * @apiGroup Task
+	 *
+	 * @apiParam {ObjectId} id Id of the task.
+	 *
+	 * @apiSuccessExample Success-Response:
+	 *     HTTP/1.1 200 OK
+		{
+			"status": "success",
+			"data": true
+		}
+	 */
+
+	DeleteTask: async (req, res, next) => {
+		try{
+			let _id = (req.body.id)?req.body.id:''
+			let validateError = ''
+	
+			if(_id === '')
+				validateError = 'This field is required.'
+	
+			if(validateError)
+				return HandleError(res,validateError)
+			
+			let update = await Delete(Task,{_id: _id})
+	
+			if(!update)
+				return HandleError(res,'Failed to delete Task.')
+	
+			return HandleSuccess(res, update)
+	
+		}catch (err) {
+			HandleServerError(res, req, err)
+		}
+	},
+
+	
 	/**
 	 * @api {post} /provider/sendproposal Send Proposal
 	 * @apiName Send Proposal
@@ -218,7 +261,86 @@ module.exports = {
 	},
 
 	/**
-	 * @api {post} /provider/sendreview Send Review
+	 * @api {post} /consumer/acceptproposal Accept Proposal
+	 * @apiName Accept Proposal
+	 * @apiGroup Task
+	 *
+	 * @apiParam {ObjectId} task_id Id of the task.
+	 * @apiParam {ObjectId} provider_id Id of the provider.
+	 *
+	 * @apiSuccessExample Success-Response:
+	 *     HTTP/1.1 200 OK
+		{
+			"status": "success",
+			"data": {
+				"location": {
+					"type": "Point",
+					"coordinates": [
+						-110.8571443,
+						32.4586858
+					]
+				},
+				"cost": {
+					"service_cost": 0,
+					"other_cost": 0,
+					"discount": 0,
+					"total": 0
+				},
+				"images": [
+					"/images/1600954873857.jpg",
+					"/images/1600954873978.jpg"
+				],
+				"_id": "5f6ca1f95700d45738d6c86c",
+				"title": "Tap Repair",
+				"service": "repair",
+				"description": "broken tap",
+				"instruction": "Not specified",
+				"name": "souradeep",
+				"mobile": "919804985304",
+				"status": "Hiring",
+				"address": "india",
+				"consumer": "5f67ac2e9a599b177fba55b5",
+				"proposals": [],
+				"createdAt": "2020-09-24T13:41:14.000Z",
+				"updatedAt": "2020-09-24T14:34:24.676Z",
+				"__v": 0,
+				"provider": "5f67ac2e9a599b177fba55b5"
+			}
+		}
+	 *
+	 */
+
+	AcceptProposal: async (req, res, next) => {
+		try {
+			const { task_id='',provider_id='' } = req.body
+
+			if(task_id=='' || provider_id=='')
+				return HandleError(res, 'Required field should not be empty.')
+			
+			const isProviderExists = await IsExists(User,{_id: provider_id})
+			const isTaskExists = await IsExists(Task,{_id: task_id})
+
+			if(!isProviderExists)
+				return HandleError(res, 'Provider doesn\'t exists anymore.')
+			else if(!isTaskExists)
+				return HandleError(res, 'Task doesn\'t exists anymore.')
+
+			const where = { _id: task_id }
+			const query = { provider: provider_id }
+	
+			let updated = await FindAndUpdate(Task,where,query)
+			if (!updated)
+				return HandleError(res, 'Failed to accept proposal. Please contact system admin.')
+
+			return HandleSuccess(res, updated)
+
+		} catch (err) {
+			HandleServerError(res, req, err)
+		}
+	},
+
+	/**
+	 * @api {post} /consumer/sendreview Send Review
 	 * @apiName Send Review
 	 * @apiGroup Task
 	 *
@@ -279,39 +401,214 @@ module.exports = {
 	},
 
 	/**
-	 * @api {post} /provider/sendreview Send Review
-	 * @apiName Send Review
+	 * @api {post} /consumer/gettasks List Tasks Consumer
+	 * @apiName List Tasks Consumer
 	 * @apiGroup Task
 	 *
-	 * @apiParam {Number} rating Rating value between 1 and 5
-	 * @apiParam {ObjectId} provider Id of the provider.
-	 * @apiParam {String} username Name of user in text.
-	 * @apiParam {String} feedback Feedback in text.
+	 * @apiParam {ObjectId} user_id Id of the consumer.
+	 *
+	 * @apiSuccessExample Success-Response:
+	 *     HTTP/1.1 200 OK
+		{
+			"status": "success",
+			"data": [
+				{
+					"_id": "5f6ca1f95700d45738d6c86c",
+					"cost": {
+						"service_cost": 0,
+						"other_cost": 0,
+						"discount": 0,
+						"total": 0
+					},
+					"images": [
+						"/images/1600954873857.jpg",
+						"/images/1600954873978.jpg"
+					],
+					"title": "Tap Repair",
+					"service": "repair",
+					"description": "broken tap",
+					"instruction": "Not specified",
+					"name": "souradeep",
+					"mobile": "919804985304",
+					"status": "Hiring",
+					"address": "india",
+					"location": {
+						"type": "Point",
+						"coordinates": [
+							-110.8571443,
+							32.4586858
+						]
+					},
+					"consumer": "5f67ac2e9a599b177fba55b5",
+					"proposals": [],
+					"createdAt": "2020-09-24T13:41:14.000Z",
+					"updatedAt": "2020-09-24T13:41:14.000Z",
+					"__v": 0
+				}
+			]
+		}
+	 */
+
+	GetTasksConsumer: async (req, res, next) => {
+		try{
+			let user_id = (req.body.user_id)?req.body.user_id:''
+			let validateError = ''
+	
+			if(user_id === '')
+				validateError = 'This field is required.'
+	
+			if(validateError)
+				return HandleError(res,validateError)
+			
+			let data = await Find(Task,{consumer: user_id})
+	
+			if(!data)
+				return HandleError(res,'Failed to list Task.')
+	
+			return HandleSuccess(res, data)
+	
+		}catch (err) {
+			HandleServerError(res, req, err)
+		}
+	},
+
+	/**
+	 * @api {post} /provider/gettasks List Tasks Provider
+	 * @apiName List Tasks Provider
+	 * @apiGroup Task
+	 *
+	 * @apiParam {ObjectId} user_id Id of the consumer.
 	 *
 	 * @apiSuccessExample Success-Response:
 	 *     HTTP/1.1 200 OK
 
-	 *	{
-			"status": "success",
-			"data": {
-				"rating": 2,
-				"_id": "5f6c381085dad029f085cc8e",
-				"provider": "5f67ac2e9a599b177fba55b5",
-				"username": "Demo",
-				"feedback": "Good Boy",
-				"createdAt": "2020-09-24T06:09:20.464Z",
-				"updatedAt": "2020-09-24T06:09:20.464Z",
-				"__v": 0
-			}
-		}
-	 *
 	 */
 
-	GetTasksOfConsumer: async (req, res, next) => {
-		try {
+	GetTasksProvider: async (req, res, next) => {
+		try{
+			let user_id = (req.body.user_id)?req.body.user_id:''
+			let validateError = ''
+	
+			if(user_id === '')
+				validateError = 'This field is required.'
+	
+			if(validateError)
+				return HandleError(res,validateError)
 			
+			let data = await Find(Task,{provider: user_id})
+	
+			if(!data)
+				return HandleError(res,'Failed to list Task.')
+	
+			return HandleSuccess(res, data)
+	
+		}catch (err) {
+			HandleServerError(res, req, err)
+		}
+	},
 
-		} catch (err) {
+	/**
+	 * @api {post} /provider/gettaskbyid Get Task By Id
+	 * @apiName Get Task By Id
+	 * @apiGroup Task
+	 * @apiDescription use /consumer/gettaskbyid for consumer
+	 *
+	 * @apiParam {ObjectId} id Id of the task.
+	 *
+	 * @apiSuccessExample Success-Response:
+	 *     HTTP/1.1 200 OK
+		{
+			"status": "success",
+			"data": [
+				{
+					"_id": "5f6ac1019b088f4c6cc2ed48",
+					"cost": {
+						"service_cost": 0,
+						"other_cost": 0,
+						"discount": 0,
+						"total": 0
+					},
+					"images": [
+						"/images/1600831745264.jpg",
+						"/images/1600831745479.jpg"
+					],
+					"title": "Tap need",
+					"service": "Tap repair",
+					"description": "Good Task",
+					"instruction": "Need Faster",
+					"name": "Test",
+					"mobile": "919804985304",
+					"status": "Hiring",
+					"address": "India",
+					"location": {
+						"type": "Point",
+						"coordinates": [
+							-110.8571443,
+							32.4586858
+						]
+					},
+					"proposals": [],
+					"createdAt": "2020-09-23T03:29:05.501Z",
+					"updatedAt": "2020-09-23T03:29:05.501Z",
+					"__v": 0
+				},
+				{
+					"_id": "5f6ca1f95700d45738d6c86c",
+					"cost": {
+						"service_cost": 0,
+						"other_cost": 0,
+						"discount": 0,
+						"total": 0
+					},
+					"images": [
+						"/images/1600954873857.jpg",
+						"/images/1600954873978.jpg"
+					],
+					"title": "Tap Repair",
+					"service": "repair",
+					"description": "broken tap",
+					"instruction": "Not specified",
+					"name": "souradeep",
+					"mobile": "919804985304",
+					"status": "Hiring",
+					"address": "india",
+					"location": {
+						"type": "Point",
+						"coordinates": [
+							-110.8571443,
+							32.4586858
+						]
+					},
+					"consumer": "5f67ac2e9a599b177fba55b5",
+					"proposals": [],
+					"createdAt": "2020-09-24T13:41:14.000Z",
+					"updatedAt": "2020-09-24T14:34:24.676Z",
+					"__v": 0,
+					"provider": "5f67ac2e9a599b177fba55b5"
+				}
+			]
+		}
+	 */
+
+	GetTaskById: async (req, res, next) => {
+		try{
+			let _id = (req.body.id)?req.body.id:''
+			let validateError = ''
+	
+			if(_id === '')
+				validateError = 'This field is required.'
+	
+			if(validateError)
+				return HandleError(res,validateError)
+			
+			let data = await Find(Task,{_id: _id})
+	
+			if(!data)
+				return HandleError(res,'Failed to get Task.')
+	
+			return HandleSuccess(res, data)
+	
+		}catch (err) {
 			HandleServerError(res, req, err)
 		}
 	},
