@@ -12,7 +12,5 @@ router.post('/createcoupon',Coupon.CreateCoupon);
 router.post('/deletecoupon',Coupon.DeleteCoupon);
 router.post('/editcoupon',Coupon.EditCoupon);
 router.get('/getallcoupon',Coupon.GetAllCoupons);
-router.get('/getcouponbycode',Coupon.GetCouponByCode);
-
 
 module.exports = router;

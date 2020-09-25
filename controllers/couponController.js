@@ -174,7 +174,7 @@ module.exports = {
 	},
 
 	/**
-	 * @api {post} /admin/getcouponbycode Get Coupon Details By Code
+	 * @api {post} /consumer/getcouponbycode Get Coupon Details By Code
 	 * @apiName Get Coupon Details By Code
 	 * @apiGroup Coupon
 	 *
