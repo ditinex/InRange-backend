@@ -397,7 +397,7 @@ define({ "api": [
   },
   {
     "type": "post",
-    "url": "/admin/getcouponbycode",
+    "url": "/consumer/getcouponbycode",
     "title": "Get Coupon Details By Code",
     "name": "Get_Coupon_Details_By_Code",
     "group": "Coupon",
