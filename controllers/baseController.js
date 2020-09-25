@@ -165,6 +165,11 @@ const PasswordStrength = password => {
 	return re.test(password);
 }
 
+const isDataURL = (s)=>{
+	let regex = /^\s*data:([a-z]+\/[a-z]+(;[a-z\-]+\=[a-z\-]+)?)?(;base64)?,[a-z0-9\!\$\&\'\,\(\)\*\+\,\;\=\-\.\_\~\:\@\/\?\%\s]*\s*$/i;
+    return !!s.match(regex);
+}
+
 const GeneratePassword = (length = 16) => {
 	let result = '';
 	let characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
@@ -234,6 +239,7 @@ exports.PasswordStrength = PasswordStrength
 exports.ValidateAlphanumeric = ValidateAlphanumeric
 exports.ValidateMobile = ValidateMobile
 exports.ValidateLength = ValidateLength
+exports.isDataURL = isDataURL
 exports.GeneratePassword = GeneratePassword
 exports.UnauthorizedError = UnauthorizedError
 exports.HandleServerError = HandleServerError

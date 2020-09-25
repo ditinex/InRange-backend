@@ -7,13 +7,13 @@ const { Admin, Otp, User, Task, Mongoose, Review, Coupon } = require('../models'
 const {
 	IsExists, Insert, Find, CompressImageAndUpload, FindAndUpdate, Delete,
 	HandleSuccess, HandleError, HandleServerError,
-	ValidateEmail, PasswordStrength, ValidateAlphanumeric, ValidateLength, ValidateMobile, GeneratePassword
+	ValidateEmail, PasswordStrength, ValidateAlphanumeric, ValidateLength, ValidateMobile, isDataURL, GeneratePassword
 } = require('./baseController');
 const { query } = require('express');
 
 
 module.exports = {
-	/**
+/**
 	 * @api {post} /admin/createcoupon Create Coupon
 	 * @apiName Create Coupon
 	 * @apiGroup Coupon
@@ -202,6 +202,31 @@ module.exports = {
 				return HandleError(res,'Failed to get Coupon.')
 	
 			return HandleSuccess(res, data)
+	
+		}catch (err) {
+			HandleServerError(res, req, err)
+		}
+	},
+
+	/**
+	 * @api {get} /admin/getallusers List All Users
+	 * @apiName List All Users
+	 * @apiGroup Admin
+	 *
+	 * @apiSuccessExample Success-Response:
+	 *     HTTP/1.1 200 OK
+	 * 
+	 */
+
+	GetAllUsers: async (req, res, next) => {
+		try{
+			
+			// let data = await Find(User)
+	
+			// if(!data)
+			// 	return HandleError(res,'Failed to list User.')
+	
+			// return HandleSuccess(res, data)
 	
 		}catch (err) {
 			HandleServerError(res, req, err)

@@ -86,6 +86,19 @@ module.exports = {
 
 	},
 
+	/**
+	 * @api {post} /admins/login Admin Login
+	 * @apiName Admin Login
+	 * @apiGroup Admin
+	 *
+	 * @apiParam {String} email Admins unique email.
+	 * @apiParam {String} password Admins password.
+	 *
+	 *
+	 * @apiSuccessExample Success-Response:
+	 *     HTTP/1.1 200 OK
+
+	 */
 	AdminLogin: async (req, res, next) => {
 		try {
 

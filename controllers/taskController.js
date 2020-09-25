@@ -7,7 +7,7 @@ const { Admin, Otp, User, Task, Mongoose, Review } = require('../models')
 const {
 	IsExists, Insert, Find, CompressImageAndUpload, FindAndUpdate, Delete,
 	HandleSuccess, HandleError, HandleServerError,
-	ValidateEmail, PasswordStrength, ValidateAlphanumeric, ValidateLength, ValidateMobile, GeneratePassword
+	ValidateEmail, PasswordStrength, ValidateAlphanumeric, ValidateLength, ValidateMobile, isDataURL,GeneratePassword
 } = require('./baseController');
 const { query } = require('express');
 
@@ -120,6 +120,94 @@ module.exports = {
 			}
 			let inserted = await Insert(Task, data)
 			if (!inserted)
+				return HandleError(res, 'Failed to create task. Please contact system admin.')
+			
+			return HandleSuccess(res, inserted)
+
+		} catch (err) {
+			HandleServerError(res, req, err)
+		}
+	},
+
+	/**
+	 * @api {post} /consumer/edittask Edit Task
+	 * @apiName Edit Task
+	 * @apiGroup Task
+	 *
+	 * @apiParam {ObjectId} id Id of the task.
+	 * @apiParam {String} name Contact name without extra spaces and within 25 length
+	 * @apiParam {String} title	Title without extra spaces and within 25 length
+	 * @apiParam {Number} mobile Users unique mobile with ISD code i.e 919903614705.
+	 * @apiParam {Sting} service Service type in text.
+	 * @apiParam {String} description Description in text.
+	 * @apiParam {String} instruction Service instruction (optional).
+	 * @apiParam {String} address Address in text.
+	 * @apiParam {Sting} status ENUM['Hiring', 'In-progress', 'Completed', 'Cancelled'].
+	 * @apiParam {String} location JSON stringify string with coordinates i.e {"longitude":"-110.8571443","lattitude":"32.4586858"}.
+	 * @apiParam {Files} images Service images (optional).
+	 * @apiParam {ObjectId} user_id Id of the consumer.
+	 *
+	 *
+	 * @apiSuccessExample Success-Response:
+	 *     HTTP/1.1 200 OK
+
+	 *
+	 *
+	 */
+	EditTask: async (req, res, next) => {
+		try {
+			const { id = '', service = '', description = '', instruction = '', mobile = '',address='',location='',user_id='' } = req.body
+			const name = req.body.name?req.body.name.trim() : ''
+			const title = req.body.title?req.body.title.trim() : ''
+			//Check images of task in frontend
+			const images = req.files?req.files.images : null
+
+			let validateError = null
+			if (!ValidateAlphanumeric(name) || !ValidateLength(name))
+				validateError = 'Please enter a valid name without any special character and less than 25 character.'
+			else if (!ValidateAlphanumeric(title) || !ValidateLength(title))
+				validateError = 'Please enter a valid task title without any special character and less than 25 character.'
+			else if (!ValidateMobile(mobile))
+				validateError = 'Please enter valid mobile number.'
+			else if (location == '')
+				validateError = 'Failed to access location. Please restart the app and allow all permissions.'
+			else if (description.trim() == '' || service.trim() == '' || address.trim() =='')
+				validateError = 'Required field should not be empty.'
+			else if(user_id=='')
+				validateError = 'Consumer id should not be empty.'
+			else if(id=='')
+				validateError = 'Failed to create task.'
+
+			if (validateError)
+				return HandleError(res, validateError)
+
+			let coordinates = {}
+			try {
+				coordinates = JSON.parse(location)
+			}
+			catch (e) {
+				return HandleError(res, 'Invalid location cooridnates.')
+			}
+			
+			let where = { _id: id }
+			let data = { title, service, description, instruction, name, mobile, status: 'Hiring', address, location: { type: 'Point', coordinates: [coordinates.longitude, coordinates.lattitude] }, consumer: user_id }
+
+			if(images)
+			{
+				data.images=[]
+				for(i=0;i<images.length;i++)
+				{
+					if(isDataURL(images[i]))
+					{
+						let isUploaded = await CompressImageAndUpload(images[i])
+						if(!isUploaded)
+							return HandleError(res,"Failed to upload images.")
+						data.images[i] = isUploaded.path
+					}
+				}
+			}
+			let updated = await FindAndUpdate(Task, where, data)
+			if (!updated)
 				return HandleError(res, 'Failed to create task. Please contact system admin.')
 			
 			return HandleSuccess(res, inserted)

@@ -1,3 +1,3 @@
 exports.Auth = require('./authController');
 exports.Task = require('./taskController');
-exports.Coupon = require('./couponController');
+exports.Admin = require('./AdminController');

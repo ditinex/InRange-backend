@@ -3,14 +3,14 @@ const router = express.Router();
 
 const Controllers = require('../controllers')
 const Auth = Controllers.Auth
-const Coupon = Controllers.Coupon
+const Admin = Controllers.Admin
 
 router.post('/signup',Auth.AdminSignup);
 router.post('/login',Auth.AdminLogin);
 
-router.post('/createcoupon',Coupon.CreateCoupon);
-router.post('/deletecoupon',Coupon.DeleteCoupon);
-router.post('/editcoupon',Coupon.EditCoupon);
-router.get('/getallcoupon',Coupon.GetAllCoupons);
+router.post('/createcoupon',Admin.CreateCoupon);
+router.post('/deletecoupon',Admin.DeleteCoupon);
+router.post('/editcoupon',Admin.EditCoupon);
+router.get('/getallcoupon',Admin.GetAllCoupons);
 
 module.exports = router;
