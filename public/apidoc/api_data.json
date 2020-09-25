@@ -237,6 +237,216 @@
     "groupTitle": "Auth"
   },
   {
+    "type": "post",
+    "url": "/admin/createcoupon",
+    "title": "Create Coupon",
+    "name": "Create_Coupon",
+    "group": "Coupon",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "code",
+            "description": "<p>Code without extra spaces and alphanumeric.</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Boolean",
+            "optional": false,
+            "field": "isPercent",
+            "description": "<p>True or False.</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Number",
+            "optional": false,
+            "field": "amount",
+            "description": "<p>A number greater than 0.</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Sting",
+            "optional": false,
+            "field": "expiry",
+            "description": "<p>Date in text.</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Boolean",
+            "optional": false,
+            "field": "isActive",
+            "description": "<p>True or False.</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "examples": [
+        {
+          "title": "Success-Response:",
+          "content": "HTTP/1.1 200 OK",
+          "type": "json"
+        }
+      ]
+    },
+    "version": "0.0.0",
+    "filename": "InRange-backend/controllers/couponController.js",
+    "groupTitle": "Coupon"
+  },
+  {
+    "type": "post",
+    "url": "/admin/deletecoupon",
+    "title": "Delete Coupon",
+    "name": "Delete_Coupon",
+    "group": "Coupon",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "ObjectId",
+            "optional": false,
+            "field": "id",
+            "description": "<p>Id of the coupon.</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "examples": [
+        {
+          "title": "Success-Response:",
+          "content": "    HTTP/1.1 200 OK\n\t\t{\n\t\t\t\"status\": \"success\",\n\t\t\t\"data\": true\n\t\t}",
+          "type": "json"
+        }
+      ]
+    },
+    "version": "0.0.0",
+    "filename": "InRange-backend/controllers/couponController.js",
+    "groupTitle": "Coupon"
+  },
+  {
+    "type": "post",
+    "url": "/admin/editcoupon",
+    "title": "Edit Coupon",
+    "name": "Edit_Coupon",
+    "group": "Coupon",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "ObjectId",
+            "optional": false,
+            "field": "id",
+            "description": "<p>Id of coupon code.</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "code",
+            "description": "<p>Code without extra spaces and alphanumeric.</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Boolean",
+            "optional": false,
+            "field": "isPercent",
+            "description": "<p>True or False.</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Number",
+            "optional": false,
+            "field": "amount",
+            "description": "<p>A number greater than 0.</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Sting",
+            "optional": false,
+            "field": "expiry",
+            "description": "<p>Date in text.</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Boolean",
+            "optional": false,
+            "field": "isActive",
+            "description": "<p>True or False.</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "examples": [
+        {
+          "title": "Success-Response:",
+          "content": "HTTP/1.1 200 OK",
+          "type": "json"
+        }
+      ]
+    },
+    "version": "0.0.0",
+    "filename": "InRange-backend/controllers/couponController.js",
+    "groupTitle": "Coupon"
+  },
+  {
+    "type": "post",
+    "url": "/admin/getcouponbycode",
+    "title": "Get Coupon Details By Code",
+    "name": "Get_Coupon_Details_By_Code",
+    "group": "Coupon",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "code",
+            "description": "<p>Code of the coupon.</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "examples": [
+        {
+          "title": "Success-Response:",
+          "content": "HTTP/1.1 200 OK",
+          "type": "json"
+        }
+      ]
+    },
+    "version": "0.0.0",
+    "filename": "InRange-backend/controllers/couponController.js",
+    "groupTitle": "Coupon"
+  },
+  {
+    "type": "get",
+    "url": "/admin/getallcoupon",
+    "title": "List All Coupons",
+    "name": "List_All_Coupons",
+    "group": "Coupon",
+    "success": {
+      "examples": [
+        {
+          "title": "Success-Response:",
+          "content": "HTTP/1.1 200 OK",
+          "type": "json"
+        }
+      ]
+    },
+    "version": "0.0.0",
+    "filename": "InRange-backend/controllers/couponController.js",
+    "groupTitle": "Coupon"
+  },
+  {
     "success": {
       "fields": {
         "Success 200": [
