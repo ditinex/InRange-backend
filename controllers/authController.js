@@ -327,6 +327,8 @@ module.exports = {
 
 			if (service) {
 				data.is_switched_provider = true
+				if(service=='Taxi' || service=='Truck')
+					data.status = 'pending'
 			}
 
 			let isUploaded = await CompressImageAndUpload(profile_picture)
@@ -339,7 +341,6 @@ module.exports = {
 				if(!isUploaded)
 					return HandleError(res,"Failed to upload verification document.")
 				data.provider.verificationDocument = isUploaded.path
-				data.status = 'pending'
 			}
 
 			let inserted = await Insert(User, data)
