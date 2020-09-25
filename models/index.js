@@ -5,4 +5,5 @@ exports.Admin = require('./AdminModel');
 exports.Otp = require('./OtpModel');
 exports.Task = require('./TaskModel');
 exports.Review = require('./ReviewModal');
+exports.Coupon = require('./CouponModel');
 exports.Mongoose = mongoose;

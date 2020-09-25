@@ -63,6 +63,64 @@ define({ "api": [
   },
   {
     "type": "post",
+    "url": "/admins/login",
+    "title": "Admin Login",
+    "name": "Admin_Login",
+    "group": "Admin",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "email",
+            "description": "<p>Admins unique email.</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "password",
+            "description": "<p>Admins password.</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "examples": [
+        {
+          "title": "Success-Response:",
+          "content": "HTTP/1.1 200 OK",
+          "type": "json"
+        }
+      ]
+    },
+    "version": "0.0.0",
+    "filename": "InRange-backend/controllers/authController.js",
+    "groupTitle": "Admin"
+  },
+  {
+    "type": "get",
+    "url": "/admin/getallusers",
+    "title": "List All Users",
+    "name": "List_All_Users",
+    "group": "Admin",
+    "success": {
+      "examples": [
+        {
+          "title": "Success-Response:",
+          "content": "HTTP/1.1 200 OK",
+          "type": "json"
+        }
+      ]
+    },
+    "version": "0.0.0",
+    "filename": "InRange-backend/controllers/AdminController.js",
+    "groupTitle": "Admin"
+  },
+  {
+    "type": "post",
     "url": "/auth/login",
     "title": "Login to user account",
     "name": "Login_User",
@@ -235,6 +293,216 @@ define({ "api": [
     "version": "0.0.0",
     "filename": "InRange-backend/controllers/authController.js",
     "groupTitle": "Auth"
+  },
+  {
+    "type": "post",
+    "url": "/admin/createcoupon",
+    "title": "Create Coupon",
+    "name": "Create_Coupon",
+    "group": "Coupon",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "code",
+            "description": "<p>Code without extra spaces and alphanumeric.</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Boolean",
+            "optional": false,
+            "field": "isPercent",
+            "description": "<p>True or False.</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Number",
+            "optional": false,
+            "field": "amount",
+            "description": "<p>A number greater than 0.</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Sting",
+            "optional": false,
+            "field": "expiry",
+            "description": "<p>Date in text.</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Boolean",
+            "optional": false,
+            "field": "isActive",
+            "description": "<p>True or False.</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "examples": [
+        {
+          "title": "Success-Response:",
+          "content": "HTTP/1.1 200 OK",
+          "type": "json"
+        }
+      ]
+    },
+    "version": "0.0.0",
+    "filename": "InRange-backend/controllers/AdminController.js",
+    "groupTitle": "Coupon"
+  },
+  {
+    "type": "post",
+    "url": "/admin/deletecoupon",
+    "title": "Delete Coupon",
+    "name": "Delete_Coupon",
+    "group": "Coupon",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "ObjectId",
+            "optional": false,
+            "field": "id",
+            "description": "<p>Id of the coupon.</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "examples": [
+        {
+          "title": "Success-Response:",
+          "content": "    HTTP/1.1 200 OK\n\t\t{\n\t\t\t\"status\": \"success\",\n\t\t\t\"data\": true\n\t\t}",
+          "type": "json"
+        }
+      ]
+    },
+    "version": "0.0.0",
+    "filename": "InRange-backend/controllers/AdminController.js",
+    "groupTitle": "Coupon"
+  },
+  {
+    "type": "post",
+    "url": "/admin/editcoupon",
+    "title": "Edit Coupon",
+    "name": "Edit_Coupon",
+    "group": "Coupon",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "ObjectId",
+            "optional": false,
+            "field": "id",
+            "description": "<p>Id of coupon code.</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "code",
+            "description": "<p>Code without extra spaces and alphanumeric.</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Boolean",
+            "optional": false,
+            "field": "isPercent",
+            "description": "<p>True or False.</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Number",
+            "optional": false,
+            "field": "amount",
+            "description": "<p>A number greater than 0.</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Sting",
+            "optional": false,
+            "field": "expiry",
+            "description": "<p>Date in text.</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Boolean",
+            "optional": false,
+            "field": "isActive",
+            "description": "<p>True or False.</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "examples": [
+        {
+          "title": "Success-Response:",
+          "content": "HTTP/1.1 200 OK",
+          "type": "json"
+        }
+      ]
+    },
+    "version": "0.0.0",
+    "filename": "InRange-backend/controllers/AdminController.js",
+    "groupTitle": "Coupon"
+  },
+  {
+    "type": "post",
+    "url": "/consumer/getcouponbycode",
+    "title": "Get Coupon Details By Code",
+    "name": "Get_Coupon_Details_By_Code",
+    "group": "Coupon",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "code",
+            "description": "<p>Code of the coupon.</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "examples": [
+        {
+          "title": "Success-Response:",
+          "content": "HTTP/1.1 200 OK",
+          "type": "json"
+        }
+      ]
+    },
+    "version": "0.0.0",
+    "filename": "InRange-backend/controllers/AdminController.js",
+    "groupTitle": "Coupon"
+  },
+  {
+    "type": "get",
+    "url": "/admin/getallcoupon",
+    "title": "List All Coupons",
+    "name": "List_All_Coupons",
+    "group": "Coupon",
+    "success": {
+      "examples": [
+        {
+          "title": "Success-Response:",
+          "content": "HTTP/1.1 200 OK",
+          "type": "json"
+        }
+      ]
+    },
+    "version": "0.0.0",
+    "filename": "InRange-backend/controllers/AdminController.js",
+    "groupTitle": "Coupon"
   },
   {
     "success": {
@@ -429,6 +697,115 @@ define({ "api": [
         {
           "title": "Success-Response:",
           "content": "    HTTP/1.1 200 OK\n\t\t{\n\t\t\t\"status\": \"success\",\n\t\t\t\"data\": true\n\t\t}",
+          "type": "json"
+        }
+      ]
+    },
+    "version": "0.0.0",
+    "filename": "InRange-backend/controllers/taskController.js",
+    "groupTitle": "Task"
+  },
+  {
+    "type": "post",
+    "url": "/consumer/edittask",
+    "title": "Edit Task",
+    "name": "Edit_Task",
+    "group": "Task",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "ObjectId",
+            "optional": false,
+            "field": "id",
+            "description": "<p>Id of the task.</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "name",
+            "description": "<p>Contact name without extra spaces and within 25 length</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "title",
+            "description": "<p>Title without extra spaces and within 25 length</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Number",
+            "optional": false,
+            "field": "mobile",
+            "description": "<p>Users unique mobile with ISD code i.e 919903614705.</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Sting",
+            "optional": false,
+            "field": "service",
+            "description": "<p>Service type in text.</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "description",
+            "description": "<p>Description in text.</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "instruction",
+            "description": "<p>Service instruction (optional).</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "address",
+            "description": "<p>Address in text.</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Sting",
+            "optional": false,
+            "field": "status",
+            "description": "<p>ENUM['Hiring', 'In-progress', 'Completed', 'Cancelled'].</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "location",
+            "description": "<p>JSON stringify string with coordinates i.e {&quot;longitude&quot;:&quot;-110.8571443&quot;,&quot;lattitude&quot;:&quot;32.4586858&quot;}.</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Files",
+            "optional": false,
+            "field": "images",
+            "description": "<p>Service images (optional).</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "ObjectId",
+            "optional": false,
+            "field": "user_id",
+            "description": "<p>Id of the consumer.</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "examples": [
+        {
+          "title": "Success-Response:",
+          "content": "HTTP/1.1 200 OK",
           "type": "json"
         }
       ]
