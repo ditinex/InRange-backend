@@ -217,7 +217,7 @@ module.exports = {
 	 *     HTTP/1.1 200 OK
 	 * 
 	 */
-
+	
 	GetAllUsers: async (req, res, next) => {
 		try{
 			
