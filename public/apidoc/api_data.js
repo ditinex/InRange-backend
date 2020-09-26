@@ -222,7 +222,7 @@ define({ "api": [
           },
           {
             "group": "Parameter",
-            "type": "Sting",
+            "type": "String",
             "optional": false,
             "field": "gender",
             "description": "<p>ENUM[male,female].</p>"
@@ -1009,5 +1009,200 @@ define({ "api": [
     "version": "0.0.0",
     "filename": "InRange-backend/controllers/taskController.js",
     "groupTitle": "Task"
+  },
+  {
+    "type": "post",
+    "url": "/user/changeprofilepic",
+    "title": "Change Profile Pic",
+    "name": "Change_Profile_Pic",
+    "group": "User",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "ObjectId",
+            "optional": false,
+            "field": "id",
+            "description": "<p>Id of the user.</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "File",
+            "optional": false,
+            "field": "profile_picture",
+            "description": "<p>Picture to change.</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "examples": [
+        {
+          "title": "Success-Response:",
+          "content": "HTTP/1.1 200 OK\n\n    {\n        \"status\": \"success\",\n        \"data\": {\n            \"location\": {\n                \"type\": \"Point\",\n                \"coordinates\": [\n                    -110.8571443,\n                    32.4586858\n                ]\n            },\n            \"provider\": {\n                \"verification_document\": null,\n                \"service\": \"\",\n                \"description\": \"\"\n            },\n            \"is_switched_provider\": false,\n            \"is_available\": true,\n            \"_id\": \"5f67ac2e9a599b177fba55b5\",\n            \"name\": \"Demo\",\n            \"gender\": \"male\",\n            \"mobile\": \"919903614706\",\n            \"address\": \"kjhkd kjdhfbk\",\n            \"status\": \"approved\",\n            \"active_session_refresh_token\": \"5OwDBqzHLUFj54TJ\",\n            \"profile_picture\": \"/images/1601090029587.jpg\",\n            \"createdAt\": \"2020-09-20T19:23:26.855Z\",\n            \"updatedAt\": \"2020-09-26T03:13:49.600Z\",\n            \"__v\": 0,\n            \"access_token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjVmNjdhYzJlOWE1OTliMTc3ZmJhNTViNSIsIm1vYmlsZSI6IjkxOTkwMzYxNDcwNiIsIm5hbWUiOiJEZW1vIiwiaWF0IjoxNjAwNjMyMDgxLCJleHAiOjE2MDA3MTg0ODF9.Uj642GC9-b_dkoTR1lrq2Z3PouybDz1Q-gzAw2TRCCI\"\n        }\n    }",
+          "type": "json"
+        }
+      ]
+    },
+    "version": "0.0.0",
+    "filename": "InRange-backend/controllers/UserController.js",
+    "groupTitle": "User"
+  },
+  {
+    "type": "post",
+    "url": "/user/editprofile",
+    "title": "Edit Profile",
+    "name": "Edit_Profile",
+    "group": "User",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "ObjectId",
+            "optional": false,
+            "field": "id",
+            "description": "<p>Id of the user.</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Number",
+            "optional": false,
+            "field": "mobile",
+            "description": "<p>Users unique mobile with ISD code i.e 919903614705.</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "name",
+            "description": ""
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "gender",
+            "description": "<p>ENUM[male,female].</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "otp",
+            "description": "<p>Need if mobile number is different.</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "examples": [
+        {
+          "title": "Success-Response:",
+          "content": "HTTP/1.1 200 OK\n\n    {\n        \"status\": \"success\",\n        \"data\": {\n            \"otp\": 1255\n        }\n    }\n    // OR,\n    {\n        \"status\": \"success\",\n        \"data\": {\n            \"location\": {\n                \"type\": \"Point\",\n                \"coordinates\": [\n                    88.1567362,\n                    22.8258274\n                ]\n            },\n            \"provider\": {\n                \"verification_document\": \"/images/1601093261125.jpg\",\n                \"service\": \"Truck\",\n                \"description\": \"Hello I a taxi driver\"\n            },\n            \"is_switched_provider\": true,\n            \"is_available\": true,\n            \"_id\": \"5f6e2d65afce8e1078f429fd\",\n            \"name\": \"Captain America\",\n            \"gender\": \"male\",\n            \"mobile\": \"917003096982\",\n            \"address\": \"\",\n            \"status\": \"pending\",\n            \"active_session_refresh_token\": \"cxi6IrWNcbA0F2bf\",\n            \"profile_picture\": \"/images/1601056101315.jpg\",\n            \"createdAt\": \"2020-09-25T17:48:21.450Z\",\n            \"updatedAt\": \"2020-09-26T05:07:43.969Z\",\n            \"__v\": 0,\n            \"access_token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjVmNmUyZDY1YWZjZThlMTA3OGY0MjlmZCIsIm1vYmlsZSI6IjkxNzAwMzA5Njk4MiIsIm5hbWUiOiJDYXB0YWluIEFtZXJpY2EiLCJpYXQiOjE2MDEwOTY4MjQsImV4cCI6MTYwMTE4MzIyNH0.F_qDFd3Ze0kZAUGXrBG8ktDXvvmbljU3Bt5NUFY_aAI\"\n        }\n    }",
+          "type": "json"
+        }
+      ]
+    },
+    "version": "0.0.0",
+    "filename": "InRange-backend/controllers/UserController.js",
+    "groupTitle": "User"
+  },
+  {
+    "type": "post",
+    "url": "/user/editproviderprofile",
+    "title": "Edit Provider Profile",
+    "name": "Edit_Provider_Profile",
+    "group": "User",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "ObjectId",
+            "optional": false,
+            "field": "id",
+            "description": "<p>Id of the user.</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "service",
+            "description": "<p>Provider service type.</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "File",
+            "optional": false,
+            "field": "verification_document",
+            "description": "<p>Certificate is mandatory for taxi or truck service.</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "examples": [
+        {
+          "title": "Success-Response:",
+          "content": "HTTP/1.1 200 OK\n\n    {\n        \"status\": \"success\",\n        \"data\": {\n            \"location\": {\n                \"type\": \"Point\",\n                \"coordinates\": [\n                    88.1567362,\n                    22.8258274\n                ]\n            },\n            \"provider\": {\n                \"verification_document\": \"/images/1601093261125.jpg\",\n                \"service\": \"Truck\",\n                \"description\": \"Hello I a truck driver\"\n            },\n            \"is_switched_provider\": true,\n            \"is_available\": true,\n            \"_id\": \"5f6e2d65afce8e1078f429fd\",\n            \"name\": \"Demo Provider\",\n            \"gender\": \"female\",\n            \"mobile\": \"919804315065\",\n            \"address\": \"\",\n            \"status\": \"pending\",\n            \"active_session_refresh_token\": \"0jmxzffnLD4kCsWD\",\n            \"profile_picture\": \"/images/1601056101315.jpg\",\n            \"createdAt\": \"2020-09-25T17:48:21.450Z\",\n            \"updatedAt\": \"2020-09-26T04:07:41.157Z\",\n            \"__v\": 0,\n            \"access_token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjVmNmUyZDY1YWZjZThlMTA3OGY0MjlmZCIsIm1vYmlsZSI6IjkxOTgwNDMxNTA2NSIsIm5hbWUiOiJEZW1vIFByb3ZpZGVyIiwiaWF0IjoxNjAxMDU2MTAxLCJleHAiOjE2MDExNDI1MDF9.lPo1kHgYGxJXV4Ainod1twFKbXwlcbtmaNFGgiobcCg\"\n        }\n    }",
+          "type": "json"
+        }
+      ]
+    },
+    "error": {
+      "examples": [
+        {
+          "title": "Error-Response:",
+          "content": "HTTP/1.1 202 Error\n    {\n        \"status\": \"failed\",\n        \"error\": \"You should give a verification document.\"\n    }",
+          "type": "json"
+        }
+      ]
+    },
+    "version": "0.0.0",
+    "filename": "InRange-backend/controllers/UserController.js",
+    "groupTitle": "User"
+  },
+  {
+    "type": "post",
+    "url": "/user/switchprofile",
+    "title": "Switch Profile",
+    "name": "Switch_Profile",
+    "group": "User",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "ObjectId",
+            "optional": false,
+            "field": "id",
+            "description": "<p>Id of the user.</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "examples": [
+        {
+          "title": "Success-Response:",
+          "content": "HTTP/1.1 200 OK\n\n    {\n        \"status\": \"success\",\n        \"data\": {\n            \"location\": {\n                \"type\": \"Point\",\n                \"coordinates\": [\n                    -110.8571443,\n                    32.4586858\n                ]\n            },\n            \"provider\": {\n                \"verification_document\": null,\n                \"service\": \"\",\n                \"description\": \"\"\n            },\n            \"is_switched_provider\": false,\n            \"is_available\": true,\n            \"_id\": \"5f67ac2e9a599b177fba55b5\",\n            \"name\": \"Demo\",\n            \"gender\": \"male\",\n            \"mobile\": \"919903614706\",\n            \"address\": \"kjhkd kjdhfbk\",\n            \"status\": \"approved\",\n            \"active_session_refresh_token\": \"5OwDBqzHLUFj54TJ\",\n            \"profile_picture\": \"/images/1600629806826.jpg\",\n            \"createdAt\": \"2020-09-20T19:23:26.855Z\",\n            \"updatedAt\": \"2020-09-26T00:15:53.977Z\",\n            \"__v\": 0,\n            \"access_token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjVmNjdhYzJlOWE1OTliMTc3ZmJhNTViNSIsIm1vYmlsZSI6IjkxOTkwMzYxNDcwNiIsIm5hbWUiOiJEZW1vIiwiaWF0IjoxNjAwNjMyMDgxLCJleHAiOjE2MDA3MTg0ODF9.Uj642GC9-b_dkoTR1lrq2Z3PouybDz1Q-gzAw2TRCCI\"\n        }\n    }",
+          "type": "json"
+        }
+      ]
+    },
+    "error": {
+      "examples": [
+        {
+          "title": "Error-Response:",
+          "content": "HTTP/1.1 202 Error\n    {\n        \"status\": \"failed\",\n        \"error\": \"All pending tasks should be completed to switch profile.\"\n    }",
+          "type": "json"
+        }
+      ]
+    },
+    "version": "0.0.0",
+    "filename": "InRange-backend/controllers/UserController.js",
+    "groupTitle": "User"
   }
 ] });

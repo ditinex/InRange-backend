@@ -256,7 +256,7 @@ module.exports = {
 	 *
 	 * @apiParam {Number} mobile Users unique mobile with ISD code i.e 919903614705.
 	 * @apiParam {String} name
-	 * @apiParam {Sting} gender ENUM[male,female].
+	 * @apiParam {String} gender ENUM[male,female].
 	 * @apiParam {String} address Address in text (optional).
 	 * @apiParam {File} profile_picture Form encoded image file.
 	 * @apiParam {String} service (applicable for provider only).

@@ -9,7 +9,6 @@ const {
 	HandleSuccess, HandleError, HandleServerError,
 	ValidateEmail, PasswordStrength, ValidateAlphanumeric, ValidateLength, ValidateMobile, isDataURL,GeneratePassword
 } = require('./baseController');
-const { query } = require('express');
 
 
 module.exports = {
