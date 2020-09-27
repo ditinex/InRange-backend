@@ -486,8 +486,9 @@ module.exports = {
 			if (!updated)
 				return HandleError(res, 'Failed to generate access token.')
 
-			updated.isUserExists = true
-			return HandleSuccess(res, updated)
+			let user = {... updated._doc}
+			user.isUserExists = true
+			return HandleSuccess(res, user)
 
 		} catch (err) {
 			HandleServerError(res, req, err)
