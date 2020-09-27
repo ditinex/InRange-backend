@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 
-//const { VerifyToken } = require('../middlewares');
+const { VerifyToken } = require('../middlewares');
 
 router.use((req, res, next) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -26,6 +26,10 @@ router.get('/', (req, res) => {
 //Import APIs
 router.use('/admins', require('./admins'));
 router.use('/auth', require('./auth'));
+
+// Protect all routes after this middleware
+router.use(VerifyToken);
+
 router.use('/consumer', require('./consumer'));
 router.use('/provider', require('./provider'));
 router.use('/user', require('./user'));

@@ -10,7 +10,8 @@ const VerifyToken = (req, res, next) => {
 	        	if(err)
 					return UnauthorizedError(res)
 				req.user_id = user.id
-				req.user_role = user.role
+				req.mobile = user.mobile
+				req.name = user.name
 	        	next()
 	        });
 	    }
@@ -18,10 +19,7 @@ const VerifyToken = (req, res, next) => {
 	    	return UnauthorizedError(res)
 	}
 	catch(err){
-		console.log(err)
-		errLog = {module: 'VerifyToken', params: req.params, query: req.query, post: req.body, error: err}
-    	HandleServerError(res, errLog, '500 Internal server error')
-        next(err);
+		HandleServerError(res, req, err)
 	}
 
 }
