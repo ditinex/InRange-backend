@@ -206,7 +206,6 @@ module.exports = {
 				//Validate OTP and Login
 				let isOtpExists = await IsExists(Otp, { mobile: mobile, otp: otp, createdAt: { $gt: expiry } })
 				let isUserExists = await IsExists(User, { mobile: mobile })
-				console.log(otp,mobile,isOtpExists,isUserExists)
 				if(!isOtpExists)
 					return HandleError(res, 'Failed to verify OTP.')
 				else if(isOtpExists && isUserExists){
@@ -416,6 +415,78 @@ module.exports = {
 				return HandleError(res, 'Failed to generate access token.')
 
 			return HandleSuccess(res, {access_token: access_token})
+
+		} catch (err) {
+			HandleServerError(res, req, err)
+		}
+	},
+
+
+	/**
+	 * @api {get} /auth/login-by-token/:mobile/:token Login with token
+	 * @apiName LoginWithToken
+	 * @apiGroup Auth
+	 *
+	 * @apiParam {String} token Refresh token of the user.
+	 * @apiParam {Number} mobile Registered mobile number.
+	 *
+	 *
+	 *
+	 * @apiSuccessExample Success-Response:
+	 *     HTTP/1.1 200 OK
+	 *     
+{
+    "status": "success",
+    "data": {
+        "location": {
+            "type": "Point",
+            "coordinates": [
+                88.1567362,
+                22.8258274
+            ]
+        },
+        "provider": {
+            "verification_document": null,
+            "service": "",
+            "description": ""
+        },
+        "is_switched_provider": false,
+        "is_available": true,
+        "_id": "5f6e252a761041600f5146fd",
+        "name": "Demo Consumer",
+        "gender": "male",
+        "mobile": "919903614705",
+        "address": "",
+        "status": "approved",
+        "active_session_refresh_token": "d7o0I0K30lZi15c0",
+        "profile_picture": "/images/1601053994590.jpg",
+        "createdAt": "2020-09-25T17:13:14.616Z",
+        "updatedAt": "2020-09-27T14:35:26.281Z",
+        "__v": 0,
+        "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjVmNmUyNTJhNzYxMDQxNjAwZjUxNDZmZCIsIm1vYmlsZSI6IjkxOTkwMzYxNDcwNSIsIm5hbWUiOiJEZW1vIENvbnN1bWVyIiwiaWF0IjoxNjAxMjE3MzI2LCJleHAiOjE2MDEzMDM3MjZ9.XbCj5mAqxudjH0bJ8LV71TI3pgV99Uf1OM_1oQ53Yfo"
+    }
+}
+	 *
+	 */
+	LoginByToken: async (req, res, next) => {
+		try {
+			const { token='', mobile='' } = req.params
+			if(!token.trim() || !mobile.trim())
+				return HandleError(res, 'Invalid mobile or token.')
+			
+			const isUserExists = await IsExists(User,{mobile: mobile, active_session_refresh_token: token})
+			if(!isUserExists)
+				return HandleSuccess(res, { isUserExists: false })
+
+			const access_token = jwt.sign({ id: isUserExists[0]._id, mobile: isUserExists[0].mobile, name: isUserExists[0].name }, Config.secret, {
+				expiresIn: Config.tokenExpiryLimit // 86400 expires in 24 hours -- It should be 1 hour in production
+			});
+
+			let updated = await FindAndUpdate(User, { _id: isUserExists[0]._id }, { access_token: access_token })
+			if (!updated)
+				return HandleError(res, 'Failed to generate access token.')
+
+			return HandleSuccess(res, updated)
 
 		} catch (err) {
 			HandleServerError(res, req, err)
