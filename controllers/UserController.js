@@ -18,7 +18,6 @@ module.exports = {
 	 * @apiName Edit Profile
 	 * @apiGroup User
 	 *
-	 * @apiParam {ObjectId} id Id of the user.
      * @apiParam {Number} mobile Users unique mobile with ISD code i.e 919903614705.
 	 * @apiParam {String} name
 	 * @apiParam {String} gender ENUM[male,female].
@@ -69,7 +68,8 @@ module.exports = {
 
 	EditProfile: async (req, res, next) => {
 		try {
-			const { id = '',name = '',gender = '' ,mobile = '', otp = '' } = req.body
+            const { name = '',gender = '' ,mobile = '', otp = '' } = req.body
+			const id = req.user_id
 
 			let validateError = null
 			if (!ValidateMobile(mobile.trim()))
@@ -141,7 +141,6 @@ module.exports = {
 	 * @apiName Change Profile Pic
 	 * @apiGroup User
 	 *
-	 * @apiParam {ObjectId} id Id of the user.
 	 * @apiParam {File} profile_picture Picture to change.
 	 *
 	 *
@@ -183,7 +182,7 @@ module.exports = {
 
 	ChangeProfilePic: async (req, res, next) => {
 		try {
-            const { id = '' } = req.body
+            const id = req.user_id
             const profile_picture = req.files?req.files.profile_picture : ''
             let validateError = null
 			//Check service & verifydoc form submission in frontend
@@ -265,7 +264,7 @@ module.exports = {
 
 	SwitchProfile: async (req, res, next) => {
 		try {
-			const { id = '' } = req.body
+            const id = req.user_id
 
 			//Check service & verifydoc form submission in frontend
             let validateError = null
@@ -309,7 +308,6 @@ module.exports = {
 	 * @apiName Edit Provider Profile
 	 * @apiGroup User
 	 *
-	 * @apiParam {ObjectId} id Id of the user.
 	 * @apiParam {String} service Provider service type.
 	 * @apiParam {File} verification_document Certificate is mandatory for taxi or truck service.
 	 *
@@ -358,7 +356,8 @@ module.exports = {
 
 	EditProviderProfile: async (req, res, next) => {
 		try {
-            const { id = '',service = '',description ='' } = req.body
+            const { service = '',description ='' } = req.body
+			const id = req.user_id
             const verification_document = req.files?req.files.verification_document : null
             let validateError = null
 			//Check service & verifydoc form submission in frontend

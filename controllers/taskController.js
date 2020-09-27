@@ -23,11 +23,12 @@ module.exports = {
 	 * @apiParam {Sting} service Service type in text.
 	 * @apiParam {String} description Description in text.
 	 * @apiParam {String} instruction Service instruction (optional).
+	 * @apiParam {String} landmark Address landmark (optional).
+	 * @apiParam {String} houseno Address houseno (optional).
 	 * @apiParam {String} address Address in text.
 	 * @apiParam {Sting} status ENUM['Hiring', 'In-progress', 'Completed', 'Cancelled'].
 	 * @apiParam {String} location JSON stringify string with coordinates i.e {"longitude":"-110.8571443","lattitude":"32.4586858"}.
 	 * @apiParam {Files} images Service images (optional).
-	 * @apiParam {ObjectId} user_id Id of the consumer.
 	 *
 	 *
 	 * @apiSuccessExample Success-Response:
@@ -73,9 +74,10 @@ module.exports = {
 	 */
 	CreateTask: async (req, res, next) => {
 		try {
-			const { service = '', description = '', instruction = '', mobile = '',address='',location='',user_id='' } = req.body
+			const { service = '', description = '', instruction = '', mobile = '',address='',location='',landmark='',houseno='' } = req.body
 			const name = req.body.name?req.body.name.trim() : ''
 			const title = req.body.title?req.body.title.trim() : ''
+			const user_id = req.user_id
 			//Check images of task in frontend
 			const images = req.files?req.files.images : null
 
@@ -104,7 +106,7 @@ module.exports = {
 				return HandleError(res, 'Invalid location cooridnates.')
 			}
 
-			let data = { title, service, description, instruction, name, mobile, status: 'Hiring', address, location: { type: 'Point', coordinates: [coordinates.longitude, coordinates.lattitude] }, consumer: user_id }
+			let data = { title, service, description, instruction, name, mobile, status: 'Hiring', address, location: { type: 'Point', coordinates: [coordinates.longitude, coordinates.lattitude] }, consumer: user_id, landmark, houseno }
 
 			if(images)
 			{
@@ -144,12 +146,13 @@ module.exports = {
 	 * @apiParam {Number} mobile Users unique mobile with ISD code i.e 919903614705.
 	 * @apiParam {Sting} service Service type in text.
 	 * @apiParam {String} description Description in text.
-	 * @apiParam {String} instruction Service instruction (optional).
+	 * @apiParam {String} instruction Service instruction (optional).	 
+	 * @apiParam {String} landmark Address landmark (optional).
+	 * @apiParam {String} houseno Address houseno (optional).
 	 * @apiParam {String} address Address in text.
 	 * @apiParam {Sting} status ENUM['Hiring', 'In-progress', 'Completed', 'Cancelled'].
 	 * @apiParam {String} location JSON stringify string with coordinates i.e {"longitude":"-110.8571443","lattitude":"32.4586858"}.
 	 * @apiParam {Files} images Service images (optional).
-	 * @apiParam {ObjectId} user_id Id of the consumer.
 	 *
 	 *
 	 * @apiSuccessExample Success-Response:
@@ -160,9 +163,10 @@ module.exports = {
 	 */
 	EditTask: async (req, res, next) => {
 		try {
-			const { id = '', service = '', description = '', instruction = '', mobile = '',address='',location='',user_id='' } = req.body
+			const { id = '', service = '', description = '', instruction = '', mobile = '',address='',location='',landmark='',houseno='' } = req.body
 			const name = req.body.name?req.body.name.trim() : ''
 			const title = req.body.title?req.body.title.trim() : ''
+			const user_id = req.user_id
 			//Check images of task in frontend
 			const images = req.files?req.files.images : null
 
@@ -194,7 +198,7 @@ module.exports = {
 			}
 			
 			let where = { _id: id }
-			let data = { title, service, description, instruction, name, mobile, status: 'Hiring', address, location: { type: 'Point', coordinates: [coordinates.longitude, coordinates.lattitude] }, consumer: user_id }
+			let data = { title, service, description, instruction, name, mobile, status: 'Hiring', address, location: { type: 'Point', coordinates: [coordinates.longitude, coordinates.lattitude] }, consumer: user_id, landmark, houseno }
 
 			if(images)
 			{
@@ -497,8 +501,6 @@ module.exports = {
 	 * @apiName List Tasks Consumer
 	 * @apiGroup Task
 	 *
-	 * @apiParam {ObjectId} user_id Id of the consumer.
-	 *
 	 * @apiSuccessExample Success-Response:
 	 *     HTTP/1.1 200 OK
 		{
@@ -543,7 +545,7 @@ module.exports = {
 
 	GetTasksConsumer: async (req, res, next) => {
 		try{
-			let user_id = (req.body.user_id)?req.body.user_id:''
+			const user_id = req.user_id
 			let validateError = ''
 	
 			if(user_id === '')
@@ -569,7 +571,6 @@ module.exports = {
 	 * @apiName List Tasks Provider
 	 * @apiGroup Task
 	 *
-	 * @apiParam {ObjectId} user_id Id of the consumer.
 	 *
 	 * @apiSuccessExample Success-Response:
 	 *     HTTP/1.1 200 OK
@@ -578,7 +579,7 @@ module.exports = {
 
 	GetTasksProvider: async (req, res, next) => {
 		try{
-			let user_id = req.body.user_id || ''
+			const user_id = req.user_id
 			let validateError = ''
 	
 			if(user_id === '')

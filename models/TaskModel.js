@@ -11,6 +11,8 @@ const TaskSchema = new Schema({
 	images: {type: Array, default: []},
     status: { type: String, required: true, trim: true, enum: ['Hiring', 'In-progress', 'Completed', 'Cancelled'] },
     address: { type: String, required: true, trim: true },
+    landmark: { type: String, trim: true },
+    houseno: { type: String, trim: true },
 	location: {
 		type: {
 			type: String,
