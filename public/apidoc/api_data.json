@@ -120,6 +120,45 @@
     "groupTitle": "Admin"
   },
   {
+    "type": "get",
+    "url": "/auth/login-by-token/:mobile/:token",
+    "title": "Login with token",
+    "name": "LoginWithToken",
+    "group": "Auth",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "token",
+            "description": "<p>Refresh token of the user.</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Number",
+            "optional": false,
+            "field": "mobile",
+            "description": "<p>Registered mobile number.</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "examples": [
+        {
+          "title": "Success-Response:",
+          "content": "    HTTP/1.1 200 OK\n    \n{\n    \"status\": \"success\",\n    \"data\": {\n        \"location\": {\n            \"type\": \"Point\",\n            \"coordinates\": [\n                88.1567362,\n                22.8258274\n            ]\n        },\n        \"provider\": {\n            \"verification_document\": null,\n            \"service\": \"\",\n            \"description\": \"\"\n        },\n        \"is_switched_provider\": false,\n        \"is_available\": true,\n        \"_id\": \"5f6e252a761041600f5146fd\",\n        \"name\": \"Demo Consumer\",\n        \"gender\": \"male\",\n        \"mobile\": \"919903614705\",\n        \"address\": \"\",\n        \"status\": \"approved\",\n        \"active_session_refresh_token\": \"d7o0I0K30lZi15c0\",\n        \"profile_picture\": \"/images/1601053994590.jpg\",\n        \"createdAt\": \"2020-09-25T17:13:14.616Z\",\n        \"updatedAt\": \"2020-09-27T14:35:26.281Z\",\n        \"__v\": 0,\n        \"access_token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjVmNmUyNTJhNzYxMDQxNjAwZjUxNDZmZCIsIm1vYmlsZSI6IjkxOTkwMzYxNDcwNSIsIm5hbWUiOiJEZW1vIENvbnN1bWVyIiwiaWF0IjoxNjAxMjE3MzI2LCJleHAiOjE2MDEzMDM3MjZ9.XbCj5mAqxudjH0bJ8LV71TI3pgV99Uf1OM_1oQ53Yfo\"\n    }\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "version": "0.0.0",
+    "filename": "InRange-backend/controllers/authController.js",
+    "groupTitle": "Auth"
+  },
+  {
     "type": "post",
     "url": "/auth/login",
     "title": "Login to user account",
@@ -626,6 +665,20 @@
             "group": "Parameter",
             "type": "String",
             "optional": false,
+            "field": "landmark",
+            "description": "<p>Address landmark (optional).</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "houseno",
+            "description": "<p>Address houseno (optional).</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
             "field": "address",
             "description": "<p>Address in text.</p>"
           },
@@ -649,13 +702,6 @@
             "optional": false,
             "field": "images",
             "description": "<p>Service images (optional).</p>"
-          },
-          {
-            "group": "Parameter",
-            "type": "ObjectId",
-            "optional": false,
-            "field": "user_id",
-            "description": "<p>Id of the consumer.</p>"
           }
         ]
       }
@@ -767,6 +813,20 @@
             "group": "Parameter",
             "type": "String",
             "optional": false,
+            "field": "landmark",
+            "description": "<p>Address landmark (optional).</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "houseno",
+            "description": "<p>Address houseno (optional).</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
             "field": "address",
             "description": "<p>Address in text.</p>"
           },
@@ -790,13 +850,6 @@
             "optional": false,
             "field": "images",
             "description": "<p>Service images (optional).</p>"
-          },
-          {
-            "group": "Parameter",
-            "type": "ObjectId",
-            "optional": false,
-            "field": "user_id",
-            "description": "<p>Id of the consumer.</p>"
           }
         ]
       }
@@ -853,19 +906,6 @@
     "title": "List Tasks Consumer",
     "name": "List_Tasks_Consumer",
     "group": "Task",
-    "parameter": {
-      "fields": {
-        "Parameter": [
-          {
-            "group": "Parameter",
-            "type": "ObjectId",
-            "optional": false,
-            "field": "user_id",
-            "description": "<p>Id of the consumer.</p>"
-          }
-        ]
-      }
-    },
     "success": {
       "examples": [
         {
@@ -885,19 +925,6 @@
     "title": "List Tasks Provider",
     "name": "List_Tasks_Provider",
     "group": "Task",
-    "parameter": {
-      "fields": {
-        "Parameter": [
-          {
-            "group": "Parameter",
-            "type": "ObjectId",
-            "optional": false,
-            "field": "user_id",
-            "description": "<p>Id of the consumer.</p>"
-          }
-        ]
-      }
-    },
     "success": {
       "examples": [
         {
@@ -1021,13 +1048,6 @@
         "Parameter": [
           {
             "group": "Parameter",
-            "type": "ObjectId",
-            "optional": false,
-            "field": "id",
-            "description": "<p>Id of the user.</p>"
-          },
-          {
-            "group": "Parameter",
             "type": "File",
             "optional": false,
             "field": "profile_picture",
@@ -1058,13 +1078,6 @@
     "parameter": {
       "fields": {
         "Parameter": [
-          {
-            "group": "Parameter",
-            "type": "ObjectId",
-            "optional": false,
-            "field": "id",
-            "description": "<p>Id of the user.</p>"
-          },
           {
             "group": "Parameter",
             "type": "Number",
@@ -1118,13 +1131,6 @@
     "parameter": {
       "fields": {
         "Parameter": [
-          {
-            "group": "Parameter",
-            "type": "ObjectId",
-            "optional": false,
-            "field": "id",
-            "description": "<p>Id of the user.</p>"
-          },
           {
             "group": "Parameter",
             "type": "String",
