@@ -117,6 +117,11 @@ module.exports = {
 					data.images[i] = isUploaded.path
 				}
 			}
+
+			let updated = await FindAndUpdate(User,{_id: user_id},{address: address})
+			if (!updated)
+				return HandleError(res, 'Failed to create task. Please contact system admin.')
+
 			let inserted = await Insert(Task, data)
 			if (!inserted)
 				return HandleError(res, 'Failed to create task. Please contact system admin.')
