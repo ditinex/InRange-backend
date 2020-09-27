@@ -486,6 +486,7 @@ module.exports = {
 			if (!updated)
 				return HandleError(res, 'Failed to generate access token.')
 
+			updated.isUserExists = true
 			return HandleSuccess(res, updated)
 
 		} catch (err) {
