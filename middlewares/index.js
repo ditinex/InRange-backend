@@ -8,7 +8,6 @@ const VerifyToken = (req, res, next) => {
 		if(typeof req.headers.authorization !== "undefined") {
 			let token = req.headers.authorization.split(" ")[1];
 	        jwt.verify(token, Config.secret, async(err, user) => {
-				console.log(user)
 	        	if(err)
 					return UnauthorizedError(res)
 				const isUserExists = await IsExists(User,{_id: user.id, access_token: token})
