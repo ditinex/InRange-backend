@@ -1,6 +1,6 @@
 const config = require('./config.js');
-const app = require('./app.js');
+const server = require('./app.js');
 
-app.listen(config.port, () => {
+server.listen(config.port, () => {
     console.log('API running on port ' + config.port);
 });

@@ -5,6 +5,8 @@ const fileupload = require("express-fileupload");
 
 const config = require('./config.js');
 const routes = require('./routes');
+const http = require('http');
+const socket = require("socket.io");
 
 //Init DB Connection
 mongoose.connect(config.mongodb.connectionString, { auth:{authdb:"admin"}, useNewUrlParser: true, useUnifiedTopology: true, autoIndex: true, useCreateIndex: true, useFindAndModify: false })
@@ -36,6 +38,15 @@ app.use((req, res)=>{
   res.json({ status: 'failed', error: 'Router not found.' });
 });
 
+const server = http.createServer(app)
+const io = socket(server);
 
-module.exports = app;
+io.on('connection', (socket) => {
+  socket.emit('welcome', { message: 'Welcome!', id: socket.id });
+
+    socket.on('i am client', console.log);
+});
+
+
+module.exports = server;
 
