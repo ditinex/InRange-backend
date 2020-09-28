@@ -69,7 +69,7 @@ module.exports = {
 	EditProfile: async (req, res, next) => {
 		try {
             const { name = '',gender = '' ,mobile = '', otp = '' } = req.body
-			const id = req.user_id
+			const id = req.user_id || ''
 
 			let validateError = null
 			if (!ValidateMobile(mobile.trim()))
@@ -182,7 +182,7 @@ module.exports = {
 
 	ChangeProfilePic: async (req, res, next) => {
 		try {
-            const id = req.user_id
+            const id = req.user_id || ''
             const profile_picture = req.files?req.files.profile_picture : ''
             let validateError = null
 			//Check service & verifydoc form submission in frontend
@@ -264,7 +264,7 @@ module.exports = {
 
 	SwitchProfile: async (req, res, next) => {
 		try {
-            const id = req.user_id
+            const id = req.user_id || ''
 
 			//Check service & verifydoc form submission in frontend
             let validateError = null
@@ -357,7 +357,7 @@ module.exports = {
 	EditProviderProfile: async (req, res, next) => {
 		try {
             const { service = '',description ='' } = req.body
-			const id = req.user_id
+			const id = req.user_id || ''
             const verification_document = req.files?req.files.verification_document : null
             let validateError = null
 			//Check service & verifydoc form submission in frontend

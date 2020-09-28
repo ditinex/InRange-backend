@@ -167,7 +167,7 @@ module.exports = {
 			const { id = '', service = '', description = '', instruction = '', mobile = '',address='',location='',landmark='',houseno='' } = req.body
 			const name = req.body.name?req.body.name.trim() : ''
 			const title = req.body.title?req.body.title.trim() : ''
-			const user_id = req.user_id
+			const user_id = req.user_id || ''
 			//Check images of task in frontend
 			const images = req.files?req.files.images : null
 
@@ -546,7 +546,7 @@ module.exports = {
 
 	GetTasksConsumer: async (req, res, next) => {
 		try{
-			const user_id = req.user_id
+			const user_id = req.user_id || ''
 			let validateError = ''
 	
 			if(user_id === '')
@@ -580,7 +580,7 @@ module.exports = {
 
 	GetTasksProvider: async (req, res, next) => {
 		try{
-			const user_id = req.user_id
+			const user_id = req.user_id || ''
 			let validateError = ''
 	
 			if(user_id === '')
