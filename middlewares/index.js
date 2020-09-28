@@ -1,7 +1,7 @@
 const jwt = require('jsonwebtoken');
 const Config = require('../config.js');
 const { UnauthorizedError, IsExists } = require('../controllers/BaseController')
-const { Admin, Otp, User, Task, Mongoose, Review } = require('../models')
+const { User } = require('../models')
 
 const VerifyToken = (req, res, next) => {
 	try{
