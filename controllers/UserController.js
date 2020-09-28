@@ -9,7 +9,7 @@ const {
 	IsExists, Insert, Find, CompressImageAndUpload, FindAndUpdate, Delete,
 	HandleSuccess, HandleError, HandleServerError, Aggregate,
 	ValidateEmail, PasswordStrength, ValidateAlphanumeric, ValidateLength, ValidateMobile, isDataURL,GeneratePassword
-} = require('./aseController');
+} = require('./BaseController');
 
 
 module.exports = {

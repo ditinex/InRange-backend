@@ -10,7 +10,7 @@ const {
 	IsExists, Insert, Find, CompressImageAndUpload, FindAndUpdate, Delete,
 	HandleSuccess, HandleError, HandleServerError,
 	ValidateEmail, PasswordStrength, ValidateAlphanumeric, ValidateLength, ValidateMobile, GeneratePassword
-} = require('./baseController');
+} = require('./BaseControllerr');
 
 
 module.exports = {
