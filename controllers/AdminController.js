@@ -8,7 +8,7 @@ const {
 	IsExists, Insert, Find, CompressImageAndUpload, FindAndUpdate, Delete,
 	HandleSuccess, HandleError, HandleServerError,
 	ValidateEmail, PasswordStrength, ValidateAlphanumeric, ValidateLength, ValidateMobile, isDataURL, GeneratePassword
-} = require('./baseController');
+} = require('./aseController');
 const { query } = require('express');
 
 
