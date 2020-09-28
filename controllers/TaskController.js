@@ -77,7 +77,7 @@ module.exports = {
 			const { service = '', description = '', instruction = '', mobile = '',address='',location='',landmark='',houseno='' } = req.body
 			const name = req.body.name?req.body.name.trim() : ''
 			const title = req.body.title?req.body.title.trim() : ''
-			console.log(req.user_id)
+			// console.log(req.user_id)
 			const user_id = req.user_id || ''
 			//Check images of task in frontend
 			const images = req.files?req.files.images : null
