@@ -1,0 +1,12 @@
+const mongoose = require('mongoose')
+const Schema = mongoose.Schema
+
+const NotificationSchema=new Schema({
+    to: { type: Schema.Types.ObjectId, ref: 'users', required: true },
+    title: { type: String, trim: true, required: true },
+    description: { type: String, trim: true, required: true },
+    read: { type: Boolean, trim: true, required: true },
+},{ timestamps: true })
+
+const NotificationModel = mongoose.model('notifications', NotificationSchema)
+module.exports = NotificationModel

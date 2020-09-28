@@ -6,11 +6,12 @@ const { Admin, Otp, User, Task, Mongoose, Review } = require('../models')
 const VerifyToken = (req, res, next) => {
 	try{
 		if(typeof req.headers.authorization !== "undefined") {
-	        let token = req.headers.authorization.split(" ")[1];
+			let token = req.headers.authorization.split(" ")[1];
 	        jwt.verify(token, Config.secret, async(err, user) => {
+				console.log(user)
 	        	if(err)
 					return UnauthorizedError(res)
-				const isUserExists = await IsExists(User,{_id: user.id, active_session_refresh_token: token})
+				const isUserExists = await IsExists(User,{_id: user.id, access_token: token})
 				if(!isUserExists)
 					return UnauthorizedError(res)
 				req.user_id = user.id
