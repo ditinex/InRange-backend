@@ -58,7 +58,7 @@ define({ "api": [
       ]
     },
     "version": "0.0.0",
-    "filename": "InRange-backend/controllers/authController.js",
+    "filename": "InRange-backend/controllers/AuthController.js",
     "groupTitle": "Admin"
   },
   {
@@ -97,7 +97,7 @@ define({ "api": [
       ]
     },
     "version": "0.0.0",
-    "filename": "InRange-backend/controllers/authController.js",
+    "filename": "InRange-backend/controllers/AuthController.js",
     "groupTitle": "Admin"
   },
   {
@@ -155,7 +155,7 @@ define({ "api": [
       ]
     },
     "version": "0.0.0",
-    "filename": "InRange-backend/controllers/authController.js",
+    "filename": "InRange-backend/controllers/AuthController.js",
     "groupTitle": "Auth"
   },
   {
@@ -194,7 +194,7 @@ define({ "api": [
       ]
     },
     "version": "0.0.0",
-    "filename": "InRange-backend/controllers/authController.js",
+    "filename": "InRange-backend/controllers/AuthController.js",
     "groupTitle": "Auth"
   },
   {
@@ -233,7 +233,7 @@ define({ "api": [
       ]
     },
     "version": "0.0.0",
-    "filename": "InRange-backend/controllers/authController.js",
+    "filename": "InRange-backend/controllers/AuthController.js",
     "groupTitle": "Auth"
   },
   {
@@ -330,8 +330,146 @@ define({ "api": [
       ]
     },
     "version": "0.0.0",
-    "filename": "InRange-backend/controllers/authController.js",
+    "filename": "InRange-backend/controllers/AuthController.js",
     "groupTitle": "Auth"
+  },
+  {
+    "type": "post",
+    "url": "/user/getchatlist",
+    "title": "Get Chatlist",
+    "name": "Get_Chatlist",
+    "group": "Chat",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "ObjectId",
+            "optional": false,
+            "field": "id",
+            "description": "<p>Id of the user.</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "examples": [
+        {
+          "title": "Success-Response:",
+          "content": "HTTP/1.1 200 OK\n\n    {\n        \"status\": \"success\",\n        \"data\": [\n            {\n                \"_id\": \"5f727e6544f33432a4b498e9\",\n                \"consumer_id\": \"5f6e2d65afce8e1078f429fd\",\n                \"provider_id\": \"5f67ac2e9a599b177fba55b5\",\n                \"chats\": [\n                    {\n                        \"seen\": false,\n                        \"_id\": \"5f727e6544f33432a4b498ea\",\n                        \"sender_id\": \"5f6e2d65afce8e1078f429fd\",\n                        \"receiver_id\": \"5f67ac2e9a599b177fba55b5\",\n                        \"message\": \"hi\",\n                        \"createdAt\": \"2020-09-29T00:23:01.054Z\",\n                        \"updatedAt\": \"2020-09-29T00:23:01.054Z\"\n                    }\n                ],\n                \"task\": [\n                    {\n                        \"_id\": \"5f6ae1daa31dc3228c3f6ab5\",\n                        \"title\": \"Tap Repair\"\n                    }\n                ],\n                \"consumer\": [\n                    {\n                        \"_id\": \"5f6e2d65afce8e1078f429fd\",\n                        \"name\": \"Captain America\",\n                        \"mobile\": \"919804985304\",\n                        \"address\": \"india\",\n                        \"profile_picture\": \"/images/1601056101315.jpg\"\n                    }\n                ],\n                \"provider\": [\n                    {\n                        \"_id\": \"5f67ac2e9a599b177fba55b5\",\n                        \"name\": \"Demo\",\n                        \"mobile\": \"919903614706\",\n                        \"address\": \"india\",\n                        \"profile_picture\": \"/images/1601090029587.jpg\"\n                    }\n                ]\n            }\n        ]\n    }",
+          "type": "json"
+        }
+      ]
+    },
+    "version": "0.0.0",
+    "filename": "InRange-backend/controllers/ChatController.js",
+    "groupTitle": "Chat"
+  },
+  {
+    "type": "socket",
+    "url": "$",
+    "title": "Send Message",
+    "name": "Send_Message",
+    "group": "Chat",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "ObjectId",
+            "optional": false,
+            "field": "id",
+            "description": "<p>Id of the user.</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "ObjectId",
+            "optional": false,
+            "field": "chat_id",
+            "description": "<p>Id of the chat.</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "ObjectId",
+            "optional": false,
+            "field": "receiver_id",
+            "description": "<p>Id of the receiver.</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>Text Message.</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Files",
+            "optional": false,
+            "field": "images",
+            "description": "<p>List of images.</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "examples": [
+        {
+          "title": "Success-Response:",
+          "content": "HTTP/1.1 200 OK",
+          "type": "json"
+        }
+      ]
+    },
+    "version": "0.0.0",
+    "filename": "InRange-backend/controllers/ChatController.js",
+    "groupTitle": "Chat"
+  },
+  {
+    "type": "post",
+    "url": "/user/startinterview",
+    "title": "Start Interview",
+    "name": "Start_Interview",
+    "group": "Chat",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "ObjectId",
+            "optional": false,
+            "field": "id",
+            "description": "<p>Id of the user.</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "ObjectId",
+            "optional": false,
+            "field": "provider_id",
+            "description": "<p>Id of the provider.</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "ObjectId",
+            "optional": false,
+            "field": "task_id",
+            "description": "<p>Id of the task.</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "examples": [
+        {
+          "title": "Success-Response:",
+          "content": "HTTP/1.1 200 OK\n    {\n        \"status\": \"success\",\n        \"data\": {\n            \"_id\": \"5f7295f882b2a92da43a6587\",\n            \"consumer_id\": \"5f6e2d65afce8e1078f429fd\",\n            \"provider_id\": \"5f67ac2e9a599b177fba55b5\",\n            \"task_id\": \"5f6ae1daa31dc3228c3f6ab5\",\n            \"chats\": [\n                {\n                    \"images\": [],\n                    \"seen\": false,\n                    \"_id\": \"5f7295f882b2a92da43a6588\",\n                    \"sender_id\": \"5f6e2d65afce8e1078f429fd\",\n                    \"receiver_id\": \"5f67ac2e9a599b177fba55b5\",\n                    \"message\": \"hi\",\n                    \"createdAt\": \"2020-09-29T02:03:36.517Z\",\n                    \"updatedAt\": \"2020-09-29T02:03:36.517Z\"\n                }\n            ],\n            \"createdAt\": \"2020-09-29T02:03:36.518Z\",\n            \"updatedAt\": \"2020-09-29T02:03:36.518Z\",\n            \"__v\": 0\n        }\n    }",
+          "type": "json"
+        }
+      ]
+    },
+    "version": "0.0.0",
+    "filename": "InRange-backend/controllers/ChatController.js",
+    "groupTitle": "Chat"
   },
   {
     "type": "post",
@@ -607,7 +745,7 @@ define({ "api": [
       ]
     },
     "version": "0.0.0",
-    "filename": "InRange-backend/controllers/taskController.js",
+    "filename": "InRange-backend/controllers/TaskController.js",
     "groupTitle": "Task"
   },
   {
@@ -716,7 +854,7 @@ define({ "api": [
       ]
     },
     "version": "0.0.0",
-    "filename": "InRange-backend/controllers/taskController.js",
+    "filename": "InRange-backend/controllers/TaskController.js",
     "groupTitle": "Task"
   },
   {
@@ -748,7 +886,7 @@ define({ "api": [
       ]
     },
     "version": "0.0.0",
-    "filename": "InRange-backend/controllers/taskController.js",
+    "filename": "InRange-backend/controllers/TaskController.js",
     "groupTitle": "Task"
   },
   {
@@ -864,7 +1002,7 @@ define({ "api": [
       ]
     },
     "version": "0.0.0",
-    "filename": "InRange-backend/controllers/taskController.js",
+    "filename": "InRange-backend/controllers/TaskController.js",
     "groupTitle": "Task"
   },
   {
@@ -897,7 +1035,7 @@ define({ "api": [
       ]
     },
     "version": "0.0.0",
-    "filename": "InRange-backend/controllers/taskController.js",
+    "filename": "InRange-backend/controllers/TaskController.js",
     "groupTitle": "Task"
   },
   {
@@ -916,7 +1054,7 @@ define({ "api": [
       ]
     },
     "version": "0.0.0",
-    "filename": "InRange-backend/controllers/taskController.js",
+    "filename": "InRange-backend/controllers/TaskController.js",
     "groupTitle": "Task"
   },
   {
@@ -935,7 +1073,7 @@ define({ "api": [
       ]
     },
     "version": "0.0.0",
-    "filename": "InRange-backend/controllers/taskController.js",
+    "filename": "InRange-backend/controllers/TaskController.js",
     "groupTitle": "Task"
   },
   {
@@ -981,7 +1119,7 @@ define({ "api": [
       ]
     },
     "version": "0.0.0",
-    "filename": "InRange-backend/controllers/taskController.js",
+    "filename": "InRange-backend/controllers/TaskController.js",
     "groupTitle": "Task"
   },
   {
@@ -1034,7 +1172,7 @@ define({ "api": [
       ]
     },
     "version": "0.0.0",
-    "filename": "InRange-backend/controllers/taskController.js",
+    "filename": "InRange-backend/controllers/TaskController.js",
     "groupTitle": "Task"
   },
   {
@@ -1176,19 +1314,6 @@ define({ "api": [
     "title": "Switch Profile",
     "name": "Switch_Profile",
     "group": "User",
-    "parameter": {
-      "fields": {
-        "Parameter": [
-          {
-            "group": "Parameter",
-            "type": "ObjectId",
-            "optional": false,
-            "field": "id",
-            "description": "<p>Id of the user.</p>"
-          }
-        ]
-      }
-    },
     "success": {
       "examples": [
         {
