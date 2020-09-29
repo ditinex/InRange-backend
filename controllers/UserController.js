@@ -216,8 +216,6 @@ module.exports = {
 	 * @apiName Switch Profile
 	 * @apiGroup User
 	 *
-	 * @apiParam {ObjectId} id Id of the user.
-	 *
 	 *
 	 * @apiSuccessExample Success-Response:
 	 *     HTTP/1.1 200 OK

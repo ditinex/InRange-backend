@@ -12,5 +12,6 @@ router.post('/gettaskbyid',Task.GetTaskById);
 router.post('/sendreview',Task.SendReview);
 router.post('/acceptproposal',Task.AcceptProposal);
 router.get('/getcouponbycode',Admin.GetCouponByCode);
+router.get('/getcouponbycode',Admin.GetCouponByCode);
 
 module.exports = router;

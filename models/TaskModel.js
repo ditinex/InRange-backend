@@ -34,7 +34,8 @@ const TaskSchema = new Schema({
     provider: { type: Schema.Types.ObjectId, ref: 'users' },
     proposals: [{
         provider: { type: Schema.Types.ObjectId, ref: 'users' },
-        cover_letter: { type: String, trim: true }
+        cover_letter: { type: String, trim: true },
+        interviewed: { type: Boolean, required: true, default: false}
     }],
 	
 },{ timestamps: true })

@@ -24,6 +24,22 @@ const IsExists = async (model, where, select = null) => {
 	}
 }
 
+const IsExistsOne = async (model, where, select = null) => {
+	try {
+		let query = model.findOne(where)
+		if (select)
+			query.select(select)
+		let doc = await query.lean().exec()
+		if (doc.length > 0)
+			return doc
+		else
+			return false
+	}
+	catch (e) {
+		return false
+	}
+}
+
 const Insert = async (model, data) => {
 	try {
 		let inserted = await new model(data).save()
@@ -226,6 +242,7 @@ const HandleServerError = (res, req, err) => {
 
 
 exports.IsExists = IsExists
+exports.IsExistsOne = IsExistsOne
 exports.Insert = Insert
 exports.Find = Find
 exports.Delete = Delete

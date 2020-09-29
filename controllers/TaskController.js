@@ -5,7 +5,7 @@ const fs = require('fs');
 const { Admin, Otp, User, Task, Mongoose, Review } = require('../models')
 
 const {
-	IsExists, Insert, Find, CompressImageAndUpload, FindAndUpdate, Delete,
+	IsExists, IsExistsOne, Insert, Find, CompressImageAndUpload, FindAndUpdate, Delete,
 	HandleSuccess, HandleError, HandleServerError,
 	ValidateEmail, PasswordStrength, ValidateAlphanumeric, ValidateLength, ValidateMobile, isDataURL,GeneratePassword
 } = require('./BaseController');
@@ -77,7 +77,6 @@ module.exports = {
 			const { service = '', description = '', instruction = '', mobile = '',address='',location='',landmark='',houseno='' } = req.body
 			const name = req.body.name?req.body.name.trim() : ''
 			const title = req.body.title?req.body.title.trim() : ''
-			// console.log(req.user_id)
 			const user_id = req.user_id || ''
 			//Check images of task in frontend
 			const images = req.files?req.files.images : null
@@ -337,11 +336,14 @@ module.exports = {
 			
 			const isProviderExists = await IsExists(User,{_id: provider})
 			const isTaskExists = await IsExists(Task,{_id: task_id})
+			const isProposalExists = await IsExistsOne(Task,{_id: task_id, 'proposals': {"$not": {$elemMatch: {provider: provider}}}})
 
 			if(!isProviderExists)
 				return HandleError(res, 'Provider doesn\'t exists.')
 			else if(!isTaskExists)
 				return HandleError(res, 'Task doesn\'t exists.')
+			else if(!isProposalExists)
+				return HandleError(res, 'Proposal Already exists.')
 
 			const where = { _id: task_id }
 			const query = { $push: { proposals: {provider: Mongoose.Types.ObjectId(provider),cover_letter: cover_letter}}}
