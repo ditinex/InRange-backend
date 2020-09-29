@@ -454,6 +454,13 @@ define({ "api": [
             "optional": false,
             "field": "task_id",
             "description": "<p>Id of the task.</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "ObjectId",
+            "optional": false,
+            "field": "proposal_id",
+            "description": "<p>Id of the proposal.</p>"
           }
         ]
       }

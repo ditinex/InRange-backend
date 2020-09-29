@@ -137,6 +137,7 @@ module.exports = {
 	 * @apiParam {ObjectId} id Id of the user.
 	 * @apiParam {ObjectId} provider_id Id of the provider.
 	 * @apiParam {ObjectId} task_id Id of the task.
+	 * @apiParam {ObjectId} proposal_id Id of the proposal.
 	 *
 	 *
 	 * @apiSuccessExample Success-Response:
@@ -172,7 +173,7 @@ module.exports = {
 
     StartInterview: async (req, res, next) => {
         try {
-            const { provider_id = '', task_id = '' } = req.body
+            const { provider_id = '', task_id = '', proposal_id = '' } = req.body
             const id = req.user_id || ''
 			//Check service & verifydoc form submission in frontend
             let validateError = null
@@ -182,6 +183,8 @@ module.exports = {
                 validateError = 'Invalid provider id.'
             else if(task_id == '')
                 validateError = 'Invalid task id.'
+            else if(proposal_id == '')
+                validateError = 'Invalid proposal id.'
 
 			if (validateError)
                 return HandleError(res, validateError)
@@ -205,13 +208,13 @@ module.exports = {
                 return HandleError(res, 'Proposal Not Found.')
                 
             const proposal_letter = result[0].proposals[0].cover_letter
+            
+            const where = { _id: task_id, 'proposals._id': proposal_id }
+            const query2 = { 'proposals.$.interviewed': true }
 
-            // const where = { _id: task_id }
-			// const query = { interviewed: provider_id }
-	
-			// let updated = await FindAndUpdate(Task,where,query)
-			// if (!updated)
-			// 	return HandleError(res, 'Failed to start interview.')
+            let updated = await FindAndUpdate(Task,where,query2)
+            if (!updated)
+                return HandleError(res, 'Failed to start interview.')
             
 			let data = { consumer_id: id, provider_id: provider_id, task_id: task_id, chats: { 
                 sender_id: id,
