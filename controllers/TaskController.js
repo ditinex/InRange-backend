@@ -2,6 +2,7 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const Config = require('../config.js');
 const fs = require('fs');
+const { RealtimeListener } = require('../services')
 const { Admin, Otp, User, Task, Mongoose, Review } = require('../models')
 
 const {
@@ -77,9 +78,7 @@ module.exports = {
 			const { service = '', description = '', instruction = '', mobile = '',address='',location='',landmark='',houseno='' } = req.body
 			const name = req.body.name?req.body.name.trim() : ''
 			const title = req.body.title?req.body.title.trim() : ''
-			// console.log(req.user_id)
 			const user_id = req.user_id || ''
-			//Check images of task in frontend
 			const images = req.files?req.files.images : null
 
 			let validateError = null
@@ -129,6 +128,11 @@ module.exports = {
 			if (!inserted)
 				return HandleError(res, 'Failed to create task. Please contact system admin.')
 			
+			/*
+			 * Creating an event task_change in self socket to server realtime database via socket
+			 */
+			RealtimeListener.taskChange.emit('task_change',inserted._id)
+
 			return HandleSuccess(res, inserted)
 
 		} catch (err) {

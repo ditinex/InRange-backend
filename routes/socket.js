@@ -8,7 +8,11 @@ module.exports = (io) => {
         //Import the middleware here
         next()
     })
-    const realtimeTaskNamespace = io.of('/realtime-task');
-    realtimeTaskNamespace.on('connection',socket=>Socket.ConnectionTest(socket,realtimeTaskNamespace))
+    
+    io.of('/realtime-task').on('connection',Socket.RealtimeTask);
+    
+    io.of('/chat').on('connection',Socket.Chat)
+
+
 };
 
