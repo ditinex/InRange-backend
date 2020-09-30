@@ -399,6 +399,84 @@ module.exports = {
 			HandleServerError(res, req, err)
 		}
     },
+
+    /**
+	 * @api {post} /user/updatelocation Update Location
+	 * @apiName Update Location
+	 * @apiGroup User
+	 *
+	 * @apiParam {String} location JSON stringify string with coordinates i.e {"longitude":"-110.8571443","lattitude":"32.4586858"}.
+	 *
+	 *
+	 * @apiSuccessExample Success-Response:
+	 *     HTTP/1.1 200 OK
+	 *     
+        {
+            "status": "success",
+            "data": {
+                "location": {
+                    "type": "Point",
+                    "coordinates": [
+                        -110.8571443,
+                        32.4586858
+                    ]
+                },
+                "provider": {
+                    "verification_document": "/images/1601093261125.jpg",
+                    "service": "Truck",
+                    "description": "Hello I a taxi driver"
+                },
+                "is_switched_provider": true,
+                "is_available": true,
+                "_id": "5f6e2d65afce8e1078f429fd",
+                "name": "Captain America",
+                "gender": "male",
+                "mobile": "919804985304",
+                "address": "india",
+                "status": "pending",
+                "active_session_refresh_token": "XsHAdWYVc2kRKCPq",
+                "profile_picture": "/images/1601056101315.jpg",
+                "createdAt": "2020-09-25T17:48:21.450Z",
+                "updatedAt": "2020-09-30T15:45:17.386Z",
+                "__v": 0,
+                "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjVmNmUyZDY1YWZjZThlMTA3OGY0MjlmZCIsIm1vYmlsZSI6IjkxOTgwNDk4NTMwNCIsIm5hbWUiOiJDYXB0YWluIEFtZXJpY2EiLCJpYXQiOjE2MDE0ODA2NTgsImV4cCI6MTYwMTU2NzA1OH0.lxtj5Ftub-EYx1XE25DjSJW7J0U48r6O2fizyw-IUkk"
+            }
+        }
+    */
+    
+    UpdateLocation: async (req, res, next) => {
+		try {
+            const { location ='' } = req.body
+            const id = req.user_id || ''
+            
+            let validateError = null
+			//Check service & verifydoc form submission in frontend
+			if (id == '')
+                validateError = 'Please give a valid id.'
+            else if(location =='')
+                validateError = 'location cannot be empty.'
+            
+			if (validateError)
+                return HandleError(res, validateError)
+            
+            let coordinates = {}
+            try {
+                coordinates = JSON.parse(location)
+            }
+            catch (e) {
+                return HandleError(res, 'Invalid location cooridnates.')
+            }
+
+			let updated = await FindAndUpdate(User, {_id: id}, {location: { type: 'Point', coordinates: [coordinates.longitude, coordinates.lattitude] }})
+			if(!updated)
+				return HandleError(res, 'Failed to update location.')
+			
+			return HandleSuccess(res, updated)
+
+		} catch (err) {
+			HandleServerError(res, req, err)
+		}
+    },
 }
 
 

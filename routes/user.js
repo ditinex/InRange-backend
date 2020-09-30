@@ -9,6 +9,7 @@ router.post('/changeprofilepic',User.ChangeProfilePic);
 router.post('/switchprofile',User.SwitchProfile);
 router.post('/editproviderprofile',User.EditProviderProfile);
 router.post('/editprofile',User.EditProfile);
+router.post('/updatelocation',User.UpdateLocation);
 router.post('/getchatlist',Chat.GetChatList);
 router.post('/startinterview',Chat.StartInterview);
 

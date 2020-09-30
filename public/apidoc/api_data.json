@@ -1342,5 +1342,37 @@
     "version": "0.0.0",
     "filename": "InRange-backend/controllers/UserController.js",
     "groupTitle": "User"
+  },
+  {
+    "type": "post",
+    "url": "/user/updatelocation",
+    "title": "Update Location",
+    "name": "Update_Location",
+    "group": "User",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "location",
+            "description": "<p>JSON stringify string with coordinates i.e {&quot;longitude&quot;:&quot;-110.8571443&quot;,&quot;lattitude&quot;:&quot;32.4586858&quot;}.</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "examples": [
+        {
+          "title": "Success-Response:",
+          "content": "HTTP/1.1 200 OK\n\n    {\n        \"status\": \"success\",\n        \"data\": {\n            \"location\": {\n                \"type\": \"Point\",\n                \"coordinates\": [\n                    -110.8571443,\n                    32.4586858\n                ]\n            },\n            \"provider\": {\n                \"verification_document\": \"/images/1601093261125.jpg\",\n                \"service\": \"Truck\",\n                \"description\": \"Hello I a taxi driver\"\n            },\n            \"is_switched_provider\": true,\n            \"is_available\": true,\n            \"_id\": \"5f6e2d65afce8e1078f429fd\",\n            \"name\": \"Captain America\",\n            \"gender\": \"male\",\n            \"mobile\": \"919804985304\",\n            \"address\": \"india\",\n            \"status\": \"pending\",\n            \"active_session_refresh_token\": \"XsHAdWYVc2kRKCPq\",\n            \"profile_picture\": \"/images/1601056101315.jpg\",\n            \"createdAt\": \"2020-09-25T17:48:21.450Z\",\n            \"updatedAt\": \"2020-09-30T15:45:17.386Z\",\n            \"__v\": 0,\n            \"access_token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjVmNmUyZDY1YWZjZThlMTA3OGY0MjlmZCIsIm1vYmlsZSI6IjkxOTgwNDk4NTMwNCIsIm5hbWUiOiJDYXB0YWluIEFtZXJpY2EiLCJpYXQiOjE2MDE0ODA2NTgsImV4cCI6MTYwMTU2NzA1OH0.lxtj5Ftub-EYx1XE25DjSJW7J0U48r6O2fizyw-IUkk\"\n        }\n    }",
+          "type": "json"
+        }
+      ]
+    },
+    "version": "0.0.0",
+    "filename": "InRange-backend/controllers/UserController.js",
+    "groupTitle": "User"
   }
 ]
