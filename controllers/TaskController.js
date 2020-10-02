@@ -347,7 +347,7 @@ module.exports = {
 				return HandleError(res, 'Provider doesn\'t exists.')
 			else if(!isTaskExists)
 				return HandleError(res, 'Task doesn\'t exists.')
-			else if(!isProposalExists)
+			else if(isProposalExists)
 				return HandleError(res, 'Proposal Already exists.')
 
 			const where = { _id: task_id }
