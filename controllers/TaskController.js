@@ -275,7 +275,6 @@ module.exports = {
 	 * @apiGroup Task
 	 *
 	 * @apiParam {ObjectId} task_id Id of the task.
-	 * @apiParam {ObjectId} provider Id of the provider.
 	 * @apiParam {Sting} cover_letter Proposal letter in text.
 	 *
 	 *
@@ -332,7 +331,8 @@ module.exports = {
 	 */
 	SendProposal: async (req, res, next) => {
 		try {
-			const { task_id = '', provider = '', cover_letter = '' } = req.body
+			const { task_id = '', cover_letter = '' } = req.body
+			const provider = req.user_id
 
 			if(cover_letter.trim()=='')
 				return HandleError(res, 'Cover letter is empty.')

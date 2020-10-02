@@ -8,7 +8,7 @@ const {
 	IsExists, Insert, Find, CompressImageAndUpload, FindAndUpdate, Delete,
 	HandleSuccess, HandleError, HandleServerError, Aggregate,
 	ValidateEmail, PasswordStrength, ValidateAlphanumeric, ValidateLength, ValidateMobile, isDataURL, GeneratePassword
-} = require('./baseController');
+} = require('./BaseController');
 
 let realtimeTaskSocketsProviders = {}
 
@@ -38,6 +38,7 @@ module.exports = {
 			socket.on('provider', (user_id) => {
 				realtimeTaskSocketsProviders[user_id] = socket.id
 			});
+
 			socket.on('task_change', async (task_id) => {
 				let task = await IsExists(Task, { _id: task_id })
 				if (task) {
@@ -63,6 +64,40 @@ module.exports = {
 					}
 				}
 			});
+
+			socket.on('fetch_available_task',async ({location,type})=>{
+				let tasks = await Find(Task,{
+					location: {
+						$near: {
+							$maxDistance: Config.max_map_range,
+							$geometry: {
+								type: "Point",
+								coordinates: [location.longitude,location.latitude]
+							}
+						}
+					},
+					service: type,
+					status: { $in: ['Hiring','In-progress'] }
+				})
+				if(tasks && tasks.length > 0){
+					socket.emit('available_task',tasks)
+				}
+			})
+
+			socket.on('disconnect',async ()=>{
+				let arr = Object.keys(realtimeTaskSocketsProviders)
+				for(let i=0; i<arr.length; i++){
+					if(realtimeTaskSocketsProviders[arr[i]]==socket.id){	
+						delete realtimeTaskSocketsProviders[arr[i]]
+						break;
+					}
+				}
+			})
+
+			socket.on('change_location',async ({location,user})=>{
+				let updated = await FindAndUpdate(User,{_id: user},{'location.coordinates': [location.longitude,location.latitude]})
+			})
+
 		} catch (err) {
 			console.log(err)
 		}
