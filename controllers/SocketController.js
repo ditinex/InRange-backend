@@ -189,9 +189,9 @@ module.exports = {
 
 			socket.on('fetch_all_providers',async ({location})=>{
 				const query = [
-					{ $match: {
+					{ $geoNear: {
 						location: {
-							$geoNear: {
+							$near: {
 								$maxDistance: Config.max_map_range,
 								$geometry: {
 									type: "Point",
