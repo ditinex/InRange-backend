@@ -18,14 +18,14 @@ module.exports = {
 
 	Chat: async (socket) => {
 		try {
-			socket.on('startchat', function(chat_id){
+			socket.on('startchat', async function(chat_id){
 				const room_name = chat_id;
 				socket.join(room_name);
 				let updated = await FindAndUpdate(Chat,{_id: chat_id, "chats.seen": false},{"chats.$[].seen": true});
 				socket.broadcast.to(room_name).emit('chathistory',updated.chats);
 			});
 
-			socket.on('message', ({chat_id,sender_id,receiver_id,message}) => {
+			socket.on('message', async({chat_id,sender_id,receiver_id,message}) => {
 				//Body
 				const room_name = chat_id;
 
@@ -44,7 +44,7 @@ module.exports = {
 					socket.broadcast.to(room_name).emit('updatechat',data);
 			});
 
-			socket.on('image', ({chat_id,sender_id,receiver_id,image_path}) => {
+			socket.on('image', async({chat_id,sender_id,receiver_id,image_path}) => {
 				//Upload the image via api call first then send socket data with image id
 				const room_name = chat_id;
 
@@ -63,7 +63,7 @@ module.exports = {
 					socket.broadcast.to(room_name).emit('updatechat',data);
 			});
 
-			socket.on('seen', ({chat_id,msg_id}) => {
+			socket.on('seen', async({chat_id,msg_id}) => {
 				let updated = await FindAndUpdate(Chat,{_id: chat_id, "chats._id": msg_id},{"chats.$.seen": true});
 			});
 
