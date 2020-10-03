@@ -6,24 +6,24 @@ const { SendSMS } = require('../services')
 const { Admin, Otp, User, Task, Mongoose, Review, Chat } = require('../models')
 
 const {
-	IsExists, Insert, Find, CompressImageAndUpload, FindAndUpdate, Delete,
-	HandleSuccess, HandleError, HandleServerError, Aggregate,
-	ValidateEmail, PasswordStrength, ValidateAlphanumeric, ValidateLength, ValidateMobile, isDataURL,GeneratePassword
+    IsExists, Insert, Find, CompressImageAndUpload, FindAndUpdate, Delete,
+    HandleSuccess, HandleError, HandleServerError, Aggregate,
+    ValidateEmail, PasswordStrength, ValidateAlphanumeric, ValidateLength, ValidateMobile, isDataURL, GeneratePassword
 } = require('./BaseController');
 
 
 module.exports = {
-    
+
     /**
-	 * @api {post} /user/getchatlist Get Chatlist
-	 * @apiName Get Chatlist
-	 * @apiGroup Chat
-	 *
-	 * @apiParam {ObjectId} id Id of the user.
-	 *
-	 *
-	 * @apiSuccessExample Success-Response:
-	 *     HTTP/1.1 200 OK
+     * @api {post} /user/getchatlist Get Chatlist
+     * @apiName Get Chatlist
+     * @apiGroup Chat
+     *
+     * @apiParam {ObjectId} id Id of the user.
+     *
+     *
+     * @apiSuccessExample Success-Response:
+     *     HTTP/1.1 200 OK
 
         {
             "status": "success",
@@ -70,78 +70,83 @@ module.exports = {
                 }
             ]
         }
-	 *
-	 *
-	 */
+     *
+     *
+     */
 
     GetChatList: async (req, res, next) => {
-		try {
+        try {
             const id = req.user_id || ''
 
             let validateError = null
             if (id == '')
                 validateError = 'Invalid id.'
 
-			if (validateError)
-				return HandleError(res, validateError)
+            if (validateError)
+                return HandleError(res, validateError)
 
             const query = [
                 { $match: { $or: [{ provider_id: Mongoose.Types.ObjectId(id) }, { consumer_id: Mongoose.Types.ObjectId(id) }] } },
-                { $lookup : 
-                    { from: 'tasks', localField: 'task_id', foreignField: '_id', as: 'task' }
+                {
+                    $lookup:
+                        { from: 'tasks', localField: 'task_id', foreignField: '_id', as: 'task' }
                 },
-                { $lookup : 
-                    { from: 'users', localField: 'consumer_id', foreignField: '_id', as: 'consumer' }
+                {
+                    $lookup:
+                        { from: 'users', localField: 'consumer_id', foreignField: '_id', as: 'consumer' }
                 },
-                { $lookup : 
-                    { from: 'users', localField: 'provider_id', foreignField: '_id', as: 'provider' }
+                {
+                    $lookup:
+                        { from: 'users', localField: 'provider_id', foreignField: '_id', as: 'provider' }
                 },
-                { $project : {
-                    _id: 1,
-                    consumer_id: 1,
-                    provider_id: 1,
-                    chats: {$slice: [ "$chats", -1 ] },
-                    task: { _id: 1, title: 1 },
-                    consumer: {
+                {
+                    $project: {
                         _id: 1,
-                        name: 1,
-                        mobile: 1,
-                        address: 1,
-                        profile_picture: 1
-                    },
-                    provider: {
-                        _id: 1,
-                        name: 1,
-                        mobile: 1,
-                        address: 1,
-                        profile_picture: 1
+                        consumer_id: 1,
+                        provider_id: 1,
+                        chats: { $slice: ["$chats", -1] },
+                        task: { _id: 1, title: 1 },
+                        consumer: {
+                            _id: 1,
+                            name: 1,
+                            mobile: 1,
+                            address: 1,
+                            profile_picture: 1
+                        },
+                        provider: {
+                            _id: 1,
+                            name: 1,
+                            mobile: 1,
+                            address: 1,
+                            profile_picture: 1
+                        }
                     }
-                } }
+                }
             ]
 
-            let data = await Aggregate(Chat,query)
-            if(!data)
-                    return HandleError(res, 'No Data Found.')
+            let data = await Aggregate(Chat, query)
+            if (!data)
+                return HandleError(res, 'No Data Found.')
             return HandleSuccess(res, data)
-		
-		} catch (err) {
-			HandleServerError(res, req, err)
-		}
+
+        } catch (err) {
+            HandleServerError(res, req, err)
+        }
     },
 
     /**
-	 * @api {post} /user/startinterview Start Interview
-	 * @apiName Start Interview
-	 * @apiGroup Chat
-	 *
-	 * @apiParam {ObjectId} id Id of the user.
-	 * @apiParam {ObjectId} provider_id Id of the provider.
-	 * @apiParam {ObjectId} task_id Id of the task.
-	 * @apiParam {ObjectId} proposal_id Id of the proposal.
-	 *
-	 *
-	 * @apiSuccessExample Success-Response:
-	 *     HTTP/1.1 200 OK
+     * @api {post} /user/startinterview Start Interview
+     * @apiName Start Interview
+     * @apiGroup Chat
+     *
+     * @apiParam {ObjectId} id Id of the user.
+     * @apiParam {ObjectId} provider_id Id of the provider.
+     * @apiParam {ObjectId} task_id Id of the task.
+     * @apiParam {ObjectId} proposal_id Id of the proposal.
+     *
+     *
+     * @apiSuccessExample Success-Response:
+     *     HTTP/1.1 200 OK
         {
             "status": "success",
             "data": {
@@ -167,9 +172,9 @@ module.exports = {
             }
         }
         
-	 *
-	 *
-	 */
+     *
+     *
+     */
 
     StartInterview: async (req, res, next) => {
         try {
@@ -179,159 +184,166 @@ module.exports = {
             let validateError = null
             if (id == '')
                 validateError = 'Invalid id.'
-            else if(provider_id == '')
+            else if (provider_id == '')
                 validateError = 'Invalid provider id.'
-            else if(task_id == '')
+            else if (task_id == '')
                 validateError = 'Invalid task id.'
-            else if(proposal_id == '')
+            else if (proposal_id == '')
                 validateError = 'Invalid proposal id.'
 
-			if (validateError)
+            if (validateError)
                 return HandleError(res, validateError)
-                
-            const isProviderExists = await IsExists(User,{_id: provider_id})
-			if(!isProviderExists)
-				return HandleError(res, 'Provider doesn\'t exists.')
-                // find the cover letter
+
+            const isProviderExists = await IsExists(User, { _id: provider_id })
+            if (!isProviderExists)
+                return HandleError(res, 'Provider doesn\'t exists.')
+            // find the cover letter
             const query = [
-                { $match: { _id: Mongoose.Types.ObjectId(task_id)} },
-                { $project: { 
-                    proposals: {$filter: {
-                        input: '$proposals',
-                        as: 'proposal',
-                        cond: {$eq: ['$$proposal.provider', Mongoose.Types.ObjectId(provider_id)]}
-                    }},
-                }}
+                { $match: { _id: Mongoose.Types.ObjectId(task_id) } },
+                {
+                    $project: {
+                        proposals: {
+                            $filter: {
+                                input: '$proposals',
+                                as: 'proposal',
+                                cond: { $eq: ['$$proposal.provider', Mongoose.Types.ObjectId(provider_id)] }
+                            }
+                        },
+                    }
+                }
             ]
-            const result = await Aggregate(Task,query)
-            if(!result)
+            const result = await Aggregate(Task, query)
+            if (!result)
                 return HandleError(res, 'Proposal Not Found.')
-                
+
             const proposal_letter = result[0].proposals[0].cover_letter
-            
+            const is_already_interviewed = result[0].proposals[0].interviewed
+
             const where = { _id: task_id, 'proposals._id': proposal_id }
             const query2 = { 'proposals.$.interviewed': true }
 
-            let updated = await FindAndUpdate(Task,where,query2)
-            if (!updated)
-                return HandleError(res, 'Failed to start interview.')
-            
-			let data = { consumer_id: id, provider_id: provider_id, task_id: task_id, chats: { 
-                sender_id: id,
-                receiver_id: provider_id,
-                message: proposal_letter
-             } }
-            let inserted = await Insert(Chat, data)
-			if (!inserted)
-				return HandleError(res, 'Failed to Start Interview. Please contact system admin.')
-			
-			return HandleSuccess(res, inserted)
-		
-		} catch (err) {
-			HandleServerError(res, req, err)
-		}
+            if (!is_already_interviewed) {
+                let updated = await FindAndUpdate(Task, where, query2)
+                if (!updated)
+                    return HandleError(res, 'Failed to start interview.')
+
+                let data = {
+                    consumer_id: id, provider_id: provider_id, task_id: task_id, chats: {
+                        sender_id: id,
+                        receiver_id: provider_id,
+                        message: proposal_letter
+                    }
+                }
+                let inserted = await Insert(Chat, data)
+                if (!inserted)
+                    return HandleError(res, 'Failed to Start Interview. Please contact system admin.')
+            }
+            return HandleSuccess(res,null)
+
+        } catch (err) {
+            HandleServerError(res, req, err)
+        }
     },
 
     /**
-	 * @api {post} /user/sendimage Send Image
-	 * @apiName Send Image
-	 * @apiGroup Chat
-	 *
-	 * @apiParam {Files} images List of images.
-	 *
-	 *
-	 * @apiSuccessExample Success-Response:
-	 *     HTTP/1.1 200 OK
+     * @api {post} /user/sendimage Send Image
+     * @apiName Send Image
+     * @apiGroup Chat
+     *
+     * @apiParam {Files} images List of images.
+     *
+     *
+     * @apiSuccessExample Success-Response:
+     *     HTTP/1.1 200 OK
         
-	 *
-	 *
-	 */
+     *
+     *
+     */
 
     SendImage: async (req, res, next) => {
-		try {
-            const image = req.files?req.files.image : null
+        try {
+            const image = req.files ? req.files.image : null
             var path = null
-			if(isDataURL(image))
-			{
-				let isUploaded = await CompressImageAndUpload(images[i])
-				if(!isUploaded)
-					return HandleError(res,"Failed to send images.")
-				path = isUploaded.path
-			}
+            if (isDataURL(image)) {
+                let isUploaded = await CompressImageAndUpload(images[i])
+                if (!isUploaded)
+                    return HandleError(res, "Failed to send images.")
+                path = isUploaded.path
+            }
 
-			return HandleSuccess(res, path)
+            return HandleSuccess(res, path)
 
-		} catch (err) {
-			HandleServerError(res, req, err)
-		}
-	},
+        } catch (err) {
+            HandleServerError(res, req, err)
+        }
+    },
 
     // /**
-	//  * @api {socket} $ Send Message
-	//  * @apiName Send Message
-	//  * @apiGroup Chat
-	//  *
-	//  * @apiParam {ObjectId} id Id of the user.
-	//  * @apiParam {ObjectId} chat_id Id of the chat.
-	//  * @apiParam {ObjectId} receiver_id Id of the receiver.
-	//  * @apiParam {String} message Text Message.
-	//  * @apiParam {Files} images List of images.
-	//  *
-	//  *
-	//  * @apiSuccessExample Success-Response:
-	//  *     HTTP/1.1 200 OK
-        
-	//  *
-	//  *
-	//  */
+    //  * @api {socket} $ Send Message
+    //  * @apiName Send Message
+    //  * @apiGroup Chat
+    //  *
+    //  * @apiParam {ObjectId} id Id of the user.
+    //  * @apiParam {ObjectId} chat_id Id of the chat.
+    //  * @apiParam {ObjectId} receiver_id Id of the receiver.
+    //  * @apiParam {String} message Text Message.
+    //  * @apiParam {Files} images List of images.
+    //  *
+    //  *
+    //  * @apiSuccessExample Success-Response:
+    //  *     HTTP/1.1 200 OK
+
+    //  *
+    //  *
+    //  */
 
     // SendMessage: async (req, res, next) => {
-	// 	try {
-	// 		const { chat_id = '', receiver_id = '', message = '' } = req.body
+    // 	try {
+    // 		const { chat_id = '', receiver_id = '', message = '' } = req.body
     //         const id = req.user_id || ''
     //         const images = req.files?req.files.images : null
 
-	// 		if( id == '' || receiver_id =='' || sender_id == '' || chat_id == '')
-	// 			return HandleError(res, 'Failed to send message.')
-			
-	// 		const isChatExists = await IsExists(Chat,{_id: chat_id})
+    // 		if( id == '' || receiver_id =='' || sender_id == '' || chat_id == '')
+    // 			return HandleError(res, 'Failed to send message.')
 
-	// 		if(!isChatExists)
-	// 			return HandleError(res, 'Chat doesn\'t exists anymore.')
+    // 		const isChatExists = await IsExists(Chat,{_id: chat_id})
 
-	// 		let data = {
+    // 		if(!isChatExists)
+    // 			return HandleError(res, 'Chat doesn\'t exists anymore.')
+
+    // 		let data = {
     //             sender_id: id,
     //             receiver_id: provider_id,
     //             message: message
     //         }
 
     //         if(images)
-	// 		{
-	// 			data.images=[]
-	// 			for(i=0;i<images.length;i++)
-	// 			{
-	// 				if(isDataURL(images[i]))
-	// 				{
-	// 					let isUploaded = await CompressImageAndUpload(images[i])
-	// 					if(!isUploaded)
-	// 						return HandleError(res,"Failed to sens images.")
-	// 					data.images[i] = isUploaded.path
-	// 				}
-	// 			}
-	// 		}
-	// 		const where = { _id: chat_id }
-	// 		const query = { $push: { chats: data}}
+    // 		{
+    // 			data.images=[]
+    // 			for(i=0;i<images.length;i++)
+    // 			{
+    // 				if(isDataURL(images[i]))
+    // 				{
+    // 					let isUploaded = await CompressImageAndUpload(images[i])
+    // 					if(!isUploaded)
+    // 						return HandleError(res,"Failed to sens images.")
+    // 					data.images[i] = isUploaded.path
+    // 				}
+    // 			}
+    // 		}
+    // 		const where = { _id: chat_id }
+    // 		const query = { $push: { chats: data}}
 
-	// 		let updated = await FindAndUpdate(Chat,where,query,true)
-	// 		if (!updated)
-	// 			return HandleError(res, 'Failed to send message.')
+    // 		let updated = await FindAndUpdate(Chat,where,query,true)
+    // 		if (!updated)
+    // 			return HandleError(res, 'Failed to send message.')
 
-	// 		return HandleSuccess(res, updated)
+    // 		return HandleSuccess(res, updated)
 
-	// 	} catch (err) {
-	// 		HandleServerError(res, req, err)
-	// 	}
-	// },
+    // 	} catch (err) {
+    // 		HandleServerError(res, req, err)
+    // 	}
+    // },
 }
 
 

@@ -8,8 +8,9 @@ const { Admin, Otp, User, Task, Mongoose, Review } = require('../models')
 const {
 	IsExists, IsExistsOne, Insert, Find, CompressImageAndUpload, FindAndUpdate, Delete,
 	HandleSuccess, HandleError, HandleServerError,
-	ValidateEmail, PasswordStrength, ValidateAlphanumeric, ValidateLength, ValidateMobile, isDataURL,GeneratePassword
+	ValidateEmail, PasswordStrength, ValidateAlphanumeric, ValidateLength, ValidateMobile, isDataURL,GeneratePassword, Aggregate
 } = require('./BaseController');
+const { lookup } = require('dns');
 
 
 module.exports = {
@@ -565,8 +566,35 @@ module.exports = {
 	
 			if(validateError)
 				return HandleError(res,validateError)
-			
-			let data = await Find(Task,{consumer: user_id})
+			let query = [
+				{ $match: { consumer: Mongoose.Types.ObjectId(user_id) }},
+				{ $lookup : 
+					{
+						from: "users", 
+						let: { id: "$proposals.provider" },
+						pipeline: [
+							{
+								$match: { 
+									"$expr":
+									{"$and":[
+										{ "$eq":["$_id",{$arrayElemAt: [ "$$id", 0 ]}] },
+									]}
+								} 
+							},
+							{ $project: { access_token: 0, active_session_refresh_token: 0, 'provider.verification_document': 0 } },
+							{ $lookup : 
+								{ from: 'reviews', localField: '_id', foreignField: 'provider', as: 'reviews' }
+							},
+							{ $addFields: { average_rating: {$avg: '$reviews.rating'} } }
+						],
+						as: 'proposed_by'
+					}
+				},
+			]
+			let data = await Aggregate(Task,query)
+			data.forEach(element => {
+				console.log(element.proposed_by.length > 0 ? element.proposed_by[0]:null)
+			});
 	
 			if(!data)
 				return HandleError(res,'Failed to list Task.')
