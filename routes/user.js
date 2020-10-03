@@ -12,6 +12,8 @@ router.post('/editprofile',User.EditProfile);
 router.post('/updatelocation',User.UpdateLocation);
 router.post('/getchatlist',Chat.GetChatList);
 router.post('/startinterview',Chat.StartInterview);
+router.post('/startinterview',Chat.StartInterview);
+router.post('/sendimage',Chat.SendImage);
 
 
 

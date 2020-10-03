@@ -5,7 +5,7 @@ const MessageSchema=new Schema({
     sender_id: { type: Schema.Types.ObjectId, ref: 'users', required: true },
     receiver_id: { type: Schema.Types.ObjectId, ref: 'users', required: true },
     message: { type: String, trim: true },
-    images: { type: Array },
+    image: { type: String },
     seen: { type: Boolean, trim: true, required: true, default: false },
 
 },{ timestamps: true })

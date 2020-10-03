@@ -18,12 +18,55 @@ module.exports = {
 
 	Chat: async (socket) => {
 		try {
-			socket.on('message', ({sender_id,receiver_id,message}) => {
+			socket.on('startchat', function(chat_id){
+				const room_name = chat_id;
+				socket.join(room_name);
+				let chatlist = await Find(Chat,{_id: chat_id});
+				socket.broadcast.to(room_name).emit('chathistory',chatlist.chats);
+			});
+
+			socket.on('message', ({chat_id,sender_id,receiver_id,message}) => {
 				//Body
+				const room_name = chat_id;
+
+				let data = {
+					sender_id: sender_id,
+					receiver_id: receiver_id,
+					message: message,
+					seen: false
+				}
+
+				const where = { _id: chat_id }
+				const query = { $push: { chats: data}}
+
+				let updated = await FindAndUpdate(Chat,where,query,true)
+				if(updated)
+					socket.broadcast.to(room_name).emit('updatechat',data);
 			});
-			socket.on('image', ({sender_id,receiver_id,image_id}) => {
+
+			socket.on('image', ({chat_id,sender_id,receiver_id,image_path}) => {
 				//Upload the image via api call first then send socket data with image id
+				const room_name = chat_id;
+
+				let data = {
+					sender_id: sender_id,
+					receiver_id: receiver_id,
+					image: image_path,
+					seen: false
+				}
+
+				const where = { _id: chat_id }
+				const query = { $push: { chats: data}}
+
+				let updated = await FindAndUpdate(Chat,where,query,true)
+				if(updated)
+					socket.broadcast.to(room_name).emit('updatechat',data);
 			});
+
+			socket.on('seen', ({chat_id,msg_id}) => {
+				let updated = await FindAndUpdate(Chat,{_id: chat_id, "chats._id": msg_id},{"chats.$.seen": true});
+			});
+
 		} catch (err) {
 			console.log(err)
 		}

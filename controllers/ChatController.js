@@ -77,7 +77,7 @@ module.exports = {
     GetChatList: async (req, res, next) => {
 		try {
             const id = req.user_id || ''
-			//Check service & verifydoc form submission in frontend
+
             let validateError = null
             if (id == '')
                 validateError = 'Invalid id.'
@@ -100,7 +100,7 @@ module.exports = {
                     _id: 1,
                     consumer_id: 1,
                     provider_id: 1,
-                    chats: 1,
+                    chats: {$slice: [ "$chats", -1 ] },
                     task: { _id: 1, title: 1 },
                     consumer: {
                         _id: 1,
@@ -175,7 +175,7 @@ module.exports = {
         try {
             const { provider_id = '', task_id = '', proposal_id = '' } = req.body
             const id = req.user_id || ''
-			//Check service & verifydoc form submission in frontend
+
             let validateError = null
             if (id == '')
                 validateError = 'Invalid id.'
@@ -233,14 +233,10 @@ module.exports = {
     },
 
     /**
-	 * @api {socket} $ Send Message
-	 * @apiName Send Message
+	 * @api {post} /user/sendimage Send Image
+	 * @apiName Send Image
 	 * @apiGroup Chat
 	 *
-	 * @apiParam {ObjectId} id Id of the user.
-	 * @apiParam {ObjectId} chat_id Id of the chat.
-	 * @apiParam {ObjectId} receiver_id Id of the receiver.
-	 * @apiParam {String} message Text Message.
 	 * @apiParam {Files} images List of images.
 	 *
 	 *
@@ -251,53 +247,91 @@ module.exports = {
 	 *
 	 */
 
-    SendMessage: async (req, res, next) => {
+    SendImage: async (req, res, next) => {
 		try {
-			const { chat_id = '', receiver_id = '', message = '' } = req.body
-            const id = req.user_id || ''
-            const images = req.files?req.files.images : null
-			//Check service & verifydoc form submission in frontend
-			if( id == '' || receiver_id =='' || sender_id == '' || chat_id == '')
-				return HandleError(res, 'Failed to send message.')
-			
-			const isChatExists = await IsExists(Chat,{_id: chat_id})
-
-			if(!isChatExists)
-				return HandleError(res, 'Chat doesn\'t exists anymore.')
-
-			let data = {
-                sender_id: id,
-                receiver_id: provider_id,
-                message: message
-            }
-
-            if(images)
+            const image = req.files?req.files.image : null
+            var path = null
+			if(isDataURL(image))
 			{
-				data.images=[]
-				for(i=0;i<images.length;i++)
-				{
-					if(isDataURL(images[i]))
-					{
-						let isUploaded = await CompressImageAndUpload(images[i])
-						if(!isUploaded)
-							return HandleError(res,"Failed to sens images.")
-						data.images[i] = isUploaded.path
-					}
-				}
+				let isUploaded = await CompressImageAndUpload(images[i])
+				if(!isUploaded)
+					return HandleError(res,"Failed to send images.")
+				path = isUploaded.path
 			}
-			const where = { _id: chat_id }
-			const query = { $push: { chats: data}}
 
-			let updated = await FindAndUpdate(Chat,where,query,true)
-			if (!updated)
-				return HandleError(res, 'Failed to send message.')
-
-			return HandleSuccess(res, updated)
+			return HandleSuccess(res, path)
 
 		} catch (err) {
 			HandleServerError(res, req, err)
 		}
 	},
+
+    // /**
+	//  * @api {socket} $ Send Message
+	//  * @apiName Send Message
+	//  * @apiGroup Chat
+	//  *
+	//  * @apiParam {ObjectId} id Id of the user.
+	//  * @apiParam {ObjectId} chat_id Id of the chat.
+	//  * @apiParam {ObjectId} receiver_id Id of the receiver.
+	//  * @apiParam {String} message Text Message.
+	//  * @apiParam {Files} images List of images.
+	//  *
+	//  *
+	//  * @apiSuccessExample Success-Response:
+	//  *     HTTP/1.1 200 OK
+        
+	//  *
+	//  *
+	//  */
+
+    // SendMessage: async (req, res, next) => {
+	// 	try {
+	// 		const { chat_id = '', receiver_id = '', message = '' } = req.body
+    //         const id = req.user_id || ''
+    //         const images = req.files?req.files.images : null
+
+	// 		if( id == '' || receiver_id =='' || sender_id == '' || chat_id == '')
+	// 			return HandleError(res, 'Failed to send message.')
+			
+	// 		const isChatExists = await IsExists(Chat,{_id: chat_id})
+
+	// 		if(!isChatExists)
+	// 			return HandleError(res, 'Chat doesn\'t exists anymore.')
+
+	// 		let data = {
+    //             sender_id: id,
+    //             receiver_id: provider_id,
+    //             message: message
+    //         }
+
+    //         if(images)
+	// 		{
+	// 			data.images=[]
+	// 			for(i=0;i<images.length;i++)
+	// 			{
+	// 				if(isDataURL(images[i]))
+	// 				{
+	// 					let isUploaded = await CompressImageAndUpload(images[i])
+	// 					if(!isUploaded)
+	// 						return HandleError(res,"Failed to sens images.")
+	// 					data.images[i] = isUploaded.path
+	// 				}
+	// 			}
+	// 		}
+	// 		const where = { _id: chat_id }
+	// 		const query = { $push: { chats: data}}
+
+	// 		let updated = await FindAndUpdate(Chat,where,query,true)
+	// 		if (!updated)
+	// 			return HandleError(res, 'Failed to send message.')
+
+	// 		return HandleSuccess(res, updated)
+
+	// 	} catch (err) {
+	// 		HandleServerError(res, req, err)
+	// 	}
+	// },
 }
 
 
