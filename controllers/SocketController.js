@@ -156,7 +156,7 @@ module.exports = {
 						}
 					},
 					is_switched_provider: true
-				},{access_token: -1, active_session_refresh_token: -1})
+				},'-access_token -active_session_refresh_token -provider.verification_document')
 				if(providers && providers.length > 0){
 					socket.emit('available_providers',providers)
 				}
