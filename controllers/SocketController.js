@@ -189,18 +189,16 @@ module.exports = {
 
 			socket.on('fetch_all_providers',async ({location})=>{
 				const query = [
-					{ $match: {is_switched_provider: true} },
 					{ $geoNear: {
-						location: {
-							$near: {
-								$maxDistance: Config.max_map_range,
-								$geometry: {
-									type: "Point",
-									coordinates: [location.longitude,location.latitude]
-								}
-							}
-						}},
-					},
+						near: {
+							type: "Point",
+							coordinates: [location.longitude,location.latitude]
+						},
+						distanceField: "distance",
+						spherical: true,
+						maxDistance: Config.max_map_range,
+					}},
+					{ $match: { is_switched_provider: true }},
 					{ $lookup : 
 						{ from: 'reviews', localField: '_id', foreignField: 'provider', as: 'reviews' }
 					},
@@ -215,9 +213,11 @@ module.exports = {
 							address: 1,
 							is_available: 1,
 							location: 1,
-							provider: 1,
+							'provider.service': 1,
+							'provider.description': 1,
 							reviews: {rating: 1,feedback: 1,username: 1},
 							average_rating: {$avg: '$reviews.rating'},
+							distance: 1,
 						}
 					}
 				]
