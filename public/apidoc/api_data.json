@@ -110,6 +110,45 @@
       "examples": [
         {
           "title": "Success-Response:",
+          "content": "    HTTP/1.1 200 OK\n\t {\n    \"status\": \"success\",\n    \"data\": [\n        {\n            \"_id\": \"5f67ac2e9a599b177fba55b5\",\n            \"provider\": {\n                \"service\": \"\",\n                \"description\": \"\"\n            },\n            \"name\": \"Demo\",\n            \"gender\": \"male\",\n            \"mobile\": \"919903614706\",\n            \"address\": \"india\",\n            \"status\": \"approved\",\n            \"profile_picture\": \"/images/1601090029587.jpg\",\n            \"provider_task\": [\n                {\n                    \"_id\": \"5f6ca1f95700d45738d6c86c\",\n                    \"cost\": {\n                        \"total\": 0\n                    },\n                    \"title\": \"Tap Repair\",\n                    \"status\": \"Hiring\",\n                    \"createdAt\": \"2020-09-24T13:41:14.000Z\"\n                }\n            ],\n            \"consumer_task\": [\n                {\n                    \"_id\": \"5f6ca1f95700d45738d6c86c\",\n                    \"cost\": {\n                        \"total\": 0\n                    },\n                    \"title\": \"Tap Repair\",\n                    \"status\": \"Hiring\",\n                    \"createdAt\": \"2020-09-24T13:41:14.000Z\"\n                }\n            ],\n            \"reviews\": [\n                {\n                    \"rating\": 2,\n                    \"username\": \"Demo\",\n                    \"feedback\": \"Good Boy\"\n                }\n            ],\n            \"average_rating\": 3.3333333333333335\n        }\n    ]\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "version": "0.0.0",
+    "filename": "InRange-backend/controllers/AdminController.js",
+    "groupTitle": "Admin"
+  },
+  {
+    "type": "post",
+    "url": "/admins/updateuserstatus",
+    "title": "Update User Status",
+    "name": "Update_User_Status",
+    "group": "Admin",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "ObjectId",
+            "optional": false,
+            "field": "id",
+            "description": "<p>Id of the user.</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "status",
+            "description": "<p>Status text [approved or suspended].</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "examples": [
+        {
+          "title": "Success-Response:",
           "content": "HTTP/1.1 200 OK",
           "type": "json"
         }
@@ -1098,13 +1137,6 @@
             "optional": false,
             "field": "task_id",
             "description": "<p>Id of the task.</p>"
-          },
-          {
-            "group": "Parameter",
-            "type": "ObjectId",
-            "optional": false,
-            "field": "provider",
-            "description": "<p>Id of the provider.</p>"
           },
           {
             "group": "Parameter",

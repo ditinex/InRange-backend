@@ -347,7 +347,7 @@ module.exports = {
 				return HandleError(res, 'Provider doesn\'t exists.')
 			else if(!isTaskExists)
 				return HandleError(res, 'Task doesn\'t exists.')
-			else if(!isProposalExists)
+			else if(isProposalExists)
 				return HandleError(res, 'Proposal Already exists.')
 
 			const where = { _id: task_id }
@@ -436,6 +436,10 @@ module.exports = {
 			if (!updated)
 				return HandleError(res, 'Failed to accept proposal. Please contact system admin.')
 
+			/*
+            * Creating an event provider_change in self socket to server realtime database via socket
+            */
+			RealtimeListener.providerChange.emit('provider_change',provider_id)
 			return HandleSuccess(res, updated)
 
 		} catch (err) {

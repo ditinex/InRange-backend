@@ -10,6 +10,8 @@ module.exports = (io) => {
     })
     
     io.of('/realtime-task').on('connection',Socket.RealtimeTask);
+
+    io.of('/realtime-provider').on('connection',Socket.RealtimeProvider);
     
     io.of('/chat').on('connection',Socket.Chat)
 

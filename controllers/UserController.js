@@ -2,7 +2,7 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const Config = require('../config.js');
 const fs = require('fs');
-const { SendSMS } = require('../services')
+const { SendSMS,RealtimeListener } = require('../services')
 const { Admin, Otp, User, Task, Mongoose, Review } = require('../models')
 
 const {
@@ -114,6 +114,11 @@ module.exports = {
 				let updated = await FindAndUpdate(User, {_id: id}, {name: name ,gender: gender ,mobile: mobile ,access_token: access_token, active_session_refresh_token: active_session_refresh_token})
 				if(!updated)
                     return HandleError(res, 'Failed to generate access token.')
+                /*
+                * Creating an event provider_change in self socket to server realtime database via socket
+                */
+                if(updated.is_switched_provider)
+                    RealtimeListener.providerChange.emit('provider_change',updated._id)
                     
 				return HandleSuccess(res, updated)
 			}
@@ -203,7 +208,13 @@ module.exports = {
 			let updated = await FindAndUpdate(User, {_id: id}, data)
 			if(!updated)
 				return HandleError(res, 'Failed to update profile pic.')
-			
+            
+            /*
+            * Creating an event provider_change in self socket to server realtime database via socket
+            */
+            if(updated.is_switched_provider)
+               RealtimeListener.providerChange.emit('provider_change',updated._id)
+
 			return HandleSuccess(res, updated)
 
 		} catch (err) {
@@ -286,12 +297,20 @@ module.exports = {
 
             let userdata = await Find(User, {_id: id})
             if(!userdata)
-                    return HandleError(res, 'User not found.')
+                return HandleError(res, 'User not found.')
+
             if(data.length==0)
             {
                 let updated = await FindAndUpdate(User, {_id: id}, {is_switched_provider: !userdata[0].is_switched_provider})
                 if(!updated)
                     return HandleError(res, 'Failed to switch provider.')
+                
+                /*
+                * Creating an event provider_change in self socket to server realtime database via socket
+                */
+                if(updated.is_switched_provider)
+                    RealtimeListener.providerChange.emit('provider_change',updated._id)
+
 			    return HandleSuccess(res, updated)
             }
             else HandleError(res, 'All pending tasks should be completed to switch profile.')
@@ -392,7 +411,12 @@ module.exports = {
 			let updated = await FindAndUpdate(User, {_id: id}, data)
 			if(!updated)
 				return HandleError(res, 'Failed to update profile.')
-			
+            
+            /*
+            * Creating an event provider_change in self socket to server realtime database via socket
+            */
+            RealtimeListener.providerChange.emit('provider_change',updated._id)
+
 			return HandleSuccess(res, updated)
 
 		} catch (err) {
@@ -469,7 +493,13 @@ module.exports = {
 
 			let updated = await FindAndUpdate(User, {_id: id}, {location: { type: 'Point', coordinates: [coordinates.longitude, coordinates.lattitude] }})
 			if(!updated)
-				return HandleError(res, 'Failed to update location.')
+                return HandleError(res, 'Failed to update location.')
+                
+            /*
+            * Creating an event provider_change in self socket to server realtime database via socket
+            */
+            if(updated.is_switched_provider)
+               RealtimeListener.providerChange.emit('provider_change',updated._id)
 			
 			return HandleSuccess(res, updated)
 
