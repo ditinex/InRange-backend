@@ -283,7 +283,7 @@ module.exports = {
             ]
 
             let data = await Aggregate(Task,query)
-            console.log(data)
+
             let userdata = await Find(User, {_id: id})
             if(!userdata)
                 return HandleError(res, 'User not found.')
