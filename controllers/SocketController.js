@@ -191,7 +191,7 @@ module.exports = {
 				const query = [
 					{ $match: {
 						location: {
-							$near: {
+							$geoNear: {
 								$maxDistance: Config.max_map_range,
 								$geometry: {
 									type: "Point",
