@@ -110,7 +110,46 @@ define({ "api": [
       "examples": [
         {
           "title": "Success-Response:",
-          "content": "    HTTP/1.1 200 OK\n\t {\n\t\t\"status\": \"success\",\n\t\t\"data\": [\n\t\t\t{\n\t\t\t\t\"_id\": \"5f67ac2e9a599b177fba55b5\",\n\t\t\t\t\"provider\": {\n\t\t\t\t\t\"service\": \"\",\n\t\t\t\t\t\"description\": \"\"\n\t\t\t\t},\n\t\t\t\t\"name\": \"Demo\",\n\t\t\t\t\"gender\": \"male\",\n\t\t\t\t\"mobile\": \"919903614706\",\n\t\t\t\t\"address\": \"india\",\n\t\t\t\t\"status\": \"approved\",\n\t\t\t\t\"profile_picture\": \"/images/1601090029587.jpg\",\n\t\t\t\t\"provider_task\": [\n\t\t\t\t\t{\n\t\t\t\t\t\t\"_id\": \"5f6ca1f95700d45738d6c86c\",\n\t\t\t\t\t\t\"cost\": {\n\t\t\t\t\t\t\t\"total\": 0\n\t\t\t\t\t\t},\n\t\t\t\t\t\t\"title\": \"Tap Repair\"\n\t\t\t\t\t}\n\t\t\t\t],\n\t\t\t\t\"consumer_task\": [\n\t\t\t\t\t{\n\t\t\t\t\t\t\"_id\": \"5f6ca1f95700d45738d6c86c\",\n\t\t\t\t\t\t\"cost\": {\n\t\t\t\t\t\t\t\"total\": 0\n\t\t\t\t\t\t},\n\t\t\t\t\t\t\"title\": \"Tap Repair\"\n\t\t\t\t\t},\n\t\t\t\t\t{\n\t\t\t\t\t\t\"_id\": \"5f71fa2717288649bc845cba\",\n\t\t\t\t\t\t\"cost\": {\n\t\t\t\t\t\t\t\"total\": 0\n\t\t\t\t\t\t},\n\t\t\t\t\t\t\"title\": \"Tap Repair\"\n\t\t\t\t\t}\n\t\t\t\t],\n\t\t\t\t\"reviews\": [\n\t\t\t\t\t{\n\t\t\t\t\t\t\"rating\": 2,\n\t\t\t\t\t\t\"username\": \"Demo\",\n\t\t\t\t\t\t\"feedback\": \"Good Boy\"\n\t\t\t\t\t},\n\t\t\t\t\t{\n\t\t\t\t\t\t\"rating\": 2,\n\t\t\t\t\t\t\"username\": \"Demo\",\n\t\t\t\t\t\t\"feedback\": \"Good Boy\"\n\t\t\t\t\t}\n\t\t\t\t]\n\t\t\t},\n\t\t\t{\n\t\t\t\t\"_id\": \"5f6e252a761041600f5146fd\",\n\t\t\t\t\"provider\": {\n\t\t\t\t\t\"service\": \"Cook\",\n\t\t\t\t\t\"description\": \"Hello I a taxi driver\"\n\t\t\t\t},\n\t\t\t\t\"name\": \"Demo Consumer\",\n\t\t\t\t\"gender\": \"male\",\n\t\t\t\t\"mobile\": \"919903614705\",\n\t\t\t\t\"address\": \"Unnamed Road\",\n\t\t\t\t\"status\": \"approved\",\n\t\t\t\t\"profile_picture\": \"/images/1601053994590.jpg\",\n\t\t\t\t\"provider_task\": [],\n\t\t\t\t\"consumer_task\": [\n\t\t\t\t\t{\n\t\t\t\t\t\t\"_id\": \"5f72094e875dfa78421c8245\",\n\t\t\t\t\t\t\"cost\": {\n\t\t\t\t\t\t\t\"total\": 0\n\t\t\t\t\t\t},\n\t\t\t\t\t\t\"title\": \"Looking for cook for a small celebration.\"\n\t\t\t\t\t},\n\t\t\t\t\t{\n\t\t\t\t\t\t\"_id\": \"5f745abcf54c33921153fab8\",\n\t\t\t\t\t\t\"cost\": {\n\t\t\t\t\t\t\t\"total\": 0\n\t\t\t\t\t\t},\n\t\t\t\t\t\t\"title\": \"Vbhbv\"\n\t\t\t\t\t}\n\t\t\t\t],\n\t\t\t\t\"reviews\": []\n\t\t\t}\n\t\t]\n\t}",
+          "content": "    HTTP/1.1 200 OK\n\t {\n    \"status\": \"success\",\n    \"data\": [\n        {\n            \"_id\": \"5f67ac2e9a599b177fba55b5\",\n            \"provider\": {\n                \"service\": \"\",\n                \"description\": \"\"\n            },\n            \"name\": \"Demo\",\n            \"gender\": \"male\",\n            \"mobile\": \"919903614706\",\n            \"address\": \"india\",\n            \"status\": \"approved\",\n            \"profile_picture\": \"/images/1601090029587.jpg\",\n            \"provider_task\": [\n                {\n                    \"_id\": \"5f6ca1f95700d45738d6c86c\",\n                    \"cost\": {\n                        \"total\": 0\n                    },\n                    \"title\": \"Tap Repair\",\n                    \"status\": \"Hiring\",\n                    \"createdAt\": \"2020-09-24T13:41:14.000Z\"\n                }\n            ],\n            \"consumer_task\": [\n                {\n                    \"_id\": \"5f6ca1f95700d45738d6c86c\",\n                    \"cost\": {\n                        \"total\": 0\n                    },\n                    \"title\": \"Tap Repair\",\n                    \"status\": \"Hiring\",\n                    \"createdAt\": \"2020-09-24T13:41:14.000Z\"\n                }\n            ],\n            \"reviews\": [\n                {\n                    \"rating\": 2,\n                    \"username\": \"Demo\",\n                    \"feedback\": \"Good Boy\"\n                }\n            ],\n            \"average_rating\": 3.3333333333333335\n        }\n    ]\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "version": "0.0.0",
+    "filename": "InRange-backend/controllers/AdminController.js",
+    "groupTitle": "Admin"
+  },
+  {
+    "type": "post",
+    "url": "/admins/updateuserstatus",
+    "title": "Update User Status",
+    "name": "Update_User_Status",
+    "group": "Admin",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "ObjectId",
+            "optional": false,
+            "field": "id",
+            "description": "<p>Id of the user.</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "status",
+            "description": "<p>Status text [approved or suspended].</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "examples": [
+        {
+          "title": "Success-Response:",
+          "content": "HTTP/1.1 200 OK",
           "type": "json"
         }
       ]
@@ -1098,13 +1137,6 @@ define({ "api": [
             "optional": false,
             "field": "task_id",
             "description": "<p>Id of the task.</p>"
-          },
-          {
-            "group": "Parameter",
-            "type": "ObjectId",
-            "optional": false,
-            "field": "provider",
-            "description": "<p>Id of the provider.</p>"
           },
           {
             "group": "Parameter",

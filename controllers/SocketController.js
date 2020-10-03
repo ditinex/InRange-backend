@@ -106,7 +106,7 @@ module.exports = {
 
 	RealtimeProvider: async (socket) => {
 		/*
-		 * On new provider available or on proposal accept or provider edit profile change an event 'provider_change' is sent from respective api  * via self socket helper.
+		 * On new provider available or on proposal accept or provider edit profile or location change an event 'provider_change' is sent from respective api  * via self socket helper.
 		 * On new consumer browsing dashboard, the consumer id and its socket id is stored in 
 		 * realtimeConsumerSockets. On disconnect, remove the entry
 		 * On provider_change event, the changed data is emitted to all the nearest consumer connected within 10KM

@@ -493,7 +493,13 @@ module.exports = {
 
 			let updated = await FindAndUpdate(User, {_id: id}, {location: { type: 'Point', coordinates: [coordinates.longitude, coordinates.lattitude] }})
 			if(!updated)
-				return HandleError(res, 'Failed to update location.')
+                return HandleError(res, 'Failed to update location.')
+                
+            /*
+            * Creating an event provider_change in self socket to server realtime database via socket
+            */
+            if(updated.is_switched_provider)
+               RealtimeListener.providerChange.emit('provider_change',updated._id)
 			
 			return HandleSuccess(res, updated)
 
