@@ -2,6 +2,7 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const Config = require('../config.js');
 const fs = require('fs');
+const { RealtimeListener } = require('../services')
 const { Admin, Otp, User, Task, Mongoose, Review, Chat } = require('../models')
 
 const {
@@ -97,6 +98,7 @@ module.exports = {
 
 			socket.on('change_location',async ({location,user})=>{
 				let updated = await FindAndUpdate(User,{_id: user},{'location.coordinates': [location.longitude,location.latitude]})
+				RealtimeListener.providerChange.emit('provider_change',user)
 			})
 
 		} catch (err) {
@@ -154,7 +156,7 @@ module.exports = {
 						}
 					},
 					is_switched_provider: true
-				})
+				},{access_token: -1, active_session_refresh_token: -1})
 				if(providers && providers.length > 0){
 					socket.emit('available_providers',providers)
 				}
