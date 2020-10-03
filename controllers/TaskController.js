@@ -509,7 +509,7 @@ module.exports = {
 	},
 
 	/**
-	 * @api {post} /consumer/gettasks List Tasks Consumer
+	 * @api {get} /consumer/gettasks List Tasks Consumer
 	 * @apiName List Tasks Consumer
 	 * @apiGroup Task
 	 *
