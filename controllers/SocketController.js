@@ -189,6 +189,7 @@ module.exports = {
 
 			socket.on('fetch_all_providers',async ({location})=>{
 				const query = [
+					{ $match: {is_switched_provider: true} },
 					{ $geoNear: {
 						location: {
 							$near: {
@@ -198,8 +199,7 @@ module.exports = {
 									coordinates: [location.longitude,location.latitude]
 								}
 							}
-						},
-						is_switched_provider: true }
+						}},
 					},
 					{ $lookup : 
 						{ from: 'reviews', localField: '_id', foreignField: 'provider', as: 'reviews' }
