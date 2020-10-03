@@ -188,18 +188,41 @@ module.exports = {
 			});
 
 			socket.on('fetch_all_providers',async ({location})=>{
-				let providers = await Find(User,{
-					location: {
-						$near: {
-							$maxDistance: Config.max_map_range,
-							$geometry: {
-								type: "Point",
-								coordinates: [location.longitude,location.latitude]
+				const query = [
+					{ $match: {
+						location: {
+							$near: {
+								$maxDistance: Config.max_map_range,
+								$geometry: {
+									type: "Point",
+									coordinates: [location.longitude,location.latitude]
+								}
 							}
-						}
+						},
+						is_switched_provider: true }
 					},
-					is_switched_provider: true
-				},'-access_token -active_session_refresh_token -provider.verification_document')
+					{ $lookup : 
+						{ from: 'reviews', localField: '_id', foreignField: 'provider', as: 'reviews' }
+					},
+					{ $project:
+						{ 
+							mobile: 1,
+							name: 1,
+							profile_picture: 1,
+							gender: 1,
+							status: 1,
+							is_switched_provider: 1,
+							address: 1,
+							is_available: 1,
+							location: 1,
+							provider: 1,
+							reviews: {rating: 1,feedback: 1,username: 1},
+							average_rating: {$avg: '$reviews.rating'},
+						}
+					}
+				]
+	
+				let providers = await Aggregate(User,query)
 				if(providers && providers.length > 0){
 					socket.emit('available_providers',providers)
 				}
