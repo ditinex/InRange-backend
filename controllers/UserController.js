@@ -114,11 +114,6 @@ module.exports = {
 				let updated = await FindAndUpdate(User, {_id: id}, {name: name ,gender: gender ,mobile: mobile ,access_token: access_token, active_session_refresh_token: active_session_refresh_token})
 				if(!updated)
                     return HandleError(res, 'Failed to generate access token.')
-                /*
-                * Creating an event provider_change in self socket to server realtime database via socket
-                */
-                if(updated.is_switched_provider)
-                    RealtimeListener.providerChange.emit('provider_change',updated._id)
                     
 				return HandleSuccess(res, updated)
 			}
@@ -208,12 +203,6 @@ module.exports = {
 			let updated = await FindAndUpdate(User, {_id: id}, data)
 			if(!updated)
 				return HandleError(res, 'Failed to update profile pic.')
-            
-            /*
-            * Creating an event provider_change in self socket to server realtime database via socket
-            */
-            if(updated.is_switched_provider)
-               RealtimeListener.providerChange.emit('provider_change',updated._id)
 
 			return HandleSuccess(res, updated)
 
@@ -411,11 +400,6 @@ module.exports = {
 			let updated = await FindAndUpdate(User, {_id: id}, data)
 			if(!updated)
 				return HandleError(res, 'Failed to update profile.')
-            
-            /*
-            * Creating an event provider_change in self socket to server realtime database via socket
-            */
-            RealtimeListener.providerChange.emit('provider_change',updated._id)
 
 			return HandleSuccess(res, updated)
 
@@ -494,12 +478,6 @@ module.exports = {
 			let updated = await FindAndUpdate(User, {_id: id}, {location: { type: 'Point', coordinates: [coordinates.longitude, coordinates.lattitude] }})
 			if(!updated)
                 return HandleError(res, 'Failed to update location.')
-                
-            /*
-            * Creating an event provider_change in self socket to server realtime database via socket
-            */
-            if(updated.is_switched_provider)
-               RealtimeListener.providerChange.emit('provider_change',updated._id)
 			
 			return HandleSuccess(res, updated)
 
