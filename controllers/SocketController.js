@@ -21,8 +21,8 @@ module.exports = {
 			socket.on('startchat', function(chat_id){
 				const room_name = chat_id;
 				socket.join(room_name);
-				let chatlist = await Find(Chat,{_id: chat_id});
-				socket.broadcast.to(room_name).emit('chathistory',chatlist.chats);
+				let updated = await FindAndUpdate(Chat,{_id: chat_id, "chats.seen": false},{"chats.$[].seen": true});
+				socket.broadcast.to(room_name).emit('chathistory',updated.chats);
 			});
 
 			socket.on('message', ({chat_id,sender_id,receiver_id,message}) => {
