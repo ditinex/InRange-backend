@@ -237,8 +237,13 @@ module.exports = {
                 let inserted = await Insert(Chat, data)
                 if (!inserted)
                     return HandleError(res, 'Failed to Start Interview. Please contact system admin.')
+                
+                return HandleSuccess(res,inserted._id)
             }
-            return HandleSuccess(res,null)
+            let chat = await Find(Chat,{consumer_id: id, provider_id: provider_id, task_id: task_id})
+            if (!chat)
+                    return HandleError(res, 'Chat instance not found. Please contact system admin.')
+            return HandleSuccess(res,chat[0]._id)
 
         } catch (err) {
             HandleServerError(res, req, err)
