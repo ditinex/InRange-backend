@@ -142,7 +142,7 @@ module.exports = {
 	},
 
 	/**
-	 * @api {post} /consumer/edittask Edit Task
+	 * @api {put} /consumer/edittask Edit Task
 	 * @apiName Edit Task
 	 * @apiGroup Task
 	 *
@@ -232,7 +232,7 @@ module.exports = {
 	},
 
 	/**
-	 * @api {post} /consumer/deletetask Delete Task
+	 * @api {delete} /consumer/deletetask Delete Task
 	 * @apiName Delete Task
 	 * @apiGroup Task
 	 *
@@ -271,7 +271,7 @@ module.exports = {
 
 	
 	/**
-	 * @api {post} /provider/sendproposal Send Proposal
+	 * @api {put} /provider/sendproposal Send Proposal
 	 * @apiName Send Proposal
 	 * @apiGroup Task
 	 *
@@ -366,7 +366,7 @@ module.exports = {
 	},
 
 	/**
-	 * @api {post} /consumer/acceptproposal Accept Proposal
+	 * @api {put} /consumer/acceptproposal Accept Proposal
 	 * @apiName Accept Proposal
 	 * @apiGroup Task
 	 *
@@ -641,7 +641,7 @@ module.exports = {
 	},
 
 	/**
-	 * @api {post} /provider/gettaskbyid Get Task By Id
+	 * @api {get} /provider/gettaskbyid Get Task By Id
 	 * @apiName Get Task By Id
 	 * @apiGroup Task
 	 * @apiDescription use /consumer/gettaskbyid for consumer

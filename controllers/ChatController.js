@@ -15,7 +15,7 @@ const {
 module.exports = {
 
     /**
-     * @api {post} /user/getchatlist Get Chatlist
+     * @api {get} /user/getchatlist Get Chatlist
      * @apiName Get Chatlist
      * @apiGroup Chat
      *
@@ -135,7 +135,7 @@ module.exports = {
     },
 
     /**
-     * @api {post} /user/startinterview Start Interview
+     * @api {put} /user/startinterview Start Interview
      * @apiName Start Interview
      * @apiGroup Chat
      *

@@ -14,7 +14,7 @@ const {
 
 module.exports = {
     /**
-	 * @api {post} /user/editprofile Edit Profile
+	 * @api {put} /user/editprofile Edit Profile
 	 * @apiName Edit Profile
 	 * @apiGroup User
 	 *
@@ -137,7 +137,7 @@ module.exports = {
     },
 
     /**
-	 * @api {post} /user/changeprofilepic Change Profile Pic
+	 * @api {put} /user/changeprofilepic Change Profile Pic
 	 * @apiName Change Profile Pic
 	 * @apiGroup User
 	 *
@@ -212,7 +212,7 @@ module.exports = {
     },
     
     /**
-	 * @api {post} /user/switchprofile Switch Profile
+	 * @api {put} /user/switchprofile Switch Profile
 	 * @apiName Switch Profile
 	 * @apiGroup User
 	 *
@@ -310,7 +310,7 @@ module.exports = {
     },
 
     /**
-	 * @api {post} /user/editproviderprofile Edit Provider Profile
+	 * @api {put} /user/editproviderprofile Edit Provider Profile
 	 * @apiName Edit Provider Profile
 	 * @apiGroup User
 	 *
@@ -409,7 +409,7 @@ module.exports = {
     },
 
     /**
-	 * @api {post} /user/updatelocation Update Location
+	 * @api {put} /user/updatelocation Update Location
 	 * @apiName Update Location
 	 * @apiGroup User
 	 *

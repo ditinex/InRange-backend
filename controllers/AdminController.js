@@ -59,7 +59,7 @@ module.exports = {
 	},
 
 	/**
-	 * @api {post} /admin/editcoupon Edit Coupon
+	 * @api {put} /admin/editcoupon Edit Coupon
 	 * @apiName Edit Coupon
 	 * @apiGroup Coupon
 	 *
@@ -109,7 +109,7 @@ module.exports = {
 	},
 
 	/**
-	 * @api {post} /admin/deletecoupon Delete Coupon
+	 * @api {delete} /admin/deletecoupon Delete Coupon
 	 * @apiName Delete Coupon
 	 * @apiGroup Coupon
 	 *
@@ -172,7 +172,7 @@ module.exports = {
 	},
 
 	/**
-	 * @api {post} /consumer/getcouponbycode Get Coupon Details By Code
+	 * @api {get} /consumer/getcouponbycode Get Coupon Details By Code
 	 * @apiName Get Coupon Details By Code
 	 * @apiGroup Coupon
 	 *
@@ -302,7 +302,7 @@ module.exports = {
 	},
 
 	/**
-	 * @api {post} /admins/updateuserstatus Update User Status
+	 * @api {put} /admins/updateuserstatus Update User Status
 	 * @apiName Update User Status
 	 * @apiGroup Admin
 	 *
@@ -317,8 +317,8 @@ module.exports = {
 	UpdateUserStatus: async (req, res, next) => {
 		try {
             const id = req.body.id || ''
-            const status = req.body.status || ''
-			//Check service & verifydoc form submission in frontend
+			const status = req.body.status || ''
+			
             let validateError = null
             if (id == '')
 				validateError = 'Invalid id.'
