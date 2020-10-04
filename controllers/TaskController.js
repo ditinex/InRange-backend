@@ -10,7 +10,6 @@ const {
 	HandleSuccess, HandleError, HandleServerError,
 	ValidateEmail, PasswordStrength, ValidateAlphanumeric, ValidateLength, ValidateMobile, isDataURL, GeneratePassword, Aggregate
 } = require('./BaseController');
-const { lookup } = require('dns');
 
 
 module.exports = {
