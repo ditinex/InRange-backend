@@ -430,11 +430,8 @@ module.exports = {
 			else if(!isTaskExists)
 				return HandleError(res, 'Task doesn\'t exists anymore.')
 
-			const where = { _id: provider_id }
-			const query = { is_available: false }
-		
-			let updated = await FindAndUpdate(User,where,query)
-			if (!updated)
+			let update = await FindAndUpdate(User,{ _id: provider_id },{ is_available: false })
+			if (!update)
 				return HandleError(res, 'Failed to accept proposal. Please contact system admin.')
 
 			const where = { _id: task_id }
