@@ -602,8 +602,12 @@ module.exports = {
 										pipeline: [
 											{
 												$match: {
-													"$expr": { "$eq": ["$provider", "$$provider_id"] }
+													$and: [
+														{$expr: { $eq: [ '$provider', '$$provider_id' ] }},
+														{$expr: { $eq: [ '$status', 'Completed' ] }}
+													]
 												}
+												
 											},
 											{ $sort: { createdAt: -1 } },
 											{ $limit: 3 },
