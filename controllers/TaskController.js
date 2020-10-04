@@ -606,6 +606,7 @@ module.exports = {
 												}
 											},
 											{ $sort: { createdAt: -1 } },
+											{ $limit: 3 },
 											{ $project: { title: 1, updatedAt: 1 } },
 										],
 										as: 'latest_tasks'
