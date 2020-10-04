@@ -8,7 +8,7 @@ const { Admin, Otp, User, Task, Mongoose, Review } = require('../models')
 const {
 	IsExists, IsExistsOne, Insert, Find, CompressImageAndUpload, FindAndUpdate, Delete,
 	HandleSuccess, HandleError, HandleServerError,
-	ValidateEmail, PasswordStrength, ValidateAlphanumeric, ValidateLength, ValidateMobile, isDataURL,GeneratePassword, Aggregate
+	ValidateEmail, PasswordStrength, ValidateAlphanumeric, ValidateLength, ValidateMobile, isDataURL, GeneratePassword, Aggregate
 } = require('./BaseController');
 const { lookup } = require('dns');
 
@@ -76,11 +76,11 @@ module.exports = {
 	 */
 	CreateTask: async (req, res, next) => {
 		try {
-			const { service = '', description = '', instruction = '', mobile = '',address='',location='',landmark='',houseno='' } = req.body
-			const name = req.body.name?req.body.name.trim() : ''
-			const title = req.body.title?req.body.title.trim() : ''
+			const { service = '', description = '', instruction = '', mobile = '', address = '', location = '', landmark = '', houseno = '' } = req.body
+			const name = req.body.name ? req.body.name.trim() : ''
+			const title = req.body.title ? req.body.title.trim() : ''
 			const user_id = req.user_id || ''
-			const images = req.files?req.files.images : null
+			const images = req.files ? req.files.images : null
 
 			let validateError = null
 			if (!ValidateAlphanumeric(name) || !ValidateLength(name))
@@ -91,9 +91,9 @@ module.exports = {
 				validateError = 'Please enter valid mobile number.'
 			else if (location == '')
 				validateError = 'Failed to access location. Please restart the app and allow all permissions.'
-			else if (description.trim() == '' || service.trim() == '' || address.trim() =='')
+			else if (description.trim() == '' || service.trim() == '' || address.trim() == '')
 				validateError = 'Required field should not be empty.'
-			else if(user_id=='')
+			else if (user_id == '')
 				validateError = 'Consumer id should not be empty.'
 
 			if (validateError)
@@ -109,30 +109,28 @@ module.exports = {
 
 			let data = { title, service, description, instruction, name, mobile, status: 'Hiring', address, location: { type: 'Point', coordinates: [coordinates.longitude, coordinates.lattitude] }, consumer: user_id, landmark, houseno }
 
-			if(images)
-			{
-				data.images=[]
-				for(i=0;i<images.length;i++)
-				{
+			if (images) {
+				data.images = []
+				for (i = 0; i < images.length; i++) {
 					let isUploaded = await CompressImageAndUpload(images[i])
-					if(!isUploaded)
-						return HandleError(res,"Failed to upload images.")
+					if (!isUploaded)
+						return HandleError(res, "Failed to upload images.")
 					data.images[i] = isUploaded.path
 				}
 			}
 
-			let updated = await FindAndUpdate(User,{_id: user_id},{address: address})
+			let updated = await FindAndUpdate(User, { _id: user_id }, { address: address })
 			if (!updated)
 				return HandleError(res, 'Failed to create task. Please contact system admin.')
 
 			let inserted = await Insert(Task, data)
 			if (!inserted)
 				return HandleError(res, 'Failed to create task. Please contact system admin.')
-			
+
 			/*
 			 * Creating an event task_change in self socket to server realtime database via socket
 			 */
-			RealtimeListener.taskChange.emit('task_change',inserted._id)
+			RealtimeListener.taskChange.emit('task_change', inserted._id)
 
 			return HandleSuccess(res, inserted)
 
@@ -169,12 +167,12 @@ module.exports = {
 	 */
 	EditTask: async (req, res, next) => {
 		try {
-			const { id = '', service = '', description = '', instruction = '', mobile = '',address='',location='',landmark='',houseno='' } = req.body
-			const name = req.body.name?req.body.name.trim() : ''
-			const title = req.body.title?req.body.title.trim() : ''
+			const { id = '', service = '', description = '', instruction = '', mobile = '', address = '', location = '', landmark = '', houseno = '' } = req.body
+			const name = req.body.name ? req.body.name.trim() : ''
+			const title = req.body.title ? req.body.title.trim() : ''
 			const user_id = req.user_id || ''
 			//Check images of task in frontend
-			const images = req.files?req.files.images : null
+			const images = req.files ? req.files.images : null
 
 			let validateError = null
 			if (!ValidateAlphanumeric(name) || !ValidateLength(name))
@@ -185,11 +183,11 @@ module.exports = {
 				validateError = 'Please enter valid mobile number.'
 			else if (location == '')
 				validateError = 'Failed to access location. Please restart the app and allow all permissions.'
-			else if (description.trim() == '' || service.trim() == '' || address.trim() =='')
+			else if (description.trim() == '' || service.trim() == '' || address.trim() == '')
 				validateError = 'Required field should not be empty.'
-			else if(user_id=='')
+			else if (user_id == '')
 				validateError = 'Consumer id should not be empty.'
-			else if(id=='')
+			else if (id == '')
 				validateError = 'Failed to create task.'
 
 			if (validateError)
@@ -202,20 +200,17 @@ module.exports = {
 			catch (e) {
 				return HandleError(res, 'Invalid location cooridnates.')
 			}
-			
+
 			let where = { _id: id }
 			let data = { title, service, description, instruction, name, mobile, status: 'Hiring', address, location: { type: 'Point', coordinates: [coordinates.longitude, coordinates.lattitude] }, consumer: user_id, landmark, houseno }
 
-			if(images)
-			{
-				data.images=[]
-				for(i=0;i<images.length;i++)
-				{
-					if(isDataURL(images[i]))
-					{
+			if (images) {
+				data.images = []
+				for (i = 0; i < images.length; i++) {
+					if (isDataURL(images[i])) {
 						let isUploaded = await CompressImageAndUpload(images[i])
-						if(!isUploaded)
-							return HandleError(res,"Failed to upload images.")
+						if (!isUploaded)
+							return HandleError(res, "Failed to upload images.")
 						data.images[i] = isUploaded.path
 					}
 				}
@@ -223,7 +218,7 @@ module.exports = {
 			let updated = await FindAndUpdate(Task, where, data)
 			if (!updated)
 				return HandleError(res, 'Failed to create task. Please contact system admin.')
-			
+
 			return HandleSuccess(res, inserted)
 
 		} catch (err) {
@@ -247,29 +242,29 @@ module.exports = {
 	 */
 
 	DeleteTask: async (req, res, next) => {
-		try{
-			let _id = (req.body.id)?req.body.id:''
+		try {
+			let _id = (req.body.id) ? req.body.id : ''
 			let validateError = ''
-	
-			if(_id === '')
+
+			if (_id === '')
 				validateError = 'This field is required.'
-	
-			if(validateError)
-				return HandleError(res,validateError)
-			
-			let update = await Delete(Task,{_id: _id})
-	
-			if(!update)
-				return HandleError(res,'Failed to delete Task.')
-	
+
+			if (validateError)
+				return HandleError(res, validateError)
+
+			let update = await Delete(Task, { _id: _id })
+
+			if (!update)
+				return HandleError(res, 'Failed to delete Task.')
+
 			return HandleSuccess(res, update)
-	
-		}catch (err) {
+
+		} catch (err) {
 			HandleServerError(res, req, err)
 		}
 	},
 
-	
+
 	/**
 	 * @api {put} /provider/sendproposal Send Proposal
 	 * @apiName Send Proposal
@@ -335,26 +330,26 @@ module.exports = {
 			const { task_id = '', cover_letter = '' } = req.body
 			const provider = req.user_id
 
-			if(cover_letter.trim()=='')
+			if (cover_letter.trim() == '')
 				return HandleError(res, 'Cover letter is empty.')
-			else if(provider=='' || task_id == '')
+			else if (provider == '' || task_id == '')
 				return HandleError(res, 'Failed to send proposal.')
-			
-			const isProviderExists = await IsExists(User,{_id: provider})
-			const isTaskExists = await IsExists(Task,{_id: task_id})
-			const isProposalExists = await IsExistsOne(Task,{_id: task_id, 'proposals': {"$not": {$elemMatch: {provider: provider}}}})
 
-			if(!isProviderExists)
+			const isProviderExists = await IsExists(User, { _id: provider })
+			const isTaskExists = await IsExists(Task, { _id: task_id })
+			const isProposalExists = await IsExistsOne(Task, { _id: task_id, 'proposals': { "$not": { $elemMatch: { provider: provider } } } })
+
+			if (!isProviderExists)
 				return HandleError(res, 'Provider doesn\'t exists.')
-			else if(!isTaskExists)
+			else if (!isTaskExists)
 				return HandleError(res, 'Task doesn\'t exists.')
-			else if(isProposalExists)
+			else if (isProposalExists)
 				return HandleError(res, 'Proposal Already exists.')
 
 			const where = { _id: task_id }
-			const query = { $push: { proposals: {provider: Mongoose.Types.ObjectId(provider),cover_letter: cover_letter}}}
+			const query = { $push: { proposals: { provider: Mongoose.Types.ObjectId(provider), cover_letter: cover_letter } } }
 
-			let updated = await FindAndUpdate(Task,where,query,true)
+			let updated = await FindAndUpdate(Task, where, query, true)
 			if (!updated)
 				return HandleError(res, 'Failed to send proposal.')
 
@@ -417,33 +412,33 @@ module.exports = {
 
 	AcceptProposal: async (req, res, next) => {
 		try {
-			const { task_id='',provider_id='' } = req.body
+			const { task_id = '', provider_id = '' } = req.body
 
-			if(task_id=='' || provider_id=='')
+			if (task_id == '' || provider_id == '')
 				return HandleError(res, 'Required field should not be empty.')
-			
-			const isProviderExists = await IsExists(User,{_id: provider_id})
-			const isTaskExists = await IsExists(Task,{_id: task_id})
 
-			if(!isProviderExists)
+			const isProviderExists = await IsExists(User, { _id: provider_id })
+			const isTaskExists = await IsExists(Task, { _id: task_id })
+
+			if (!isProviderExists)
 				return HandleError(res, 'Provider doesn\'t exists anymore.')
-			else if(!isTaskExists)
+			else if (!isTaskExists)
 				return HandleError(res, 'Task doesn\'t exists anymore.')
 
-			let update = await FindAndUpdate(User,{ _id: provider_id },{ is_available: false })
+			let update = await FindAndUpdate(User, { _id: provider_id }, { is_available: false })
 			if (!update)
 				return HandleError(res, 'Failed to accept proposal. Please contact system admin.')
 
 			const where = { _id: task_id }
 			const query = { provider: provider_id }
-	
-			let updated = await FindAndUpdate(Task,where,query)
+
+			let updated = await FindAndUpdate(Task, where, query)
 			if (!updated)
 				return HandleError(res, 'Failed to accept proposal. Please contact system admin.')
 			/*
-            * Creating an event provider_change in self socket to server realtime database via socket
-            */
-			RealtimeListener.providerChange.emit('provider_change',provider_id)
+			* Creating an event provider_change in self socket to server realtime database via socket
+			*/
+			RealtimeListener.providerChange.emit('provider_change', provider_id)
 			return HandleSuccess(res, updated)
 
 		} catch (err) {
@@ -482,21 +477,21 @@ module.exports = {
 
 	SendReview: async (req, res, next) => {
 		try {
-			const { rating = 1, provider = '', username = '', feedback= '' } = req.body
+			const { rating = 1, provider = '', username = '', feedback = '' } = req.body
 
-			if(username.trim()=='')
+			if (username.trim() == '')
 				return HandleError(res, 'Invalid username.')
-			else if(provider=='')
+			else if (provider == '')
 				return HandleError(res, 'Invalid provider.')
-			else if(!rating>=1 && !rating<=5)
+			else if (!rating >= 1 && !rating <= 5)
 				return HandleError(res, 'Rating must be between 1 to 5.')
-			
-			const isProviderExists = await IsExists(User,{_id: provider})
-			const isUserExists = await IsExists(User,{name: username})
 
-			if(!isProviderExists)
+			const isProviderExists = await IsExists(User, { _id: provider })
+			const isUserExists = await IsExists(User, { name: username })
+
+			if (!isProviderExists)
 				return HandleError(res, 'Provider doesn\'t exists.')
-			else if(!isUserExists)
+			else if (!isUserExists)
 				return HandleError(res, 'User doesn\'t exists.')
 
 			let data = { rating, provider, username, feedback }
@@ -560,51 +555,88 @@ module.exports = {
 	 */
 
 	GetTasksConsumer: async (req, res, next) => {
-		try{
+		try {
 			const user_id = req.user_id || ''
 			let validateError = ''
-	
-			if(user_id === '')
+
+			if (user_id === '')
 				validateError = 'This field is required.'
-	
-			if(validateError)
-				return HandleError(res,validateError)
+
+			if (validateError)
+				return HandleError(res, validateError)
 			let query = [
-				{ $match: { consumer: Mongoose.Types.ObjectId(user_id) }},
-				{ $lookup : 
+				{ $match: { consumer: Mongoose.Types.ObjectId(user_id) } },
+				{
+					"$unwind": {
+						"path": "$proposals",
+						"preserveNullAndEmptyArrays": true
+					}
+				},
+				{
+					$lookup:
 					{
-						from: "users", 
+						from: "users",
 						let: { id: "$proposals.provider" },
 						pipeline: [
 							{
-								$match: { 
+								$match: {
 									"$expr":
-									{"$and":[
-										{ "$eq":["$_id",{$arrayElemAt: [ "$$id", 0 ]}] },
-									]}
-								} 
+									{
+										"$and": [
+											{ "$eq": ["$_id", "$$id"] },
+										]
+									}
+								}
 							},
 							{ $project: { access_token: 0, active_session_refresh_token: 0, 'provider.verification_document': 0 } },
-							{ $lookup : 
-								{ from: 'reviews', localField: '_id', foreignField: 'provider', as: 'reviews' }
+							{
+								$lookup:
+									{ from: 'reviews', localField: '_id', foreignField: 'provider', as: 'reviews' }
 							},
-							{ $addFields: { average_rating: {$avg: '$reviews.rating'} } }
+							{ $addFields: { average_rating: { $avg: '$reviews.rating' } } },
 						],
-						as: 'proposed_by'
+						as: 'proposals.provider'
+					}
+				},
+				{
+					"$unwind": {
+						"path": "$proposals.provider",
+						"preserveNullAndEmptyArrays": true
+					}
+				},
+				{
+					$group: {
+						_id: "$_id",
+						cost: { "$first":"$cost" },
+						images: { "$first":"$images" },
+						title: { "$first": "$title" },
+						service: { "$first": "$service" },
+						description: { "$first": "$description" },
+						instruction: { "$first": "$instruction" },
+						name: { "$first": "$name" },
+						mobile: { "$first": "$mobile" },
+						status: { "$first": "$status" },
+						address: { "$first": "$address" },
+						location: { "$first": "$location" },
+						consumer: { "$first": "$consumer" },
+						landmark: { "$first": "$landmark" },
+						houseno: { "$first": "$houseno" },
+						proposals: { $push: "$proposals" }
 					}
 				},
 			]
-			let data = await Aggregate(Task,query)
+			let data = await Aggregate(Task, query)
 			data.forEach(element => {
-				console.log(element.proposed_by.length > 0 ? element.proposed_by[0]:null)
+				console.log((element))
+				//console.log((element.new)?element.new[0]:null)
 			});
-	
-			if(!data)
-				return HandleError(res,'Failed to list Task.')
-	
+
+			if (!data)
+				return HandleError(res, 'Failed to list Task.')
+
 			return HandleSuccess(res, data)
-	
-		}catch (err) {
+
+		} catch (err) {
 			HandleServerError(res, req, err)
 		}
 	},
@@ -621,24 +653,24 @@ module.exports = {
 	 */
 
 	GetTasksProvider: async (req, res, next) => {
-		try{
+		try {
 			const user_id = req.user_id || ''
 			let validateError = ''
-	
-			if(user_id === '')
+
+			if (user_id === '')
 				validateError = 'This field is required.'
-	
-			if(validateError)
-				return HandleError(res,validateError)
-			
-			let data = await Find(Task,{provider: user_id})
-	
-			if(!data)
-				return HandleError(res,'Failed to list Task.')
-	
+
+			if (validateError)
+				return HandleError(res, validateError)
+
+			let data = await Find(Task, { provider: user_id })
+
+			if (!data)
+				return HandleError(res, 'Failed to list Task.')
+
 			return HandleSuccess(res, data)
-	
-		}catch (err) {
+
+		} catch (err) {
 			HandleServerError(res, req, err)
 		}
 	},
@@ -727,24 +759,24 @@ module.exports = {
 	 */
 
 	GetTaskById: async (req, res, next) => {
-		try{
+		try {
 			let _id = req.body.id || ''
 			let validateError = ''
-	
-			if(_id === '')
+
+			if (_id === '')
 				validateError = 'This field is required.'
-	
-			if(validateError)
-				return HandleError(res,validateError)
-			
-			let data = await Find(Task,{_id: _id})
-	
-			if(!data)
-				return HandleError(res,'Failed to get Task.')
-	
+
+			if (validateError)
+				return HandleError(res, validateError)
+
+			let data = await Find(Task, { _id: _id })
+
+			if (!data)
+				return HandleError(res, 'Failed to get Task.')
+
 			return HandleSuccess(res, data)
-	
-		}catch (err) {
+
+		} catch (err) {
 			HandleServerError(res, req, err)
 		}
 	},
