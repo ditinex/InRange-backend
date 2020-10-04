@@ -430,13 +430,19 @@ module.exports = {
 			else if(!isTaskExists)
 				return HandleError(res, 'Task doesn\'t exists anymore.')
 
+			const where = { _id: provider_id }
+			const query = { is_available: false }
+		
+			let updated = await FindAndUpdate(User,where,query)
+			if (!updated)
+				return HandleError(res, 'Failed to accept proposal. Please contact system admin.')
+
 			const where = { _id: task_id }
 			const query = { provider: provider_id }
 	
 			let updated = await FindAndUpdate(Task,where,query)
 			if (!updated)
 				return HandleError(res, 'Failed to accept proposal. Please contact system admin.')
-
 			/*
             * Creating an event provider_change in self socket to server realtime database via socket
             */
