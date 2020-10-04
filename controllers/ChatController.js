@@ -135,7 +135,7 @@ module.exports = {
     },
 
     /**
-     * @api {put} /user/startinterview Start Interview
+     * @api {put} /consumer/startinterview Start Interview
      * @apiName Start Interview
      * @apiGroup Chat
      *
