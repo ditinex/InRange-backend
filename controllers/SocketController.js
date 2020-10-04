@@ -202,10 +202,15 @@ module.exports = {
 					{ $lookup : 
 						{ from: 'reviews', localField: '_id', foreignField: 'provider', as: 'reviews' }
 					},
+					{
+						$lookup:
+							{ from: 'tasks', localField: '_id', foreignField: 'provider', as: 'total_completed_task' }
+					},
+					{ $addFields: { total_completed_task: {$size:"$total_completed_task"} } },
 					{ $lookup : 
 						{ 
 							from: 'tasks',
-							as: 'tasks',
+							as: 'latest_tasks',
 							let: { id: '$_id' },
 							pipeline: [
 							{ $match: {
@@ -235,7 +240,7 @@ module.exports = {
 							reviews: {rating: 1,feedback: 1,username: 1},
 							average_rating: {$avg: '$reviews.rating'},
 							distance: 1,
-							tasks: {title: 1 ,updatedAt: 1}
+							latest_tasks: {title: 1 ,updatedAt: 1}
 						}
 					}
 				]
