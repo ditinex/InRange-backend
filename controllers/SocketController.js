@@ -208,9 +208,13 @@ module.exports = {
 							as: 'tasks',
 							let: { _id: '$_id' },
 							pipeline: [
-							  { $match: {
-								$expr: { $eq: [ '$provider', '$$_id' ] }
-							  } },
+							{ $match: {
+								$and: [
+									{$expr: { $eq: [ '$provider', '$$_id' ] }},
+									{$expr: { $eq: [ '$status', 'Completed' ] }}
+								]
+							  } 
+							},
 							  { $sort: { createdAt: -1 } },
 							  { $limit: 3 }
 							]}
