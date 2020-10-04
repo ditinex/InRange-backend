@@ -580,12 +580,7 @@ module.exports = {
 						pipeline: [
 							{
 								$match: {
-									"$expr":
-									{
-										"$and": [
-											{ "$eq": ["$_id", "$$id"] },
-										]
-									}
+									"$expr": { "$eq": ["$_id", "$$id"] }
 								}
 							},
 							{ $project: { access_token: 0, active_session_refresh_token: 0, 'provider.verification_document': 0 } },
@@ -594,6 +589,28 @@ module.exports = {
 									{ from: 'reviews', localField: '_id', foreignField: 'provider', as: 'reviews' }
 							},
 							{ $addFields: { average_rating: { $avg: '$reviews.rating' } } },
+							{
+								$lookup:
+									{ from: 'tasks', localField: '_id', foreignField: 'provider', as: 'total_completed_task' }
+							},
+							{ $addFields: { total_completed_task: {$size:"$total_completed_task"} } },
+							{
+								$lookup:
+									{ 
+										from: 'tasks',
+										let: { provider_id: "$_id" },
+										pipeline: [
+											{
+												$match: {
+													"$expr": { "$eq": ["$provider", "$$provider_id"] }
+												}
+											},
+											{ $sort: { createdAt: -1 } },
+											{ $project: { title: 1, updatedAt: 1 } },
+										],
+										as: 'latest_tasks'
+									}
+							},
 						],
 						as: 'proposals.provider'
 					}
@@ -626,10 +643,6 @@ module.exports = {
 				},
 			]
 			let data = await Aggregate(Task, query)
-			data.forEach(element => {
-				console.log((element))
-				//console.log((element.new)?element.new[0]:null)
-			});
 
 			if (!data)
 				return HandleError(res, 'Failed to list Task.')
