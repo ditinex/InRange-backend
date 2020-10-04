@@ -204,7 +204,22 @@ module.exports = {
 					},
 					{
 						$lookup:
-							{ from: 'tasks', localField: '_id', foreignField: 'provider', as: 'total_completed_task' }
+						{ 
+							from: 'tasks',
+							let: { provider_id: "$_id" },
+							pipeline: [
+								{
+									$match: {
+										$and: [
+											{$expr: { $eq: [ '$provider', '$$provider_id' ] }},
+											{$expr: { $eq: [ '$status', 'Completed' ] }}
+										]
+									}
+									
+								},
+							],
+							as: 'total_completed_task'
+						}
 					},
 					{ $addFields: { total_completed_task: {$size:"$total_completed_task"} } },
 					{ $lookup : 
