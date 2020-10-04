@@ -202,6 +202,19 @@ module.exports = {
 					{ $lookup : 
 						{ from: 'reviews', localField: '_id', foreignField: 'provider', as: 'reviews' }
 					},
+					{ $lookup : 
+						{ 
+							from: 'tasks',
+							as: 'tasks',
+							let: { _id: '$_id' },
+							pipeline: [
+							  { $match: {
+								$expr: { $eq: [ '$provider', '$$_id' ] }
+							  } },
+							  { $sort: { createdAt: -1 } },
+							  { $limit: 3 }
+							]}
+					},
 					{ $project:
 						{ 
 							mobile: 1,
@@ -218,6 +231,7 @@ module.exports = {
 							reviews: {rating: 1,feedback: 1,username: 1},
 							average_rating: {$avg: '$reviews.rating'},
 							distance: 1,
+							tasks: {title: 1 ,updatedAt: 1}
 						}
 					}
 				]
