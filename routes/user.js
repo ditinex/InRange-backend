@@ -13,7 +13,7 @@ router.put('/updatelocation',User.UpdateLocation);
 router.get('/getchatlist',Chat.GetChatList);
 router.put('/startinterview',Chat.StartInterview);
 router.post('/sendimage',Chat.SendImage);
-
+// router.post('/test',User.test);
 
 
 module.exports = router;

@@ -417,11 +417,11 @@ module.exports = {
 			if (task_id == '' || provider_id == '')
 				return HandleError(res, 'Required field should not be empty.')
 
-			const isProviderExists = await IsExists(User, { _id: provider_id })
+			const isProviderAvailable = await IsExists(User, { _id: provider_id, is_available: true })
 			const isTaskExists = await IsExists(Task, { _id: task_id })
 
-			if (!isProviderExists)
-				return HandleError(res, 'Provider doesn\'t exists anymore.')
+			if (!isProviderAvailable)
+				return HandleError(res, 'Provider doesn\'t available.')
 			else if (!isTaskExists)
 				return HandleError(res, 'Task doesn\'t exists anymore.')
 
