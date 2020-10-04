@@ -240,7 +240,8 @@ module.exports = {
 							reviews: {rating: 1,feedback: 1,username: 1},
 							average_rating: {$avg: '$reviews.rating'},
 							distance: 1,
-							latest_tasks: {title: 1 ,updatedAt: 1}
+							latest_tasks: {title: 1 ,updatedAt: 1},
+							total_completed_task: 1
 						}
 					}
 				]
