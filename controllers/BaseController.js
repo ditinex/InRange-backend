@@ -230,7 +230,6 @@ const HandleServerError = (res, req, err) => {
 	 * Can log the error data into files to recreate and fix issue.
 	 * Hiding stack stace from users.
 	 */
-	console.log(err)
 	const errLog = { method: req.method, url: req.originalUrl, params: req.params, query: req.query, post: req.body, error: err }
 	// Temporary console log for debug mode
 	console.log(errLog)

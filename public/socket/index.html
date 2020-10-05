@@ -3,7 +3,7 @@
     <head>
         <script src='/socket.io/socket.io.js'></script>
         <script>
-            var socket = io('http://localhost:3001/realtime-provider');
+            var socket = io('http://server.ditinex.online:3002/realtime-provider');
             socket.connect();
             socket.on('connect', function() {
                 addMessage('connected');
