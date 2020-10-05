@@ -99,13 +99,19 @@ module.exports = {
                     $lookup:
                         { from: 'users', localField: 'provider_id', foreignField: '_id', as: 'provider' }
                 },
+                { 
+                    $lookup : 
+                        { from: 'reviews', localField: 'provider_id', foreignField: 'provider', as: 'reviews' }
+                },
                 {
                     $project: {
                         _id: 1,
                         consumer_id: 1,
                         provider_id: 1,
-                        chats: { $slice: ["$chats", -1] },
+                        lastchat: { $slice: ["$chats", -1] },
+                        chats: 1,
                         task: { _id: 1, title: 1 },
+                        average_rating: {$avg: '$reviews.rating'},
                         consumer: {
                             _id: 1,
                             name: 1,
