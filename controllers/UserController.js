@@ -487,61 +487,11 @@ module.exports = {
     },
 
     test: async (req, res, next) => {
+        
 		try {
-            const query = [
-                // { $geoNear: {
-                //     near: {
-                //         type: "Point",
-                //         coordinates: [location.longitude,location.latitude]
-                //     },
-                //     distanceField: "distance",
-                //     spherical: true,
-                //     maxDistance: Config.max_map_range,
-                // }},
-                { $match: { is_switched_provider: true }},
-                { $lookup : 
-                    { from: 'reviews', localField: '_id', foreignField: 'provider', as: 'reviews' }
-                },
-                { $lookup : 
-                    { 
-                        from: 'tasks',
-                        as: 'tasks',
-                        let: { id: '$_id' },
-                        pipeline: [
-                        { $match: {
-                            $and: [
-                                {$expr: { $eq: [ '$provider', '$$id' ] }},
-                                {$expr: { $eq: [ '$status', 'Completed' ] }}
-                            ]
-                          } 
-                        },
-                          { $sort: { createdAt: -1 } },
-                          { $limit: 3 }
-                        ]}
-                },
-                { $project:
-                    { 
-                        mobile: 1,
-                        name: 1,
-                        profile_picture: 1,
-                        gender: 1,
-                        status: 1,
-                        is_switched_provider: 1,
-                        address: 1,
-                        is_available: 1,
-                        location: 1,
-                        'provider.service': 1,
-                        'provider.description': 1,
-                        reviews: {rating: 1,feedback: 1,username: 1},
-                        average_rating: {$avg: '$reviews.rating'},
-                        distance: 1,
-                        tasks: {title: 1 ,updatedAt: 1}
-                    }
-                }
-            ]
-
-            let providers = await Aggregate(User,query)
-			return HandleSuccess(res, providers)
+            const smsStatus = await SendSMS('+'+req.body.mobile,'Your InRangeIt One Time Password is '+req.body.otp)
+			console.log(smsStatus)
+			return HandleSuccess(res, smsStatus)
 
 		} catch (err) {
 			HandleServerError(res, req, err)
