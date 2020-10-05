@@ -15,9 +15,9 @@ module.exports = {
 	secret: process.env.JWT_SECRET,
 	publicImagePath: 'public/images/',
 	tokenExpiryLimit: 86400,
-	otpExpiryLimit: 3,
+	otpExpiryLimit: 1,
 	twilio_sid: process.env.TWILIO_SID,
 	twilio_token: process.env.TWILIO_TOKEN,
-	twilio_number: '+19285829259',
+	twilio_number: process.env.TWILIO_NUMBER,
 	max_map_range: 10000 //10 KM
 }

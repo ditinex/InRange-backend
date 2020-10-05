@@ -235,7 +235,8 @@ module.exports = {
 
 			const otpValue = Math.floor(1000 + Math.random() * 9000);
 			const smsStatus = await SendSMS('+'+mobile,'Your InRangeIt One Time Password is '+otpValue)
-			console.log(smsStatus)
+			if(smsStatus.errorMessage)
+				return HandleError(res, 'Failed to send OTP. Please contact system admin.')
 			const inserted = await Insert(Otp,{otp: otpValue, mobile: mobile})
 			if(!inserted)
 				return HandleError(res, 'Failed to send OTP.')
