@@ -140,7 +140,6 @@ module.exports = {
      * @apiGroup Chat
      *
      * @apiParam {ObjectId} id Id of the user.
-     * @apiParam {ObjectId} provider_id Id of the provider.
      * @apiParam {ObjectId} task_id Id of the task.
      * @apiParam {ObjectId} proposal_id Id of the proposal.
      *
@@ -178,14 +177,12 @@ module.exports = {
 
     StartInterview: async (req, res, next) => {
         try {
-            const { provider_id = '', task_id = '', proposal_id = '' } = req.body
+            const { task_id = '', proposal_id = '' } = req.body
             const id = req.user_id || ''
 
             let validateError = null
             if (id == '')
                 validateError = 'Invalid id.'
-            else if (provider_id == '')
-                validateError = 'Invalid provider id.'
             else if (task_id == '')
                 validateError = 'Invalid task id.'
             else if (proposal_id == '')
@@ -194,9 +191,6 @@ module.exports = {
             if (validateError)
                 return HandleError(res, validateError)
 
-            const isProviderExists = await IsExists(User, { _id: provider_id })
-            if (!isProviderExists)
-                return HandleError(res, 'Provider doesn\'t exists.')
             // find the cover letter
             const query = [
                 { $match: { _id: Mongoose.Types.ObjectId(task_id) } },
@@ -206,23 +200,28 @@ module.exports = {
                             $filter: {
                                 input: '$proposals',
                                 as: 'proposal',
-                                cond: { $eq: ['$$proposal.provider', Mongoose.Types.ObjectId(provider_id)] }
+                                cond: { $eq: ['$$proposal._id', Mongoose.Types.ObjectId(proposal_id)] }
                             }
                         },
                     }
                 }
             ]
             const result = await Aggregate(Task, query)
-            if (!result)
+            if (!result.length)
                 return HandleError(res, 'Proposal Not Found.')
 
+            const provider_id = result[0].proposals[0].provider
             const proposal_letter = result[0].proposals[0].cover_letter
             const is_already_interviewed = result[0].proposals[0].interviewed
 
-            const where = { _id: task_id, 'proposals._id': proposal_id }
-            const query2 = { 'proposals.$.interviewed': true }
+            const isProviderExists = await IsExists(User, { _id: provider_id, is_switched_provider: true })
+            if (!isProviderExists)
+                return HandleError(res, 'Provider doesn\'t exists.')
 
             if (!is_already_interviewed) {
+                const where = { _id: task_id, 'proposals._id': proposal_id }
+                const query2 = { 'proposals.$.interviewed': true }
+
                 let updated = await FindAndUpdate(Task, where, query2)
                 if (!updated)
                     return HandleError(res, 'Failed to start interview.')
@@ -238,7 +237,42 @@ module.exports = {
                 if (!inserted)
                     return HandleError(res, 'Failed to Start Interview. Please contact system admin.')
             }
-            return HandleSuccess(res,null)
+
+             // send chat data
+             const chatquery = [
+                {$match: { 
+                    $and: [ 
+                        { consumer_id: id },
+                        { provider_id: provider_id },
+                        { task_id: task_id },
+                    ]
+                    }
+                },
+                { $lookup : 
+                    { from: 'reviews', localField: 'provider_id', foreignField: 'provider', as: 'reviews' }
+                },
+                { $lookup : 
+                    { from: 'tasks', localField: 'task_id', foreignField: '_id', as: 'tasks' }
+                },
+                {
+                    $project: {
+                        consumer_id: 1,
+                        provider_id: 1,
+                        chats: 1,
+                        task_id: 1,
+                        average_rating: {$avg: '$reviews.rating'},
+                        tasks: {title: 1,service: 1},
+                        provider_profileImg: isProviderExists[0].profile_picture,
+                        provider_name: isProviderExists[0].name,
+                        provider_service: isProviderExists[0].provider.service,
+                    }
+                }
+            ]
+            const chatresult = await Aggregate(Chat, chatquery)
+            if (!result.length)
+                return HandleError(res, 'Failed to fetch chat.')
+
+            return HandleSuccess(res,chatresult)
 
         } catch (err) {
             HandleServerError(res, req, err)

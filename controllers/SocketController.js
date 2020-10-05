@@ -237,7 +237,8 @@ module.exports = {
 							},
 							{ $sort: { createdAt: -1 } },
 							{ $limit: 3 }
-							]}
+							]
+						}
 					},
 					{ $project:
 						{ 
