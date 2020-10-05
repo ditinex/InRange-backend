@@ -4,7 +4,7 @@ const Config = require('../config.js')
 const fs = require('fs')
 const { SendSMS } = require('../services')
 const { Admin, Otp, User } = require('../models')
-
+const { RealtimeListener } = require('../services')
 
 const {
 	IsExists, Insert, Find, CompressImageAndUpload, FindAndUpdate, Delete,
