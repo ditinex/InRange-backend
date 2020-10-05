@@ -3,10 +3,15 @@
     <head>
         <script src='/socket.io/socket.io.js'></script>
         <script>
-            var socket = io('ws://192.168.0.100:3001');
+            var socket = io('http://localhost:3001/realtime-provider');
             socket.connect();
             socket.on('connect', function() {
                 addMessage('connected');
+                socket.emit('consumer','5f6e252a761041600f5146fd')
+            });
+            socket.on('available_providers', (data)=>{
+                console.log(data)
+                addMessage(data)
             });
             socket.on('welcome', function(data) {
                 addMessage(data.message);
