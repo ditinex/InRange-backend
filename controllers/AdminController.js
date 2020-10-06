@@ -13,8 +13,200 @@ const { query } = require('express');
 
 
 module.exports = {
-/**
-	 * @api {post} /admin/createcoupon Create Coupon
+	/**
+	 * @api {post} /admins/signup Add admin account
+	 * @apiName AdminSignup
+	 * @apiGroup Admin
+	 *
+	 * @apiParam {String} email Admins unique email.
+	 * @apiParam {String} name Name contains alphabets only.
+	 * @apiParam {String} password Password must contain atleast one number, one capital alphabet, one small alphabet, one special character and between 8-24 character.
+	 * @apiParam {String} type Admin type as ENUM[ admin, analyst ].
+	 *
+	 *
+	 * @apiSuccessExample Success-Response:
+	 *     HTTP/1.1 200 OK
+	 *     {
+	 *			"status": "success",
+	 *			"data": {
+	 *				"_id": "5f62722a4bf8b92249c9caa6",
+	 *				"name": "Demo Admin",
+	 *				"email": "demo@demo.com",
+	 *				"type": "admin",
+	 *				"createdAt": "2020-09-16T20:14:34.112Z",
+	 *				"updatedAt": "2020-09-16T20:14:34.112Z"
+	 *			}
+	 *	}
+	 *
+	 *
+	 * @apiErrorExample Error-Response:
+	 *     HTTP/1.1 202 Error
+	 *     {
+	 *       "status": "failed", message: "Email already exists.",
+	 *     }
+	 */
+	AdminSignup: async (req, res, next) => {
+		try {
+			let name = req.body.name || ''
+			let email = req.body.email || ''
+			let password = req.body.password || ''
+			let type = req.body.type || ''
+			email = email.toLowerCase()
+			let validateError = null
+			if (!ValidateEmail(email))
+				validateError = 'Please enter a valid email.'
+			else if (!ValidateAlphanumeric(name) || !ValidateLength(name))
+				validateError = 'Please enter a valid name without any special character and less than 25 character.'
+			else if (type == '')
+				validateError = 'Please select service type.'
+			else if (!PasswordStrength(password))
+				validateError = 'Please enter a password containing atleast one number, one capital alphabet, one small alphabet, one special character and between 8-24 character.'
+			if (validateError)
+				return HandleError(res, validateError)
+
+			let salt = await bcrypt.genSalt(12);
+			password = await bcrypt.hash(password, salt);
+
+			const data = { name: name, email: email, password: password, type: type }
+			let inserted = await Insert(Admin, data)
+			if (inserted) {
+				inserted = { ...inserted._doc }
+				delete inserted.password
+				delete inserted.__v
+				return HandleSuccess(res, inserted)
+			}
+			else
+				return HandleError(res, 'Email already exists.')
+
+
+		} catch (err) {
+			HandleServerError(res, req, err)
+		}
+
+	},
+
+	/**
+	 * @api {post} /admins/login Admin Login
+	 * @apiName Admin Login
+	 * @apiGroup Admin
+	 *
+	 * @apiParam {String} email Admins unique email.
+	 * @apiParam {String} password Admins password.
+	 *
+	 *
+	 * @apiSuccessExample Success-Response:
+	 *     HTTP/1.1 200 OK
+
+	 */
+	AdminLogin: async (req, res, next) => {
+		try {
+
+			let email = req.body.email || ''
+			let password = req.body.password || ''
+			email = email.toLowerCase()
+			let validateError = null
+
+			if (email == '')
+				validateError = 'Email field empty'
+			else if (password == '')
+				validateError = 'Enter the password'
+
+			if (validateError)
+				return HandleError(res, validateError)
+
+			const where = { 'email': email }
+			let doc = await Find(Admin, where)
+			if (doc.length > 0) {
+				doc = doc[0]
+				if (await bcrypt.compare(password, doc.password) == true) {	//if password matches
+					//Creating access token.
+					doc.token = jwt.sign({ id: doc._id, type: doc.typec }, Config.secret, {
+						expiresIn: 86400 // 86400 expires in 24 hours
+					});
+					delete doc.password
+					delete doc.__v
+					return HandleSuccess(res, doc)
+				}
+				else
+					return HandleError(res, 'Incorrect Password.')
+			}
+			else
+				return HandleError(res, 'Admin does not exists.')
+
+
+		} catch (err) {
+			HandleServerError(res, req, err)
+		}
+
+	},
+
+	/**
+	 * @api {get} /admins/listalladmin List All Admins
+	 * @apiName List All Admins
+	 * @apiGroup Admin
+	 *
+	 * @apiSuccessExample Success-Response:
+	 *     HTTP/1.1 200 OK
+	 * 
+	 */
+
+	GetAllAdmins: async (req, res, next) => {
+		try{
+			
+			let data = await Find(Admin)
+	
+			if(!data)
+				return HandleError(res,'Failed to list Admin.')
+	
+			return HandleSuccess(res, data)
+	
+		}catch (err) {
+			HandleServerError(res, req, err)
+		}
+	},
+
+	/**
+	 * @api {delete} /admins/deleteadmin Delete Admin
+	 * @apiName Delete Admin
+	 * @apiGroup Admin
+	 *
+	 * @apiParam {ObjectId} id Id of the admin.
+	 *
+	 * @apiSuccessExample Success-Response:
+	 *     HTTP/1.1 200 OK
+		{
+			"status": "success",
+			"data": true
+		}
+	 */
+
+	DeleteAdmin: async (req, res, next) => {
+		try{
+			console.log(req)
+			const { id = '' } = req.body
+			let validateError = ''
+	
+			if(id === '')
+				validateError = 'This field is required.'
+	
+			if(validateError)
+				return HandleError(res,validateError)
+			
+			let update = await Delete(Admin,{_id: id})
+	
+			if(!update)
+				return HandleError(res,'Failed to delete Admin.')
+	
+			return HandleSuccess(res, update)
+	
+		}catch (err) {
+			HandleServerError(res, req, err)
+		}
+	},
+
+
+	/**
+	 * @api {post} /admins/createcoupon Create Coupon
 	 * @apiName Create Coupon
 	 * @apiGroup Coupon
 	 *
@@ -59,7 +251,7 @@ module.exports = {
 	},
 
 	/**
-	 * @api {put} /admin/editcoupon Edit Coupon
+	 * @api {put} /admins/editcoupon Edit Coupon
 	 * @apiName Edit Coupon
 	 * @apiGroup Coupon
 	 *
@@ -109,7 +301,7 @@ module.exports = {
 	},
 
 	/**
-	 * @api {delete} /admin/deletecoupon Delete Coupon
+	 * @api {delete} /admins/deletecoupon Delete Coupon
 	 * @apiName Delete Coupon
 	 * @apiGroup Coupon
 	 *
@@ -147,7 +339,7 @@ module.exports = {
 	},
 
 	/**
-	 * @api {get} /admin/getallcoupon List All Coupons
+	 * @api {get} /admins/getallcoupon List All Coupons
 	 * @apiName List All Coupons
 	 * @apiGroup Coupon
 	 *
@@ -207,7 +399,7 @@ module.exports = {
 	},
 
 	/**
-	 * @api {get} /admin/getallusers List All Users
+	 * @api {get} /admins/getallusers List All Users
 	 * @apiName List All Users
 	 * @apiGroup Admin
 	 *
