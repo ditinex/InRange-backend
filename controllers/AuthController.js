@@ -4,7 +4,7 @@ const Config = require('../config.js')
 const fs = require('fs')
 const { SendSMS } = require('../services')
 const { Admin, Otp, User } = require('../models')
-
+const { RealtimeListener } = require('../services')
 
 const {
 	IsExists, Insert, Find, CompressImageAndUpload, FindAndUpdate, Delete,
@@ -235,6 +235,7 @@ module.exports = {
 
 			const otpValue = Math.floor(1000 + Math.random() * 9000);
 			const smsStatus = await SendSMS('+'+mobile,'Your InRangeIt One Time Password is '+otpValue)
+			console.log(otpValue)
 			if(smsStatus.errorMessage)
 				return HandleError(res, 'Failed to send OTP. Please contact system admin.')
 			const inserted = await Insert(Otp,{otp: otpValue, mobile: mobile})
