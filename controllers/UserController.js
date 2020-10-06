@@ -485,18 +485,6 @@ module.exports = {
 			HandleServerError(res, req, err)
 		}
     },
-
-    test: async (req, res, next) => {
-        
-		try {
-            const smsStatus = await SendSMS('+'+req.body.mobile,'Your InRangeIt One Time Password is '+req.body.otp)
-			console.log(smsStatus)
-			return HandleSuccess(res, smsStatus)
-
-		} catch (err) {
-			HandleServerError(res, req, err)
-		}
-    },
 }
 
 
