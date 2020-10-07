@@ -593,7 +593,7 @@ module.exports = {
 			result.transactionamount = transactionamount;
 			
 			// paid user
-			where = { subscription: {isSubscribed: true} }
+			where = { 'subscription.isSubscribed': true }
 			let paiduser = await Find(User, where)
 			result.paiduser = paiduser.length;
 
@@ -604,11 +604,11 @@ module.exports = {
 			query = [
 				{
 				  $match: {
-					subscription: {isSubscribed: true},
+					'subscription.isSubscribed': true,
 					$expr: {
 					  $and: [
-						{ $gte: ["$createdAt", firstDate] },
-						{ $lte: ["$createdAt", lastDate] }
+						{ $gt: ["$createdAt", firstDate] },
+						{ $lt: ["$createdAt", lastDate] }
 					  ],
 					}
 				  }
@@ -618,9 +618,8 @@ module.exports = {
 					_id: {
 					  month: { $month: "$createdAt" }
 					},
-					value: {
-					  $sum: "$subcription.amount"
-					}
+					amount: { $sum: "$subscription.amount" },
+           			count: { $sum: 1 }
 				  }
 				},
 				{
@@ -632,10 +631,11 @@ module.exports = {
 								"$_id.month"
 							]
 						},
-					value: 1,
+					amount: 1,
+					count: 1
 				  }
 				}
-			  ]
+			]
 			let revenue = await Aggregate(User,query)
 			result.revenue = revenue;
 
