@@ -13,6 +13,7 @@ const { query } = require('express');
 
 
 module.exports = {
+	
 	/**
 	 * @api {post} /admins/signup Add admin account
 	 * @apiName AdminSignup
@@ -528,7 +529,122 @@ module.exports = {
 		} catch (err) {
 			HandleServerError(res, req, err)
 		}
-    },
+	},
+	/**
+	 * @api {get} /admins/getstats Get Stats
+	 * @apiName Get Stats
+	 * @apiGroup Admin
+	 *
+	 *
+	 * @apiSuccessExample Success-Response:
+	 *     HTTP/1.1 200 OK
+
+	 *
+	 *
+	 */
+	GetStats: async (req, res, next) => {
+		try {
+			let result = {}
+			// user stat
+			let data = await Find(User)
+			if(!data)
+				return HandleError(res,'Failed to list User.')
+			result.noofuser = data.length;
+
+			var monthAgo = new Date();
+			monthAgo.setDate(1)
+
+            let where = { createdAt: {$lt: monthAgo} }
+			let prevmonthuser = await Find(User, where)
+
+			where = { createdAt: {$lte: new Date()} }
+			let thismonthuser = await Find(User, where)
+
+			result.userchangepercent = ((thismonthuser.length - prevmonthuser.length)/thismonthuser.length)*100;
+
+			// completed task
+			where = { status: 'Completed' }
+			let completedtask = await Find(Task, where)
+			result.noofcompletedtask = completedtask.length;
+
+			// active task
+			where = { status: 'In-progress' }
+			let activetask = await Find(Task, where)
+			result.noofactivetask = activetask.length;
+
+			// latest 10 tasks
+			let query = [
+				{$sort: {created_at: -1}},
+				{$limit: 10},
+				{$project: {
+					title: 1,
+					name: 1,
+					status: 1
+				}}
+			]
+			let latesttask = await Aggregate(Task,query)
+			result.latesttask = latesttask;
+
+			// transaction amount
+			query = [
+				{ $group: { _id: null, amount: { $sum: "$cost.total" } } }
+			]
+			let transactionamount = await Aggregate(Task,query)
+			result.transactionamount = transactionamount;
+			
+			// paid user
+			where = { subscription: {isSubscribed: true} }
+			let paiduser = await Find(User, where)
+			result.paiduser = paiduser.length;
+
+			// revenue
+			const firstDate = new Date(new Date().getFullYear(), 0, 1);
+			const lastDate = new Date(new Date().getFullYear(), 11, 31);
+			const monthStrings = ["","January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+			query = [
+				{
+				  $match: {
+					subscription: {isSubscribed: true},
+					$expr: {
+					  $and: [
+						{ $gte: ["$createdAt", firstDate] },
+						{ $lte: ["$createdAt", lastDate] }
+					  ],
+					}
+				  }
+				},
+				{
+				  $group: {
+					_id: {
+					  month: { $month: "$createdAt" }
+					},
+					value: {
+					  $sum: "$subcription.amount"
+					}
+				  }
+				},
+				{
+				  $project: {
+					_id: 
+						{
+							$arrayElemAt: [
+								monthStrings,
+								"$_id.month"
+							]
+						},
+					value: 1,
+				  }
+				}
+			  ]
+			let revenue = await Aggregate(User,query)
+			result.revenue = revenue;
+
+			return HandleSuccess(res, result)
+
+		} catch (err) {
+			HandleServerError(res, req, err)
+		}
+	},
 }
 
 

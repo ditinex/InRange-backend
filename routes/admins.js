@@ -5,6 +5,9 @@ const Controllers = require('../controllers')
 const Auth = Controllers.Auth
 const Admin = Controllers.Admin
 
+// stat
+router.get('/stats',Admin.GetStats);
+
 // admin
 router.post('/signup',Admin.AdminSignup);
 router.post('/login',Admin.AdminLogin);
