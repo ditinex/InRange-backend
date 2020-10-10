@@ -483,7 +483,7 @@ module.exports = {
             ]
 
             let data = await Aggregate(User,query)
-            if(!data)
+            if(!data.length)
                     return HandleError(res, 'No Data Found.')
             return HandleSuccess(res, data)
 		
