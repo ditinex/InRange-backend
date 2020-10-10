@@ -183,7 +183,6 @@ module.exports = {
 
 	DeleteAdmin: async (req, res, next) => {
 		try{
-			console.log(req)
 			const { id = '' } = req.body
 			let validateError = ''
 	
@@ -320,7 +319,6 @@ module.exports = {
 		try{
 			const { id = '' } = req.body
 			let validateError = ''
-	
 			if(id === '')
 				validateError = 'This field is required.'
 	
@@ -560,7 +558,7 @@ module.exports = {
 			where = { createdAt: {$lte: new Date()} }
 			let thismonthuser = await Find(User, where)
 
-			result.userchangepercent = ((thismonthuser.length - prevmonthuser.length)/thismonthuser.length)*100;
+			result.userchangepercent = ((thismonthuser.length - prevmonthuser.length)/(thismonthuser.length || 1))*100;
 
 			// completed task
 			where = { status: 'Completed' }
@@ -591,6 +589,23 @@ module.exports = {
 			]
 			let transactionamount = await Aggregate(Task,query)
 			result.transactionamount = transactionamount;
+			// transaction percent
+			query = [
+				{ $match: { createdAt: {$lt: monthAgo} } },
+				{ $group: { _id: null, amount: { $sum: "$cost.total" } } }
+			]
+			let prevmonthtransaction = await Aggregate(Task,query)
+			prevmonthtransaction = prevmonthtransaction.length==0?[{_id: null,amount: 0}]: prevmonthtransaction
+
+			query = [
+				{ $match: { createdAt: {$lt: new Date()} } },
+				{ $group: { _id: null, amount: { $sum: "$cost.total" } } }
+			]
+			let thismonthtransaction = await Aggregate(Task,query)
+			thismonthtransaction = thismonthtransaction.length==0?[{_id: null,amount: 0}]: thismonthtransaction
+
+			result.transactionchangepercent = ((thismonthtransaction[0].amount - prevmonthtransaction[0].amount)/(thismonthtransaction[0].amount || 1))*100;
+
 			
 			// paid user
 			where = { 'subscription.isSubscribed': true }
@@ -600,7 +615,7 @@ module.exports = {
 			// revenue
 			const firstDate = new Date(new Date().getFullYear(), 0, 1);
 			const lastDate = new Date(new Date().getFullYear(), 11, 31);
-			const monthStrings = ["","January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+			const monthStrings = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 			query = [
 				{
 				  $match: {
@@ -624,20 +639,21 @@ module.exports = {
 				},
 				{
 				  $project: {
-					_id: 
-						{
-							$arrayElemAt: [
-								monthStrings,
-								"$_id.month"
-							]
-						},
+					_id_month: "$_id.month",
 					amount: 1,
 					count: 1
 				  }
 				}
 			]
 			let revenue = await Aggregate(User,query)
-			result.revenue = revenue;
+			let revenueList = []
+			for(i=0;i<12;i++)
+			{ revenueList.push({name: monthStrings[i], Revenue: 0}) }
+			for(i=0;i<revenue.length;i++)
+			{ 
+				revenueList[revenue[i]._id_month-1].Revenue = revenue[i].amount;
+			}
+			result.revenueList = revenueList;
 
 			return HandleSuccess(res, result)
 
