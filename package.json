@@ -33,10 +33,10 @@
     "express-fileupload": "^1.1.7-alpha.3",
     "jsonwebtoken": "^8.5.1",
     "mongoose": "^5.9.18",
+    "plivo": "^4.10.0",
     "sharp": "^0.25.4",
     "socket.io": "^2.3.0",
-    "socket.io-client": "^2.3.0",
-    "twilio": "^3.49.3"
+    "socket.io-client": "^2.3.0"
   },
   "devDependencies": {
     "supertest": "^4.0.2"

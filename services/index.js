@@ -1,2 +1,2 @@
-exports.SendSMS = require('./twilio');
+exports.SendSMS = require('./plivo');
 exports.RealtimeListener = require('./realtimeDbHelper')
