@@ -5,11 +5,18 @@ const Controllers = require('../controllers')
 const Auth = Controllers.Auth
 const Admin = Controllers.Admin
 
-router.post('/signup',Auth.AdminSignup);
-router.post('/login',Auth.AdminLogin);
+// stat
+router.get('/stats',Admin.GetStats);
+
+// admin
+router.post('/signup',Admin.AdminSignup);
+router.post('/login',Admin.AdminLogin);
+router.get('/getalladmin',Admin.GetAllAdmins);
+router.delete('/deleteadmin',Admin.DeleteAdmin);
 
 // user
 router.get('/getalluser',Admin.GetAllUsers);
+
 // coupon
 router.post('/createcoupon',Admin.CreateCoupon);
 router.delete('/deletecoupon',Admin.DeleteCoupon);

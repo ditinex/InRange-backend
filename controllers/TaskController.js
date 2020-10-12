@@ -663,7 +663,7 @@ module.exports = {
 			]
 			let data = await Aggregate(Task, query)
 
-			if (!data)
+			if (!data.length)
 				return HandleError(res, 'Failed to list Task.')
 
 			return HandleSuccess(res, data)

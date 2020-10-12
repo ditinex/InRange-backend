@@ -131,7 +131,7 @@ module.exports = {
             ]
 
             let data = await Aggregate(Chat, query)
-            if (!data)
+            if (!data.length)
                 return HandleError(res, 'No Data Found.')
             return HandleSuccess(res, data)
 
@@ -276,7 +276,7 @@ module.exports = {
                 }
             ]
             const chatresult = await Aggregate(Chat, chatquery)
-            if (!result.length)
+            if (!chatresult.length)
                 return HandleError(res, 'Failed to fetch chat.')
 
             return HandleSuccess(res,chatresult)
