@@ -1,6 +1,8 @@
 const Config = require('../config.js');
 const plivo = require('plivo');
-const client = new plivo.Client(Config.plivo_authid, Config.plivo_token);
+let client = null
+if(Config.plivo_authid)
+  client = new plivo.Client(Config.plivo_authid, Config.plivo_token);
 
 module.exports = async (number,message) => {
     return await client.messages.create(
