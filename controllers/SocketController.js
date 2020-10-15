@@ -22,8 +22,8 @@ module.exports = {
 				const room_name = chat_id;
 				socket.join(room_name);
 				let updated = await FindAndUpdate(Chat,{_id: chat_id, "chats.seen": false},{"chats.$[].seen": true});
-				socket.emit('chathistory',updated.chats);
-
+				let chat = await Find(Chat,{_id: chat_id},'chats');
+				socket.emit('chathistory',chat);
 			});
 
 			socket.on('message', async({chat_id,sender_id,receiver_id,message}) => {
