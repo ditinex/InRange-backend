@@ -664,7 +664,7 @@ module.exports = {
 			let data = await Aggregate(Task, query)
 
 			if (!data.length)
-				return HandleError(res, 'Failed to list Task.')
+				return HandleSuccess(res, [])
 
 			return HandleSuccess(res, data)
 
@@ -697,8 +697,8 @@ module.exports = {
 
 			let data = await Find(Task, { provider: user_id })
 
-			if (!data)
-				return HandleError(res, 'Failed to list Task.')
+			if (!data.length)
+				return HandleSuccess(res, [])
 
 			return HandleSuccess(res, data)
 
