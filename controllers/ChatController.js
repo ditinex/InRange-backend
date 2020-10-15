@@ -99,8 +99,8 @@ module.exports = {
                     $lookup:
                         { from: 'users', localField: 'provider_id', foreignField: '_id', as: 'provider' }
                 },
-                { 
-                    $lookup : 
+                {
+                    $lookup:
                         { from: 'reviews', localField: 'provider_id', foreignField: 'provider', as: 'reviews' }
                 },
                 {
@@ -111,7 +111,7 @@ module.exports = {
                         lastchat: { $slice: ["$chats", -1] },
                         chats: 1,
                         task: { _id: 1, title: 1 },
-                        average_rating: {$avg: '$reviews.rating'},
+                        average_rating: { $avg: '$reviews.rating' },
                         consumer: {
                             _id: 1,
                             name: 1,
@@ -234,8 +234,8 @@ module.exports = {
 
                 let data = {
                     consumer_id: id, provider_id: provider_id, task_id: task_id, chats: {
-                        sender_id: id,
-                        receiver_id: provider_id,
+                        sender_id: provider_id,
+                        receiver_id: id,
                         message: proposal_letter
                     }
                 }
@@ -244,21 +244,24 @@ module.exports = {
                     return HandleError(res, 'Failed to Start Interview. Please contact system admin.')
             }
 
-             // send chat data
-             const chatquery = [
-                {$match: { 
-                    $and: [ 
-                        { consumer_id: id },
-                        { provider_id: provider_id },
-                        { task_id: task_id },
-                    ]
+            // send chat data
+            const chatquery = [
+                {
+                    $match: {
+                        $and: [
+                            { consumer_id: Mongoose.Types.ObjectId(id) },
+                            { provider_id: Mongoose.Types.ObjectId(provider_id) },
+                            { task_id: Mongoose.Types.ObjectId(task_id) },
+                        ]
                     }
                 },
-                { $lookup : 
-                    { from: 'reviews', localField: 'provider_id', foreignField: 'provider', as: 'reviews' }
+                {
+                    $lookup:
+                        { from: 'reviews', localField: 'provider_id', foreignField: 'provider', as: 'reviews' }
                 },
-                { $lookup : 
-                    { from: 'tasks', localField: 'task_id', foreignField: '_id', as: 'tasks' }
+                {
+                    $lookup:
+                        { from: 'tasks', localField: 'task_id', foreignField: '_id', as: 'tasks' }
                 },
                 {
                     $project: {
@@ -267,9 +270,9 @@ module.exports = {
                         provider_id: 1,
                         chats: 1,
                         task_id: 1,
-                        average_rating: {$avg: '$reviews.rating'},
-                        tasks: {title: 1,service: 1},
-                        provider_profileImg: isProviderExists[0].profile_picture,
+                        average_rating: { $avg: '$reviews.rating' },
+                        tasks: { title: 1, service: 1 },
+                        provider_profile_img: isProviderExists[0].profile_picture,
                         provider_name: isProviderExists[0].name,
                         provider_service: isProviderExists[0].provider.service,
                     }
@@ -279,7 +282,7 @@ module.exports = {
             if (!chatresult.length)
                 return HandleError(res, 'Failed to fetch chat.')
 
-            return HandleSuccess(res,chatresult)
+            return HandleSuccess(res, chatresult[0])
 
         } catch (err) {
             HandleServerError(res, req, err)
@@ -318,73 +321,7 @@ module.exports = {
             HandleServerError(res, req, err)
         }
     },
-
-    // /**
-    //  * @api {socket} $ Send Message
-    //  * @apiName Send Message
-    //  * @apiGroup Chat
-    //  *
-    //  * @apiParam {ObjectId} id Id of the user.
-    //  * @apiParam {ObjectId} chat_id Id of the chat.
-    //  * @apiParam {ObjectId} receiver_id Id of the receiver.
-    //  * @apiParam {String} message Text Message.
-    //  * @apiParam {Files} images List of images.
-    //  *
-    //  *
-    //  * @apiSuccessExample Success-Response:
-    //  *     HTTP/1.1 200 OK
-
-    //  *
-    //  *
-    //  */
-
-    // SendMessage: async (req, res, next) => {
-    // 	try {
-    // 		const { chat_id = '', receiver_id = '', message = '' } = req.body
-    //         const id = req.user_id || ''
-    //         const images = req.files?req.files.images : null
-
-    // 		if( id == '' || receiver_id =='' || sender_id == '' || chat_id == '')
-    // 			return HandleError(res, 'Failed to send message.')
-
-    // 		const isChatExists = await IsExists(Chat,{_id: chat_id})
-
-    // 		if(!isChatExists)
-    // 			return HandleError(res, 'Chat doesn\'t exists anymore.')
-
-    // 		let data = {
-    //             sender_id: id,
-    //             receiver_id: provider_id,
-    //             message: message
-    //         }
-
-    //         if(images)
-    // 		{
-    // 			data.images=[]
-    // 			for(i=0;i<images.length;i++)
-    // 			{
-    // 				if(isDataURL(images[i]))
-    // 				{
-    // 					let isUploaded = await CompressImageAndUpload(images[i])
-    // 					if(!isUploaded)
-    // 						return HandleError(res,"Failed to sens images.")
-    // 					data.images[i] = isUploaded.path
-    // 				}
-    // 			}
-    // 		}
-    // 		const where = { _id: chat_id }
-    // 		const query = { $push: { chats: data}}
-
-    // 		let updated = await FindAndUpdate(Chat,where,query,true)
-    // 		if (!updated)
-    // 			return HandleError(res, 'Failed to send message.')
-
-    // 		return HandleSuccess(res, updated)
-
-    // 	} catch (err) {
-    // 		HandleServerError(res, req, err)
-    // 	}
-    // },
+    
 }
 
 

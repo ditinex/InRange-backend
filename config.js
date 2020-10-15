@@ -16,8 +16,8 @@ module.exports = {
 	publicImagePath: 'public/images/',
 	tokenExpiryLimit: 86400,
 	otpExpiryLimit: 1,
-	twilio_sid: process.env.TWILIO_SID,
-	twilio_token: process.env.TWILIO_TOKEN,
-	twilio_number: process.env.TWILIO_NUMBER,
+	plivo_authid: process.env.PLIVO_AUTHID,
+	plivo_token: process.env.PLIVO_TOKEN,
+	plivo_number: process.env.PLIVO_NUMBER,
 	max_map_range: 10000 //10 KM
 }

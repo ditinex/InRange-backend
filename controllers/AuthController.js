@@ -108,9 +108,10 @@ module.exports = {
 				return HandleError(res, 'Too many OTP requests. Please try after sometime.')
 
 			const otpValue = Math.floor(1000 + Math.random() * 9000);
-			const smsStatus = await SendSMS('+'+mobile,'Your InRangeIt One Time Password is '+otpValue)
-			console.log(otpValue)
-			if(smsStatus.errorMessage)
+			let smsStatus = null
+			if(Config.plivo_authid)
+				smsStatus = await SendSMS('+'+mobile,'Your InRangeIt One Time Password is '+otpValue)
+			if(smsStatus && smsStatus.errorMessage)
 				return HandleError(res, 'Failed to send OTP. Please contact system admin.')
 			const inserted = await Insert(Otp,{otp: otpValue, mobile: mobile})
 			if(!inserted)
