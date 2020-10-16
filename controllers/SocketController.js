@@ -21,11 +21,17 @@ module.exports = {
 			socket.on('startchat', async function(chat_id,user_id){
 				const room_name = chat_id;
 				socket.join(room_name);
+<<<<<<< HEAD
 				let updated = await FindAndUpdate(Chat,{_id: chat_id,"chats.receiver_id": user_id, "chats.seen": false},{"chats.$[].seen": true});
 
 				let chatList = await Find(Chat,{_id: chat_id},{},{ createdAt: -1 },50);
 				socket.emit('chathistory',chatList.chats);
 
+=======
+				let updated = await FindAndUpdate(Chat,{_id: chat_id, "chats.seen": false},{"chats.$[].seen": true});
+				let chat = await Find(Chat,{_id: chat_id},'chats');
+				socket.emit('chathistory',chat);
+>>>>>>> 248769f7f248c64b33fcfa7152f3fba0cb98791b
 			});
 
 			socket.on('message', async({chat_id,sender_id,receiver_id,message}) => {
