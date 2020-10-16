@@ -18,11 +18,13 @@ module.exports = {
 
 	Chat: async (socket) => {
 		try {
-			socket.on('startchat', async function(chat_id){
+			socket.on('startchat', async function(chat_id,user_id){
 				const room_name = chat_id;
 				socket.join(room_name);
-				let updated = await FindAndUpdate(Chat,{_id: chat_id, "chats.seen": false},{"chats.$[].seen": true});
-				socket.emit('chathistory',updated.chats);
+				let updated = await FindAndUpdate(Chat,{_id: chat_id,"chats.receiver_id": user_id, "chats.seen": false},{"chats.$[].seen": true});
+
+				let chatList = await Find(Chat,{_id: chat_id},{},{ createdAt: -1 },50);
+				socket.emit('chathistory',chatList.chats);
 
 			});
 
@@ -226,7 +228,7 @@ module.exports = {
 					{ $lookup : 
 						{ 
 							from: 'tasks',
-							as: 'latest_tasks',
+							as: 'pastTask',
 							let: { id: '$_id' },
 							pipeline: [
 							{ $match: {
@@ -254,10 +256,10 @@ module.exports = {
 							location: 1,
 							'provider.service': 1,
 							'provider.description': 1,
-							reviews: {rating: 1,feedback: 1,username: 1},
-							average_rating: {$avg: '$reviews.rating'},
+							reviews: {feedback: 1,username: 1},
+							rating: {$avg: '$reviews.rating'},
 							distance: 1,
-							latest_tasks: {title: 1 ,updatedAt: 1},
+							pastTask: {title: 1 ,updatedAt: 1},
 							total_completed_task: 1
 						}
 					}
