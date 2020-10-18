@@ -19,5 +19,6 @@ module.exports = {
 	plivo_authid: process.env.PLIVO_AUTHID,
 	plivo_token: process.env.PLIVO_TOKEN,
 	plivo_number: process.env.PLIVO_NUMBER,
-	max_map_range: 10000 //10 KM
+	max_map_range: 10000, //10 KM
+	environment: process.env.ENVIRONMENT,
 }

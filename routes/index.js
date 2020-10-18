@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const config = require('../config.js');
 
 const { VerifyToken } = require('../middlewares');
 
@@ -26,6 +27,8 @@ router.get('/', (req, res) => {
 //Import APIs
 router.use('/admins', require('./admins'));
 router.use('/auth', require('./auth'));
+
+router.use('/chat', require('./chat'));
 
 // Protect all routes after this middleware
 router.use(VerifyToken);

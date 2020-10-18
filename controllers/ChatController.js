@@ -290,7 +290,7 @@ module.exports = {
     },
 
     /**
-     * @api {post} /user/sendimage Send Image
+     * @api {post} /chat/sendimage Send Image
      * @apiName Send Image
      * @apiGroup Chat
      *
@@ -306,16 +306,26 @@ module.exports = {
 
     SendImage: async (req, res, next) => {
         try {
-            const image = req.files ? req.files.image : null
-            var path = null
-            if (isDataURL(image)) {
-                let isUploaded = await CompressImageAndUpload(images[i])
+            const files = req.files ? req.files.images : null
+            let images = null
+            if(!(files instanceof Array)){
+                images=[]
+                images.push(files)
+            }
+            else
+                images = files
+            var paths = []
+            
+            for(const item of images){
+                let isUploaded = await CompressImageAndUpload(item)
                 if (!isUploaded)
-                    return HandleError(res, "Failed to send images.")
-                path = isUploaded.path
+                    return HandleError(res, "Failed to upload images.")
+                paths.push(isUploaded.path)
             }
 
-            return HandleSuccess(res, path)
+            console.log(paths)
+            
+            return HandleSuccess(res, paths)
 
         } catch (err) {
             HandleServerError(res, req, err)

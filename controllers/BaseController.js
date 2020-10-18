@@ -128,7 +128,7 @@ const CompressImageAndUpload = async (image) => {
 		let imagePath = Config.publicImagePath + time + '.jpg'
 		//Any error from sharp will automatically handle in catch block returning false.
 		let imageInfo = await sharp(image.data).jpeg({
-			quality: 50,
+			quality: 90,
 			chromaSubsampling: '4:4:4'
 		}).toFile(imagePath)
 		return {

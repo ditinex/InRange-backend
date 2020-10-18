@@ -23,15 +23,13 @@ module.exports = {
 				socket.join(room_name);
 				let updated = await FindAndUpdate(Chat,{_id: chat_id,"chats.receiver_id": user_id, "chats.seen": false},{"chats.$[].seen": true});
 
-				let chatList = await Find(Chat,{_id: chat_id},{},{ createdAt: -1 },50);
-				socket.emit('chathistory',chatList.chats);
+				let chatList = await Find(Chat,{_id: chat_id},{},{ 'chats.createdAt': -1 },50);
+				socket.emit('chathistory',chatList[0].chats);
 
 			});
 
 			socket.on('message', async({chat_id,sender_id,receiver_id,message}) => {
-				//Body
 				const room_name = chat_id;
-
 				let data = {
 					sender_id: sender_id,
 					receiver_id: receiver_id,
@@ -44,7 +42,7 @@ module.exports = {
 
 				let updated = await FindAndUpdate(Chat,where,query,true)
 				if(updated)
-					socket.broadcast.to(room_name).emit('updatechat',data);
+					socket.broadcast.to(room_name).emit('message',data);
 			});
 
 			socket.on('image', async({chat_id,sender_id,receiver_id,image_path}) => {

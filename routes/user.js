@@ -10,9 +10,6 @@ router.put('/switchprofile',User.SwitchProfile);
 router.put('/editproviderprofile',User.EditProviderProfile);
 router.put('/editprofile',User.EditProfile);
 router.put('/updatelocation',User.UpdateLocation);
-router.get('/getchatlist',Chat.GetChatList);
-router.post('/sendimage',Chat.SendImage);
-// router.post('/test',User.test);
 
 
 module.exports = router;
