@@ -28,15 +28,13 @@ router.get('/', (req, res) => {
 router.use('/admins', require('./admins'));
 router.use('/auth', require('./auth'));
 
-router.use('/chat', require('./chat'));
-
 // Protect all routes after this middleware
 router.use(VerifyToken);
 
 router.use('/consumer', require('./consumer'));
 router.use('/provider', require('./provider'));
 router.use('/user', require('./user'));
-
+router.use('/chat', require('./chat'));
 
 
 

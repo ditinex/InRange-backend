@@ -109,3 +109,4 @@ dist
 .DS_Store
 ngrok.exe
 createapidoc.bat
+.vscode

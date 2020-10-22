@@ -109,8 +109,7 @@ module.exports = {
                         consumer_id: 1,
                         provider_id: 1,
                         lastchat: { $slice: ["$chats", -1] },
-                        chats: 1,
-                        task: { _id: 1, title: 1 },
+                        task: { _id: 1, title: 1, status: 1 },
                         average_rating: { $avg: '$reviews.rating' },
                         consumer: {
                             _id: 1,
@@ -124,6 +123,7 @@ module.exports = {
                             name: 1,
                             mobile: 1,
                             address: 1,
+                            provider: {service: 1},
                             profile_picture: 1
                         }
                     }
