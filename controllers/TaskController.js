@@ -429,7 +429,7 @@ module.exports = {
 				return HandleError(res, 'Failed to accept proposal. Please contact system admin.')
 
 			const where = { _id: task_id }
-			const query = { provider: provider_id }
+			const query = { provider: provider_id, status: 'In-progress' }
 
 			let updated = await FindAndUpdate(Task, where, query)
 			if (!updated)
@@ -644,6 +644,7 @@ module.exports = {
 					$group: {
 						_id: "$_id",
 						cost: { "$first":"$cost" },
+						provider: { "$first":"$provider" },
 						images: { "$first":"$images" },
 						title: { "$first": "$title" },
 						service: { "$first": "$service" },
