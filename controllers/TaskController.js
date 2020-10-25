@@ -263,6 +263,46 @@ module.exports = {
 		}
 	},
 
+	/**
+	 * @api {post} /consumer/canceltask Cancel Task
+	 * @apiName Cancel Task
+	 * @apiGroup Task
+	 *
+	 * @apiParam {ObjectId} id Id of the task.
+	 *
+	 * @apiSuccessExample Success-Response:
+	 *     HTTP/1.1 200 OK
+		{
+			"status": "success",
+			"data": true
+		}
+	 */
+
+	CancelTask: async (req, res, next) => {
+		try {
+			let _id = (req.body.id) ? req.body.id : ''
+			let validateError = ''
+
+			if (_id === '')
+				validateError = 'This field is required.'
+
+			if (validateError)
+				return HandleError(res, validateError)
+
+
+			let where = { _id: id }
+			let data = { status: 'Cancelled'}
+
+			let updated = await FindAndUpdate(Task, where, data)
+			if (!updated)
+				return HandleError(res, 'Failed to cancel task. Please contact system admin.')
+
+			return HandleSuccess(res, updated);
+		} catch (err) {
+			HandleServerError(res, req, err)
+		}
+	},
+
 
 	/**
 	 * @api {put} /provider/sendproposal Send Proposal
@@ -369,51 +409,16 @@ module.exports = {
 	 *
 	 * @apiSuccessExample Success-Response:
 	 *     HTTP/1.1 200 OK
-		{
-			"status": "success",
-			"data": {
-				"location": {
-					"type": "Point",
-					"coordinates": [
-						-110.8571443,
-						32.4586858
-					]
-				},
-				"cost": {
-					"service_cost": 0,
-					"other_cost": 0,
-					"discount": 0,
-					"total": 0
-				},
-				"images": [
-					"/images/1600954873857.jpg",
-					"/images/1600954873978.jpg"
-				],
-				"_id": "5f6ca1f95700d45738d6c86c",
-				"title": "Tap Repair",
-				"service": "repair",
-				"description": "broken tap",
-				"instruction": "Not specified",
-				"name": "souradeep",
-				"mobile": "919804985304",
-				"status": "Hiring",
-				"address": "india",
-				"consumer": "5f67ac2e9a599b177fba55b5",
-				"proposals": [],
-				"createdAt": "2020-09-24T13:41:14.000Z",
-				"updatedAt": "2020-09-24T14:34:24.676Z",
-				"__v": 0,
-				"provider": "5f67ac2e9a599b177fba55b5"
-			}
-		}
+	 * 
 	 *
 	 */
 
 	AcceptProposal: async (req, res, next) => {
 		try {
 			const { task_id = '', provider_id = '' } = req.body
+			const user_id = req.user_id || ''
 
-			if (task_id == '' || provider_id == '')
+			if (task_id == '' || provider_id == '' || user_id == '')
 				return HandleError(res, 'Required field should not be empty.')
 
 			const isProviderAvailable = await IsExists(User, { _id: provider_id, is_available: true })
@@ -438,7 +443,113 @@ module.exports = {
 			* Creating an event provider_change in self socket to server realtime database via socket
 			*/
 			RealtimeListener.providerChange.emit('provider_change', provider_id)
-			return HandleSuccess(res, updated)
+			// return HandleSuccess(res, updated)
+			let query2 = [
+				{ $match: { consumer: Mongoose.Types.ObjectId(user_id) } },
+				{
+					"$unwind": {
+						"path": "$proposals",
+						"preserveNullAndEmptyArrays": true
+					}
+				},
+				{
+					$lookup:
+					{
+						from: "users",
+						let: { id: "$proposals.provider" },
+						pipeline: [
+							{
+								$match: {
+									"$expr": { "$eq": ["$_id", "$$id"] }
+								}
+							},
+							{ $project: { access_token: 0, active_session_refresh_token: 0, 'provider.verification_document': 0 } },
+							{
+								$lookup:
+									{ from: 'reviews', localField: '_id', foreignField: 'provider', as: 'reviews' }
+							},
+							{ $addFields: { average_rating: { $avg: '$reviews.rating' } } },
+							{
+								$lookup:
+								{ 
+									from: 'tasks',
+									let: { provider_id: "$_id" },
+									pipeline: [
+										{
+											$match: {
+												$and: [
+													{$expr: { $eq: [ '$provider', '$$provider_id' ] }},
+													{$expr: { $eq: [ '$status', 'Completed' ] }}
+												]
+											}
+											
+										},
+									],
+									as: 'total_completed_task'
+								}
+							},
+							{ $addFields: { total_completed_task: {$size:"$total_completed_task"} } },
+							{
+								$lookup:
+									{ 
+										from: 'tasks',
+										let: { provider_id: "$_id" },
+										pipeline: [
+											{
+												$match: {
+													$and: [
+														{$expr: { $eq: [ '$provider', '$$provider_id' ] }},
+														{$expr: { $eq: [ '$status', 'Completed' ] }}
+													]
+												}
+												
+											},
+											{ $sort: { createdAt: -1 } },
+											{ $limit: 3 },
+											{ $project: { title: 1, updatedAt: 1 } },
+										],
+										as: 'latest_tasks'
+									}
+							},
+						],
+						as: 'proposals.provider'
+					}
+				},
+				{
+					"$unwind": {
+						"path": "$proposals.provider",
+						"preserveNullAndEmptyArrays": true
+					}
+				},
+				{
+					$group: {
+						_id: "$_id",
+						cost: { "$first":"$cost" },
+						provider: { "$first":"$provider" },
+						images: { "$first":"$images" },
+						title: { "$first": "$title" },
+						service: { "$first": "$service" },
+						description: { "$first": "$description" },
+						instruction: { "$first": "$instruction" },
+						name: { "$first": "$name" },
+						mobile: { "$first": "$mobile" },
+						status: { "$first": "$status" },
+						address: { "$first": "$address" },
+						location: { "$first": "$location" },
+						consumer: { "$first": "$consumer" },
+						landmark: { "$first": "$landmark" },
+						houseno: { "$first": "$houseno" },
+						proposals: { $push: "$proposals" }
+					}
+				},
+			]
+			let data2 = await Aggregate(Task, query2)
+
+			if (!data2.length)
+				return HandleSuccess(res, [])
+
+			return HandleSuccess(res, data2)
+
 
 		} catch (err) {
 			HandleServerError(res, req, err)
@@ -675,7 +786,7 @@ module.exports = {
 	},
 
 	/**
-	 * @api {post} /provider/gettasks List Tasks Provider
+	 * @api {get} /provider/gettasks List Tasks Provider
 	 * @apiName List Tasks Provider
 	 * @apiGroup Task
 	 *
@@ -813,6 +924,52 @@ module.exports = {
 			HandleServerError(res, req, err)
 		}
 	},
+
+	/**
+	 * @api {post} /consumer/setcost Set Cost
+	 * @apiName Set Cost
+	 * @apiGroup Task
+	 *
+	 * @apiParam {ObjectId} task_id Id of the task.
+	 * @apiParam {Number} service_cost Cost of the service.
+	 * @apiParam {Number} other_cost Other Costs.
+	 * @apiParam {Number} discount Discount value.
+	 *
+	 * @apiSuccessExample Success-Response:
+	 *     HTTP/1.1 200 OK
+
+	 *	
+	 *
+	 */
+
+	SetCost: async (req, res, next) => {
+		try {
+			const { task_id = '', service_cost = 0, other_cost = 0, discount = 0 } = req.body
+
+			if (task_id == '')
+				return HandleError(res, 'Invalid task id.')
+			else if (service_cost == 0)
+				return HandleError(res, 'Service cost can not be zero.')
+
+			const isTaskExists = await IsExists(Task, { _id: task_id })
+
+			if (!isTaskExists)
+				return HandleError(res, 'Task doesn\'t exists.')
+
+			const total = service_cost + other_cost - discount;
+			const where = { _id: task_id }
+			const query = { 'cost.service_cost': service_cost, 'cost.other_cost': other_cost, 'cost.total': total  }
+
+			let updated = await FindAndUpdate(Task, where, query)
+			if (!updated)
+				return HandleError(res, 'Failed to set cost.')
+
+			return HandleSuccess(res, updated)
+			
+
+		} catch (err) {
+			HandleServerError(res, req, err)
+		}
+	},
+
 }
-
-
