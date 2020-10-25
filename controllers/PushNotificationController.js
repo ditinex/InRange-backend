@@ -19,8 +19,6 @@ module.exports = {
 	 * @apiName Update Firebase Token
 	 * @apiGroup PushNotification
 	 *
-	 * @apiParam {File} profile_picture Picture to change.
-	 *
 	 *
 	 * @apiSuccessExample Success-Response:
 	 *     HTTP/1.1 200 OK
@@ -35,7 +33,28 @@ module.exports = {
 		} catch (err) {
 			HandleServerError(res, req, err)
 		}
-    },
+	},
+
+	/**
+	 * @api {put} /pnc/sendnotification Send Notification
+	 * @apiName Send Notification
+	 * @apiGroup PushNotification
+	 *
+	 *
+	 * @apiSuccessExample Success-Response:
+	 *     HTTP/1.1 200 OK
+	 *     
+
+	*/
+	
+	SendNotification: async (req, res, next) => {
+		try {
+            
+
+		} catch (err) {
+			HandleServerError(res, req, err)
+		}
+	}
 }
 
 
