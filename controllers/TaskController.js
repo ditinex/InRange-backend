@@ -972,4 +972,45 @@ module.exports = {
 		}
 	},
 
+	/**
+	 * @api {get} /consumer/inprogressorder Get OrderDetails-Inprogress
+	 * @apiName Get OrderDetails-Inprogress
+	 * @apiGroup Task
+	 *
+	 * @apiParam {ObjectId} task_id Id of the task.
+	 *
+	 * @apiSuccessExample Success-Response:
+	 *     HTTP/1.1 200 OK
+
+	 *	
+	 *
+	 */
+
+	GetOrderDetailsInProgress: async (req, res, next) => {
+		try {
+			const { task_id = '' } = req.body
+
+			if (task_id == '')
+				return HandleError(res, 'Invalid task id.')
+
+			const isTaskExists = await IsExists(Task, { _id: task_id })
+
+			if (!isTaskExists)
+				return HandleError(res, 'Task doesn\'t exists.')
+
+			const where = { _id: task_id }
+
+			let data = await Find(Task, where)
+			if (!data)
+				return HandleError(res, 'Failed to get details.')
+
+			return HandleSuccess(res, {service_cost: data.cost.service_cost, other_cost: data.cost.other_cost})
+			
+
+		} catch (err) {
+			HandleServerError(res, req, err)
+		}
+	},
+
+
 }
