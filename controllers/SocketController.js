@@ -18,6 +18,16 @@ module.exports = {
 
 	Chat: async (socket) => {
 		try {
+
+			/**
+			 * @api {socket} startchat Start Chat
+			 * @apiName Start Chat
+			 * @apiGroup Socket
+			 *
+			 * @apiParam {ObjectId} chat_id Id of the chat.
+			 * @apiParam {ObjectId} user_id Id of the user.
+			 *
+			*/
 			socket.on('startchat', async function(chat_id,user_id){
 				const room_name = chat_id;
 				socket.join(room_name);
@@ -27,6 +37,18 @@ module.exports = {
 				socket.emit('chathistory',chatList[0].chats);
 
 			});
+
+			/**
+			 * @api {socket} message Send Message
+			 * @apiName Send Message
+			 * @apiGroup Socket
+			 *
+			 * @apiParam {ObjectId} chat_id Id of the chat.
+			 * @apiParam {ObjectId} serder_id Id of the sender user.
+			 * @apiParam {ObjectId} receiver_id Id of the receiver user.
+			 * @apiParam {String} message Message text.
+			 *
+			*/
 
 			socket.on('message', async({chat_id,sender_id,receiver_id,message}) => {
 				const room_name = chat_id;
@@ -44,6 +66,18 @@ module.exports = {
 				if(updated)
 					socket.broadcast.to(room_name).emit('message',data);
 			});
+
+			/**
+			 * @api {socket} image Send Image
+			 * @apiName Send Image
+			 * @apiGroup Socket
+			 *
+			 * @apiParam {ObjectId} chat_id Id of the chat.
+			 * @apiParam {ObjectId} serder_id Id of the sender user.
+			 * @apiParam {ObjectId} receiver_id Id of the receiver user.
+			 * @apiParam {String} image_path Image path.
+			 *
+			*/
 
 			socket.on('image', async({chat_id,sender_id,receiver_id,image_path}) => {
 				//Upload the image via api call first then send socket data with image id
@@ -64,6 +98,16 @@ module.exports = {
 					socket.broadcast.to(room_name).emit('updatechat',data);
 			});
 
+			/**
+			 * @api {socket} seen Seen Message
+			 * @apiName Seen Message
+			 * @apiGroup Socket
+			 *
+			 * @apiParam {ObjectId} chat_id Id of the chat.
+			 * @apiParam {ObjectId} msg_id Id of the message.
+			 *
+			*/
+
 			socket.on('seen', async({chat_id,msg_id}) => {
 				let updated = await FindAndUpdate(Chat,{_id: chat_id, "chats._id": msg_id},{"chats.$.seen": true});
 			});
@@ -81,10 +125,27 @@ module.exports = {
 		 * On task_change event, the changed data is emitted to all the nearest provider connected within 10KM
 		 */
 		try {
+
+			/**
+			 * @api {socket} provider Store provider
+			 * @apiName Store provider
+			 * @apiGroup Socket
+			 *
+			 * @apiParam {ObjectId} user_id Id of the user.
+			 *
+			*/
 			socket.on('provider', (user_id) => {
 				realtimeTaskSocketsProviders[user_id] = socket.id
 			});
 
+			/**
+			 * @api {socket} task_change Realtime task change listner
+			 * @apiName Realtime task
+			 * @apiGroup Socket
+			 *
+			 * @apiParam {ObjectId} task_id Id of the task.
+			 *
+			*/
 			socket.on('task_change', async (task_id) => {
 				let task = await IsExists(Task, { _id: task_id })
 				if (task) {
@@ -111,6 +172,15 @@ module.exports = {
 				}
 			});
 
+			/**
+			 * @api {socket} fetch_available_task Fetch task
+			 * @apiName Fetch task
+			 * @apiGroup Socket
+			 *
+			 * @apiParam {Object} location Location to fetch nearby tasks.
+			 * @apiParam {ObjectId} type Type of service.
+			 *
+			*/
 			socket.on('fetch_available_task',async ({location,type})=>{
 				let tasks = await Find(Task,{
 					location: {
@@ -140,6 +210,15 @@ module.exports = {
 				}
 			})
 
+			/**
+			 * @api {socket} change_location Change location
+			 * @apiName Change location
+			 * @apiGroup Socket
+			 *
+			 * @apiParam {Object} location Location to change [longitude,latitude].
+			 * @apiParam {ObjectId} user Id of the user
+			 *
+			*/
 			socket.on('change_location',async ({location,user})=>{
 				let updated = await FindAndUpdate(User,{_id: user},{'location.coordinates': [location.longitude,location.latitude]})
 				RealtimeListener.providerChange.emit('provider_change',user)
@@ -158,10 +237,27 @@ module.exports = {
 		 * On provider_change event, the changed data is emitted to all the nearest consumer connected within 10KM
 		 */
 		try {
+
+			/**
+			 * @api {socket} consumer Store consumer
+			 * @apiName Store consumer
+			 * @apiGroup Socket
+			 *
+			 * @apiParam {ObjectId} user Id of the user
+			 *
+			*/
 			socket.on('consumer', (user_id) => {
 				realtimeConsumerSockets[user_id] = socket.id
 			});
 
+			/**
+			 * @api {socket} provider_change Realtime provider change listner
+			 * @apiName Realtime provider
+			 * @apiGroup Socket
+			 *
+			 * @apiParam {ObjectId} user_id Id of the user.
+			 *
+			*/
 			socket.on('provider_change', async (user_id) => {
 				let provider = await IsExists(User, { _id: user_id })
 				if (provider) {
@@ -188,6 +284,14 @@ module.exports = {
 				}
 			});
 
+			/**
+			 * @api {socket} fetch_all_providers Fetch providers
+			 * @apiName Fetch providers
+			 * @apiGroup Socket
+			 *
+			 * @apiParam {Object} location Location to fetch nearby providers.
+			 *
+			*/
 			socket.on('fetch_all_providers',async ({location})=>{
 				const query = [
 					{ $geoNear: {
