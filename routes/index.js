@@ -29,7 +29,7 @@ router.use('/admins', require('./admins'));
 router.use('/auth', require('./auth'));
 
 // Protect all routes after this middleware
-router.use(VerifyToken);
+// router.use(VerifyToken);
 
 router.use('/consumer', require('./consumer'));
 router.use('/provider', require('./provider'));

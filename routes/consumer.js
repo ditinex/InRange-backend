@@ -8,14 +8,14 @@ const Chat = Controllers.Chat
 
 router.post('/createtask',Task.CreateTask);
 router.delete('/deletetask',Task.DeleteTask);
-router.delete('/canceltask',Task.CancelTask);
+router.post('/cancel-task',Task.CancelTask);
 router.get('/gettasks',Task.GetTasksConsumer);
 router.get('/gettaskbyid',Task.GetTaskById);
 router.post('/sendreview',Task.SendReview);
 router.put('/acceptproposal',Task.AcceptProposal);
 router.get('/getcouponbycode',Admin.GetCouponByCode);
 router.put('/startinterview',Chat.StartInterview);
-router.post('/setcost',Task.SetCost);
-router.post('/inprogressorder',Task.GetOrderDetailsInProgress);
+router.post('/set-cost',Task.SetCost);
+router.get('/inprogress-order',Task.GetOrderDetailsInProgress);
 
 module.exports = router;

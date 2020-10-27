@@ -30,7 +30,7 @@ const IsExistsOne = async (model, where, select = null) => {
 		if (select)
 			query.select(select)
 		let doc = await query.lean().exec()
-		if (doc.length > 0)
+		if (doc)
 			return doc
 		else
 			return false
@@ -71,6 +71,22 @@ const Find = async (model, where, select = null, sort = null, limit = null, skip
 	}
 	catch (e) {
 		console.log(e)
+		return false
+	}
+}
+
+const FindOne = async (model, where, select = null) => {
+	try {
+		let query = model.findOne(where)
+		if (select)
+			query.select(select)
+		let doc = await query.lean().exec()
+		if (doc)
+			return doc
+		else
+			return false
+	}
+	catch (e) {
 		return false
 	}
 }
@@ -244,6 +260,7 @@ exports.IsExists = IsExists
 exports.IsExistsOne = IsExistsOne
 exports.Insert = Insert
 exports.Find = Find
+exports.FindOne = FindOne
 exports.Delete = Delete
 exports.FindAndUpdate = FindAndUpdate
 exports.Aggregate = Aggregate

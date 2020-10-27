@@ -6,7 +6,7 @@ const { RealtimeListener } = require('../services')
 const { Admin, Otp, User, Task, Mongoose, Review } = require('../models')
 
 const {
-	IsExists, IsExistsOne, Insert, Find, CompressImageAndUpload, FindAndUpdate, Delete,
+	IsExists, IsExistsOne, Insert, Find, FindOne,CompressImageAndUpload, FindAndUpdate, Delete,
 	HandleSuccess, HandleError, HandleServerError,
 	ValidateEmail, PasswordStrength, ValidateAlphanumeric, ValidateLength, ValidateMobile, isDataURL, GeneratePassword, Aggregate
 } = require('./BaseController');
@@ -264,7 +264,7 @@ module.exports = {
 	},
 
 	/**
-	 * @api {post} /consumer/canceltask Cancel Task
+	 * @api {post} /consumer/cancel-task Cancel Task
 	 * @apiName Cancel Task
 	 * @apiGroup Task
 	 *
@@ -290,7 +290,7 @@ module.exports = {
 				return HandleError(res, validateError)
 
 
-			let where = { _id: id }
+			let where = { _id: _id }
 			let data = { status: 'Cancelled'}
 
 			let updated = await FindAndUpdate(Task, where, data)
@@ -904,7 +904,7 @@ module.exports = {
 
 	GetTaskById: async (req, res, next) => {
 		try {
-			let _id = req.body.id || ''
+			let _id = req.query.id || ''
 			let validateError = ''
 
 			if (_id === '')
@@ -926,7 +926,7 @@ module.exports = {
 	},
 
 	/**
-	 * @api {post} /consumer/setcost Set Cost
+	 * @api {post} /consumer/set-cost Set Cost
 	 * @apiName Set Cost
 	 * @apiGroup Task
 	 *
@@ -938,7 +938,41 @@ module.exports = {
 	 * @apiSuccessExample Success-Response:
 	 *     HTTP/1.1 200 OK
 
-	 *	
+	*	{
+		"status": "success",
+		"data": {
+			"location": {
+				"type": "Point",
+				"coordinates": [
+					67.1027029,
+					24.9335846
+				]
+			},
+			"cost": {
+				"service_cost": 100,
+				"other_cost": 10,
+				"discount": 0,
+				"total": 108
+			},
+			"images": [],
+			"_id": "5f89e197efa0471a92d71504",
+			"title": "Looking for cook",
+			"service": "Cook",
+			"description": "Need cook",
+			"instruction": "",
+			"name": "Jay",
+			"mobile": "112233448866",
+			"status": "Hiring",
+			"address": "Allama Shabbir Ahmed Usmani Road",
+			"consumer": "5f89e0c3efa0471a92d71503",
+			"landmark": "",
+			"houseno": "",
+			"proposals": [],
+			"createdAt": "2020-10-16T18:08:23.898Z",
+			"updatedAt": "2020-10-27T14:55:55.621Z",
+			"__v": 0
+		}
+	}
 	 *
 	 */
 
@@ -956,7 +990,7 @@ module.exports = {
 			if (!isTaskExists)
 				return HandleError(res, 'Task doesn\'t exists.')
 
-			const total = service_cost + other_cost - discount;
+			const total = parseInt(service_cost) + parseInt(other_cost) - parseInt(discount);
 			const where = { _id: task_id }
 			const query = { 'cost.service_cost': service_cost, 'cost.other_cost': other_cost, 'cost.total': total  }
 
@@ -973,7 +1007,7 @@ module.exports = {
 	},
 
 	/**
-	 * @api {get} /consumer/inprogressorder Get OrderDetails-Inprogress
+	 * @api {get} /consumer/inprogress-order Get OrderDetails-Inprogress
 	 * @apiName Get OrderDetails-Inprogress
 	 * @apiGroup Task
 	 *
@@ -983,13 +1017,19 @@ module.exports = {
 	 *     HTTP/1.1 200 OK
 
 	 *	
+	 {
+		"status": "success",
+		"data": {
+			"service_cost": 100,
+			"other_cost": 10
+		}
+	}
 	 *
 	 */
 
 	GetOrderDetailsInProgress: async (req, res, next) => {
 		try {
-			const { task_id = '' } = req.body
-
+			const { task_id = '' } = req.query
 			if (task_id == '')
 				return HandleError(res, 'Invalid task id.')
 
@@ -1000,7 +1040,7 @@ module.exports = {
 
 			const where = { _id: task_id }
 
-			let data = await Find(Task, where)
+			let data = await FindOne(Task, where)
 			if (!data)
 				return HandleError(res, 'Failed to get details.')
 
