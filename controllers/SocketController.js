@@ -388,7 +388,65 @@ module.exports = {
 		}
 	},
 
+	RealtimeTracking: async (socket) => {
+		try {
 
+			/**
+			 * @api {socket} start-tracker Get Tracking Location
+			 * @apiName Get Tracking Location
+			 * @apiGroup Socket
+			 *
+			 * @apiParam {ObjectId} task_id Id of the task
+			 *
+			*/
+			socket.on('start-tracker', async function(task_id){
+				const room_name = task_id;
+				socket.join(room_name);
+				//
+				const getAddressQuery = [
+					{
+						$match: { _id: Mongoose.Types.ObjectId(task_id) }
+					},
+					{
+						$lookup:
+							{ from: 'users', localField: 'provider', foreignField: '_id', as: 'provider' }
+					},
+					{
+						$lookup:
+							{ from: 'users', localField: 'consumer', foreignField: '_id', as: 'consumer' }
+					},
+					{
+						$project: {
+							provider_location: provider.location.coordinates,
+							consumer_location: consumer.location.coordinates
+						}
+					}
+				]
+				const locationData = await Aggregate(Task, getAddressQuery)
+
+				socket.emit('tracking-details',locationData[0]);
+			});
+
+			/**
+			 * @api {socket} change-provider-location Realtime Provider location
+			 * @apiName Realtime Provider location
+			 * @apiGroup Socket
+			 *
+			 * @apiParam {Object} location Location to change [longitude,latitude].
+			 * @apiParam {ObjectId} provider_id Id of the provider
+			 * @apiParam {ObjectId} task_id Id of the task
+			 *
+			*/
+			socket.on('change-provider-location',async ({location,provider_id,task_id})=>{
+				let updated = await FindAndUpdate(User,{_id: provider_id},{'location.coordinates': [location.longitude,location.latitude]})
+				const updatedLoc = [location.longitude,location.latitude];
+				socket.to(task_id).emit('provider-location', updatedLoc);
+			});
+
+		} catch (err) {
+			console.log(err)
+		}
+	}
 }
 
 
