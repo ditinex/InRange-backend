@@ -388,7 +388,7 @@ module.exports = {
 		}
 	},
 
-	RealtimeTracking: async (socket) => {
+	RealtimeInprogressTask: async (socket) => {
 		try {
 
 			/**
@@ -410,21 +410,12 @@ module.exports = {
 					{
 						$lookup:
 							{ from: 'users', localField: 'provider', foreignField: '_id', as: 'provider' }
-					},
-					{
-						$lookup:
-							{ from: 'users', localField: 'consumer', foreignField: '_id', as: 'consumer' }
-					},
-					{
-						$project: {
-							provider_location: provider.location.coordinates,
-							consumer_location: consumer.location.coordinates
-						}
 					}
 				]
-				const locationData = await Aggregate(Task, getAddressQuery)
+				const data = await Aggregate(Task, getAddressQuery)
 
-				socket.emit('tracking-details',locationData[0]);
+				const locationData = {provider_coordinates: data[0].provider[0].location.coordinates}
+				socket.emit('tracking-details',locationData);
 			});
 
 			/**

@@ -15,7 +15,7 @@ module.exports = (io) => {
     
     io.of('/chat').on('connection',Socket.Chat);
 
-    io.of('/realtime-tracking').on('connection',Socket.RealtimeTracking);
+    io.of('/realtime-inprogress-task').on('connection',Socket.RealtimeInprogressTask);
 
 
 };

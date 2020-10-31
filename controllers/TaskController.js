@@ -376,8 +376,7 @@ module.exports = {
 
 			const isProviderExists = await IsExists(User, { _id: provider })
 			const isTaskExists = await IsExists(Task, { _id: task_id })
-			const isProposalExists = await IsExistsOne(Task, { _id: task_id, 'proposals': { "$not": { $elemMatch: { provider: provider } } } })
-
+			const isProposalExists = await IsExistsOne(Task, { _id: task_id, 'proposals': { $elemMatch: { provider: provider } } })
 			if (!isProviderExists)
 				return HandleError(res, 'Provider doesn\'t exists.')
 			else if (!isTaskExists)
