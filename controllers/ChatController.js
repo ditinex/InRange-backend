@@ -209,6 +209,7 @@ module.exports = {
                                 cond: { $eq: ['$$proposal._id', Mongoose.Types.ObjectId(proposal_id)] }
                             }
                         },
+                        consumer: 1
                     }
                 }
             ]
@@ -217,12 +218,17 @@ module.exports = {
                 return HandleError(res, 'Proposal Not Found.')
 
             const provider_id = result[0].proposals[0].provider
+            const consumer_id = result[0].consumer
             const proposal_letter = result[0].proposals[0].cover_letter
             const is_already_interviewed = result[0].proposals[0].interviewed
 
             const isProviderExists = await IsExists(User, { _id: provider_id, is_switched_provider: true })
             if (!isProviderExists)
                 return HandleError(res, 'Provider doesn\'t exists.')
+
+            const isConsumerExists = await IsExists(User, { _id: consumer_id, is_switched_provider: false })
+            if (!isConsumerExists)
+                return HandleError(res, 'Consumer doesn\'t exists.')
 
             if (!is_already_interviewed) {
                 const where = { _id: task_id, 'proposals._id': proposal_id }
@@ -243,13 +249,12 @@ module.exports = {
                 if (!inserted)
                     return HandleError(res, 'Failed to Start Interview. Please contact system admin.')
             }
-
             // send chat data
             const chatquery = [
                 {
                     $match: {
                         $and: [
-                            { consumer_id: Mongoose.Types.ObjectId(id) },
+                            { consumer_id: Mongoose.Types.ObjectId(consumer_id) },
                             { provider_id: Mongoose.Types.ObjectId(provider_id) },
                             { task_id: Mongoose.Types.ObjectId(task_id) },
                         ]
@@ -261,19 +266,15 @@ module.exports = {
                 },
                 {
                     $lookup:
-                        { from: 'tasks', localField: 'task_id', foreignField: '_id', as: 'tasks' }
+                        { from: 'tasks', localField: 'task_id', foreignField: '_id', as: 'task' }
                 },
                 {
                     $project: {
                         _id: 1,
-                        consumer_id: 1,
-                        provider_id: 1,
-                        task_id: 1,
                         average_rating: { $avg: '$reviews.rating' },
-                        tasks: { _id: 1, title: 1, service: 1, status: 1 },
-                        provider_profile_img: isProviderExists[0].profile_picture,
-                        provider_name: isProviderExists[0].name,
-                        provider_service: isProviderExists[0].provider.service,
+                        task: { _id: 1, title: 1, service: 1, status: 1 },
+                        provider: { _id: isProviderExists[0]._id, name: isProviderExists[0].name, service: isProviderExists[0].provider.service, profile_img: isProviderExists[0].profile_picture },
+                        consumer: { _id: isConsumerExists[0]._id, name: isConsumerExists[0].name, profile_img: isConsumerExists[0].profile_picture },
                     }
                 }
             ]

@@ -805,9 +805,21 @@ module.exports = {
 
 			if (validateError)
 				return HandleError(res, validateError)
+			
+			const query = [
+                { $match: { provider: Mongoose.Types.ObjectId(user_id) } },
+                {
+                    $lookup:
+                        { from: 'users', localField: 'provider', foreignField: '_id', as: 'provider_details' }
+				},
+				{
+                    $lookup:
+                        { from: 'users', localField: 'consumer', foreignField: '_id', as: 'consumer_details' }
+                }
+            ]
 
-			let data = await Find(Task, { provider: user_id })
-
+			let data = await Aggregate(Task, query)
+			
 			if (!data.length)
 				return HandleSuccess(res, [])
 

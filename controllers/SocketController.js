@@ -399,7 +399,7 @@ module.exports = {
 			 * @apiParam {ObjectId} task_id Id of the task
 			 *
 			*/
-			socket.on('start-tracker', async function(task_id){
+			socket.on('join-tracking-room', async function(task_id){
 				const room_name = task_id;
 				socket.join(room_name);
 				//
