@@ -8,7 +8,7 @@ router.put('/sendproposal',Task.SendProposal);
 router.get('/gettasks',Task.GetTasksProvider);
 router.get('/gettaskbyid',Task.GetTaskById);
 router.post('/set-cost',Task.SetCost);
-router.post('/complete-task',Task.CompleteTask);
+router.post('/done-task',Task.DoneTask);
 
 
 module.exports = router;

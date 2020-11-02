@@ -304,7 +304,7 @@ module.exports = {
 		}
 	},
 
-	CompleteTask: async (req, res, next) => {
+	DoneTask: async (req, res, next) => {
 		try {
 			let _id = (req.body.id) ? req.body.id : ''
 			let validateError = ''
@@ -317,7 +317,7 @@ module.exports = {
 
 
 			let where = { _id: _id }
-			let data = { status: 'Completed'}
+			let data = { 'cost.readytopay': true }
 
 			let updated = await FindAndUpdate(Task, where, data)
 			if (!updated)
