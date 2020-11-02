@@ -296,13 +296,39 @@ module.exports = {
 			let updated = await FindAndUpdate(Task, where, data)
 			if (!updated)
 				return HandleError(res, 'Failed to cancel task. Please contact system admin.')
-
+			// Realtime change
+			RealtimeListener.inProgressTaskChange.emit('task-change',{task_id: updated._id})
 			return HandleSuccess(res, updated);
 		} catch (err) {
 			HandleServerError(res, req, err)
 		}
 	},
 
+	CompleteTask: async (req, res, next) => {
+		try {
+			let _id = (req.body.id) ? req.body.id : ''
+			let validateError = ''
+
+			if (_id === '')
+				validateError = 'This field is required.'
+
+			if (validateError)
+				return HandleError(res, validateError)
+
+
+			let where = { _id: _id }
+			let data = { status: 'Completed'}
+
+			let updated = await FindAndUpdate(Task, where, data)
+			if (!updated)
+				return HandleError(res, 'Failed to cancel task. Please contact system admin.')
+			// Realtime change
+			RealtimeListener.inProgressTaskChange.emit('task-change',{task_id: updated._id})
+			return HandleSuccess(res, updated);
+		} catch (err) {
+			HandleServerError(res, req, err)
+		}
+	},
 
 	/**
 	 * @api {put} /provider/sendproposal Send Proposal
@@ -937,7 +963,7 @@ module.exports = {
 	},
 
 	/**
-	 * @api {post} /consumer/set-cost Set Cost
+	 * @api {post} /provider/set-cost Set Cost
 	 * @apiName Set Cost
 	 * @apiGroup Task
 	 *
@@ -1008,6 +1034,9 @@ module.exports = {
 			let updated = await FindAndUpdate(Task, where, query)
 			if (!updated)
 				return HandleError(res, 'Failed to set cost.')
+
+			// Realtime change
+			RealtimeListener.inProgressTaskChange.emit('task-change',{task_id: task_id})
 
 			return HandleSuccess(res, updated)
 			

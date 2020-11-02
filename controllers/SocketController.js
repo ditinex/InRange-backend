@@ -415,7 +415,7 @@ module.exports = {
 				const data = await Aggregate(Task, getAddressQuery)
 
 				const locationData = {provider_coordinates: data[0].provider[0].location.coordinates}
-				socket.emit('tracking-details',locationData);
+				socket.to(task_id).emit('provider-location',locationData);
 			});
 
 			/**
@@ -432,6 +432,24 @@ module.exports = {
 				let updated = await FindAndUpdate(User,{_id: provider_id},{'location.coordinates': [location.longitude,location.latitude]})
 				const updatedLoc = [location.longitude,location.latitude];
 				socket.to(task_id).emit('provider-location', updatedLoc);
+			});
+
+			socket.on('task-change',async ({task_id})=>{
+				const query = [
+					{ $match: { _id: Mongoose.Types.ObjectId(task_id) } },
+					{
+						$lookup:
+							{ from: 'users', localField: 'provider', foreignField: '_id', as: 'provider_details' }
+					},
+					{
+						$lookup:
+							{ from: 'users', localField: 'consumer', foreignField: '_id', as: 'consumer_details' }
+					}
+				]
+	
+				let data = await Aggregate(Task, query)
+				if(data.length>0)
+					socket.to(task_id).emit('updated-task', data[0]);
 			});
 
 		} catch (err) {
