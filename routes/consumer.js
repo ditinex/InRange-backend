@@ -9,6 +9,7 @@ const Chat = Controllers.Chat
 router.post('/createtask',Task.CreateTask);
 router.delete('/deletetask',Task.DeleteTask);
 router.post('/cancel-task',Task.CancelTask);
+router.post('/complete-task',Task.CompleteTask);
 router.get('/gettasks',Task.GetTasksConsumer);
 router.get('/gettaskbyid',Task.GetTaskById);
 router.post('/sendreview',Task.SendReview);

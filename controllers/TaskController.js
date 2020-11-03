@@ -304,6 +304,32 @@ module.exports = {
 		}
 	},
 
+	CompleteTask: async (req, res, next) => {
+		try {
+			let _id = (req.body.id) ? req.body.id : ''
+			let validateError = ''
+
+			if (_id === '')
+				validateError = 'This field is required.'
+
+			if (validateError)
+				return HandleError(res, validateError)
+
+
+			let where = { _id: _id }
+			let data = { status: 'Completed' }
+
+			let updated = await FindAndUpdate(Task, where, data)
+			if (!updated)
+				return HandleError(res, 'Failed to cancel task. Please contact system admin.')
+			// Realtime change
+			RealtimeListener.inProgressTaskChange.emit('task-change',{task_id: updated._id})
+			return HandleSuccess(res, updated);
+		} catch (err) {
+			HandleServerError(res, req, err)
+		}
+	},
+
 	DoneTask: async (req, res, next) => {
 		try {
 			let _id = (req.body.id) ? req.body.id : ''
@@ -701,6 +727,7 @@ module.exports = {
 				return HandleError(res, validateError)
 			let query = [
 				{ $match: { consumer: Mongoose.Types.ObjectId(user_id) } },
+				{ $sort: { createdAt: -1 } },
 				{
 					"$unwind": {
 						"path": "$proposals",
@@ -833,7 +860,8 @@ module.exports = {
 				return HandleError(res, validateError)
 			
 			const query = [
-                { $match: { provider: Mongoose.Types.ObjectId(user_id) } },
+				{ $match: { provider: Mongoose.Types.ObjectId(user_id) } },
+				{ $sort: { createdAt: -1 } },
                 {
                     $lookup:
                         { from: 'users', localField: 'provider', foreignField: '_id', as: 'provider_details' }
@@ -841,7 +869,7 @@ module.exports = {
 				{
                     $lookup:
                         { from: 'users', localField: 'consumer', foreignField: '_id', as: 'consumer_details' }
-                }
+				}
             ]
 
 			let data = await Aggregate(Task, query)
