@@ -638,24 +638,24 @@ module.exports = {
 
 	SendReview: async (req, res, next) => {
 		try {
-			const { rating = 1, provider = '', username = '', feedback = '' } = req.body
+			const { rating = 0, provider = '', username = '', feedback = '',task_id = '' } = req.body
 
 			if (username.trim() == '')
 				return HandleError(res, 'Invalid username.')
 			else if (provider == '')
 				return HandleError(res, 'Invalid provider.')
-			else if (!rating >= 1 && !rating <= 5)
+			else if (!rating > 0 && !rating <= 5)
 				return HandleError(res, 'Rating must be between 1 to 5.')
 
 			const isProviderExists = await IsExists(User, { _id: provider })
-			const isUserExists = await IsExists(User, { name: username })
+			const isReviewExists = await IsExists(Review, { task_id: task_id })
 
 			if (!isProviderExists)
 				return HandleError(res, 'Provider doesn\'t exists.')
-			else if (!isUserExists)
-				return HandleError(res, 'User doesn\'t exists.')
+			if (isReviewExists)
+				return HandleError(res, 'You Already Reviewed!')
 
-			let data = { rating, provider, username, feedback }
+			let data = { rating, provider, username, feedback, task_id }
 
 			let inserted = await Insert(Review, data)
 			if (!inserted)
