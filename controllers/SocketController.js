@@ -8,8 +8,9 @@ const { Admin, Otp, User, Task, Mongoose, Review, Chat } = require('../models')
 const {
 	IsExists, Insert, Find, CompressImageAndUpload, FindAndUpdate, Delete,
 	HandleSuccess, HandleError, HandleServerError, Aggregate,
-	ValidateEmail, PasswordStrength, ValidateAlphanumeric, ValidateLength, ValidateMobile, isDataURL, GeneratePassword
+	ValidateEmail, PasswordStrength, ValidateAlphanumeric, ValidateLength, ValidateMobile, isDataURL, GeneratePassword, FindOne
 } = require('./BaseController');
+const { update } = require('../models/OtpModel.js');
 
 let realtimeTaskSocketsProviders = {}
 let realtimeConsumerSockets = {}
@@ -29,10 +30,10 @@ module.exports = {
 			 *
 			*/
 			socket.on('startchat', async function(chat_id,user_id){
+				console.log(user_id)
 				const room_name = chat_id;
 				socket.join(room_name);
 				let updated = await FindAndUpdate(Chat,{_id: chat_id,"chats.receiver_id": user_id, "chats.seen": false},{"chats.$[].seen": true});
-
 				let chatList = await Find(Chat,{_id: chat_id},{},{ 'chats.createdAt': -1 },50);
 				socket.emit('chathistory',chatList[0].chats);
 

@@ -6,7 +6,7 @@ const MessageSchema=new Schema({
     receiver_id: { type: Schema.Types.ObjectId, ref: 'users', required: true },
     message: { type: String, trim: true },
     image: { type: String },
-    seen: { type: Boolean, trim: true, required: true, default: false },
+    seen: { type: Boolean, required: true, default: false },
 },{ timestamps: true })
 
 const ChatSchema=new Schema({
