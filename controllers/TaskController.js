@@ -84,7 +84,7 @@ module.exports = {
 			let validateError = null
 			if (!ValidateAlphanumeric(name) || !ValidateLength(name))
 				validateError = 'Please enter a valid name without any special character and less than 25 character.'
-			else if (!ValidateAlphanumeric(title) || !ValidateLength(title))
+			else if (!ValidateAlphanumeric(title) || !ValidateLength(title,50))
 				validateError = 'Please enter a valid task title without any special character and less than 25 character.'
 			else if (!ValidateMobile(mobile))
 				validateError = 'Please enter valid mobile number.'

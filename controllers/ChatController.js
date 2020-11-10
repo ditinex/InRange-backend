@@ -131,8 +131,6 @@ module.exports = {
             ]
 
             let data = await Aggregate(Chat, query)
-            if (!data.length)
-                return HandleError(res, 'No Data Found.')
             return HandleSuccess(res, data)
 
         } catch (err) {
