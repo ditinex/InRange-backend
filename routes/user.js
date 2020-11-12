@@ -10,6 +10,6 @@ router.put('/switchprofile',User.SwitchProfile);
 router.put('/editproviderprofile',User.EditProviderProfile);
 router.put('/editprofile',User.EditProfile);
 router.put('/updatelocation',User.UpdateLocation);
-
+router.put('/update-push-token',User.UpdatePushToken);
 
 module.exports = router;

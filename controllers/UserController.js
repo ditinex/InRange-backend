@@ -485,6 +485,44 @@ module.exports = {
 			HandleServerError(res, req, err)
 		}
     },
+
+    /**
+	 * @api {put} /user/updatepushtoken Set Notification Token
+	 * @apiName Set Notification Token
+	 * @apiGroup Auth
+	 *
+	 * @apiParam {String} push_token Token of the device.
+	 * @apiParam {String} push_id Push Id of the user.
+	 *
+	 *
+	 *
+	 * @apiSuccessExample Success-Response:
+	 *     HTTP/1.1 200 OK
+	 *     
+	 *
+	 */
+
+	UpdatePushToken: async (req, res, next) => {
+		try {
+			const { push_token='', push_id='' } = req.body
+			console.log(req.user_id)
+			const id = req.user_id || ''
+			if(!push_token.trim() || !push_id.trim())
+				return HandleError(res, 'Invalid id or token.')
+
+			const push = { push_token: push_token, push_id: push_id }
+
+			let updated = await FindAndUpdate(User, { _id: id }, { push_notification: push })
+			if (!updated)
+				return HandleError(res, 'Failed to set notification token.')
+
+			return HandleSuccess(res, updated)
+
+		} catch (err) {
+			HandleServerError(res, req, err)
+		}
+    },
+    
 }
 
 
