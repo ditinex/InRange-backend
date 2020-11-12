@@ -258,6 +258,81 @@ module.exports = {
 		}
 	},
 
+	EditProfile: async (req, res, next) => {
+		try {
+			const { name = '', gender = '', mobile = '', location = '', address = '', service = '', description = '' } = req.body
+			const { profile_picture = null, verification_document = null } = req.files
+
+			//Check service & verifydoc form submission in frontend
+
+			let validateError = null
+			if (!ValidateAlphanumeric(name.trim()) || !ValidateLength(name.trim()))
+				validateError = 'Please enter a valid name without any special character and less than 25 character.'
+			else if (gender.trim() == '')
+				validateError = 'Please select gender.'
+			else if (location == '')
+				validateError = 'Failed to access location. Please restart the app and allow all permissions.'
+			else if (!profile_picture)
+				validateError = 'Please upload a profile picture.'
+
+			if (validateError)
+				return HandleError(res, validateError)
+
+			let coordinates = {}
+			try {
+				coordinates = JSON.parse(location)
+			}
+			catch (e) {
+				return HandleError(res, 'Invalid location cooridnates.')
+			}
+
+			let data = { name, gender, mobile, address, status: 'approved', location: { type: 'Point', coordinates: [coordinates.longitude, coordinates.lattitude] }, provider: { service: service, description: description } }
+			data.active_session_refresh_token = GeneratePassword()
+
+			if (service) {
+				data.is_switched_provider = true
+				if(service=='Taxi' || service=='Truck')
+					data.status = 'pending'
+			}
+
+			let isUploaded = await CompressImageAndUpload(profile_picture)
+			if(!isUploaded)
+				return HandleError(res,"Failed to upload profile pic.")
+			data.profile_picture = isUploaded.path
+			
+			if(verification_document){
+				isUploaded = await CompressImageAndUpload(verification_document)
+				if(!isUploaded)
+					return HandleError(res,"Failed to upload verification document.")
+				data.provider.verificationDocument = isUploaded.path
+			}
+
+			let inserted = await Insert(User, data)
+			if (!inserted)
+				return HandleError(res, 'Failed to create account. Please contact system admin.')
+
+			inserted = { ...inserted._doc }
+			const access_token = jwt.sign({ id: inserted._id, mobile: inserted.mobile, name: inserted.name }, Config.secret, {
+				expiresIn: Config.tokenExpiryLimit // 86400 expires in 24 hours -- It should be 1 hour in production
+			});
+
+			let updated = await FindAndUpdate(User, {_id: inserted._id}, {access_token: access_token})
+			if(!updated)
+				return HandleError(res, 'Failed to update access token.')
+
+			/*
+            * Creating an event provider_change in self socket to server realtime database via socket
+            */
+			if(updated.is_switched_provider)
+			   RealtimeListener.providerChange.emit('provider_change',updated._id)
+			
+			return HandleSuccess(res, updated)
+
+		} catch (err) {
+			HandleServerError(res, req, err)
+		}
+	},
+
 	/**
 	 * @api {get} /auth/refresh-token/:mobile/:token Refresh access token
 	 * @apiName RefreshToken
@@ -378,6 +453,41 @@ module.exports = {
 		}
 	},
 
+		/**
+	 * @api {put} /auth/updatepushtoken Set Notification Token
+	 * @apiName Set Notification Token
+	 * @apiGroup Auth
+	 *
+	 * @apiParam {String} push_token Token of the device.
+	 * @apiParam {String} push_id Push Id of the user.
+	 *
+	 *
+	 *
+	 * @apiSuccessExample Success-Response:
+	 *     HTTP/1.1 200 OK
+	 *     
+	 *
+	 */
+
+	UpdatePushToken: async (req, res, next) => {
+		try {
+			const { push_token='', push_id='' } = req.body
+			const id = req.user_id || ''
+			if(!push_token.trim() || !push_id.trim())
+				return HandleError(res, 'Invalid id or token.')
+
+			const push = { push_token: push_token, push_id: push_id }
+
+			let updated = await FindAndUpdate(User, { _id: id }, { push_notification: push })
+			if (!updated)
+				return HandleError(res, 'Failed to set notification token.')
+
+			return HandleSuccess(res, updated)
+
+		} catch (err) {
+			HandleServerError(res, req, err)
+		}
+	},
 	
 }
 

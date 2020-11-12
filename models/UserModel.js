@@ -12,6 +12,10 @@ const UserSchema = new Schema({
 	is_available: { type: Boolean, default: true, required: true },
 	active_session_refresh_token: { type: String, required: true },
 	access_token: { type: String },
+	push_notification: { 
+		push_token: { type: String },
+		push_id: { type: String }
+	 },
 	subscription: {
         isSubscribed: {type: Boolean, default: false},
 		amount: { type: Number, default: 0 },
