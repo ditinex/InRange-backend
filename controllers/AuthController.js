@@ -453,7 +453,7 @@ module.exports = {
 		}
 	},
 
-		/**
+	/**
 	 * @api {put} /auth/updatepushtoken Set Notification Token
 	 * @apiName Set Notification Token
 	 * @apiGroup Auth
