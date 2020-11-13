@@ -522,6 +522,42 @@ module.exports = {
 			HandleServerError(res, req, err)
 		}
     },
+
+    GetNotificationList: async (req, res, next) => {
+		try {
+			let _id = req.user_id || ''
+			let validateError = ''
+
+			if (_id === '')
+				validateError = 'This field is required.'
+
+			if (validateError)
+				return HandleError(res, validateError)
+
+			let data = await Find(Notification, { user_id: _id },{},{ createdAt: -1 })
+
+			if (!data)
+				return HandleError(res, 'Failed to get List.')
+
+			return HandleSuccess(res, data)
+
+		} catch (err) {
+			HandleServerError(res, req, err)
+		}
+	},
+
+    SendNotification: async(data) => {
+        try {
+            let inserted = await Insert(Notification, data)
+            if (!inserted)
+                return false
+
+            return true;
+
+        }catch (err) {
+
+        }
+    }
     
 }
 

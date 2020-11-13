@@ -4,6 +4,7 @@ const Config = require('../config.js');
 const fs = require('fs');
 const { RealtimeListener } = require('../services')
 const { Admin, Otp, User, Task, Mongoose, Review } = require('../models')
+const Controllers = require('../controllers')
 
 const {
 	IsExists, IsExistsOne, Insert, Find, FindOne,CompressImageAndUpload, FindAndUpdate, Delete,
@@ -298,6 +299,18 @@ module.exports = {
 				return HandleError(res, 'Failed to cancel task. Please contact system admin.')
 			// Realtime change
 			RealtimeListener.inProgressTaskChange.emit('task-change',{task_id: updated._id})
+			/*
+			 * Send Notification
+			 */
+
+				Controllers.User.GetNotificationList({
+					title:	'Task Cancelled',
+					description: 'The task '+updated[0].title+' has been cancelled by the consumer.',
+					user_id: updated[0].provider,
+					read: false,
+					is_provider: true
+				})
+
 			return HandleSuccess(res, updated);
 		} catch (err) {
 			HandleServerError(res, req, err)
@@ -324,6 +337,17 @@ module.exports = {
 				return HandleError(res, 'Failed to cancel task. Please contact system admin.')
 			// Realtime change
 			RealtimeListener.inProgressTaskChange.emit('task-change',{task_id: updated._id})
+			/*
+			 * Send Notification
+			 */
+
+				Controllers.User.GetNotificationList({
+					title:	'Task Completed',
+					description: 'The task '+updated[0].title+' has been successfully completed.',
+					user_id: updated[0].consumer,
+					read: false,
+					is_provider: false
+				})
 			return HandleSuccess(res, updated);
 		} catch (err) {
 			HandleServerError(res, req, err)
@@ -350,6 +374,17 @@ module.exports = {
 				return HandleError(res, 'Failed to cancel task. Please contact system admin.')
 			// Realtime change
 			RealtimeListener.inProgressTaskChange.emit('task-change',{task_id: updated._id})
+			/*
+			 * Send Notification
+			 */
+
+				Controllers.User.GetNotificationList({
+					title:	'Task Almost Completed',
+					description: 'The task '+updated[0].title+' is almost complete. Please pay as soon as possible.',
+					user_id: updated[0].consumer,
+					read: false,
+					is_provider: false
+				})
 			return HandleSuccess(res, updated);
 		} catch (err) {
 			HandleServerError(res, req, err)
@@ -444,9 +479,18 @@ module.exports = {
 				return HandleError(res, 'Failed to send proposal.')
 
 			/*
-			 * Creating an event send-notification in self socket to server realtime database via socket
+			 *  Send Notification 
 			 */
-				RealtimeListener.notificationChange.emit('send-notification', {})
+
+				Controllers.User.GetNotificationList({
+					title:	'Task Proposal Recieved',
+					description: isProviderExists[0].name+' send you a proposal for the task'+isTaskExists[0].title,
+					user_id: isTaskExists[0].consumer,
+					read: false,
+					is_provider: false
+				})
+
+
 			return HandleSuccess(res, updated)
 
 		} catch (err) {
@@ -498,6 +542,19 @@ module.exports = {
 			* Creating an event provider_change in self socket to server realtime database via socket
 			*/
 			RealtimeListener.providerChange.emit('provider_change', provider_id)
+
+			/*
+			 * Creating an event send-notification in self socket to server realtime database via socket
+			 */
+
+			Controllers.User.GetNotificationList({
+				title:	'Task Proposal Accepted',
+				description: 'Your Proposal has been accepted for the task'+isTaskExists[0].title,
+				user_id: isTaskExists[0].provider,
+				read: false,
+				is_provider: true
+			})
+
 			// return HandleSuccess(res, updated)
 			let query2 = [
 				{ $match: { consumer: Mongoose.Types.ObjectId(user_id) } },
@@ -664,6 +721,18 @@ module.exports = {
 			let inserted = await Insert(Review, data)
 			if (!inserted)
 				return HandleError(res, 'Failed to send review. Please contact system admin.')
+
+			/*
+			 * Send Notification
+			 */
+
+				Controllers.User.GetNotificationList({
+					title:	'Task Reviewed',
+					description: 'Your have got '+rating+' star for the task '+isTaskExists[0].title,
+					user_id: provider,
+					read: false,
+					is_provider: true
+				})
 
 			return HandleSuccess(res, inserted)
 
