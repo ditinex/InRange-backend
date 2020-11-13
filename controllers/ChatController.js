@@ -8,7 +8,7 @@ const { Admin, Otp, User, Task, Mongoose, Review, Chat } = require('../models')
 const {
     IsExists, Insert, Find, CompressImageAndUpload, FindAndUpdate, Delete,
     HandleSuccess, HandleError, HandleServerError, Aggregate,
-    ValidateEmail, PasswordStrength, ValidateAlphanumeric, ValidateLength, ValidateMobile, isDataURL, GeneratePassword
+    ValidateEmail, PasswordStrength, ValidateAlphanumeric, ValidateLength, ValidateMobile, isDataURL, GeneratePassword, IsExistsOne
 } = require('./BaseController');
 
 
@@ -85,8 +85,17 @@ module.exports = {
             if (validateError)
                 return HandleError(res, validateError)
 
+            const user = await IsExistsOne(User, { _id: id })
+            if (!user)
+                return HandleError(res, 'User doesn\'t exists.')
+
+            if(user.is_switched_provider)
+                queryField = 'provider_id';
+            else
+                queryField = 'consumer_id'; 
+
             const query = [
-                { $match: { $or: [{ provider_id: Mongoose.Types.ObjectId(id) }, { consumer_id: Mongoose.Types.ObjectId(id) }] } },
+                { $match: { [queryField]: Mongoose.Types.ObjectId(id) } },
                 {
                     $lookup:
                         { from: 'tasks', localField: 'task_id', foreignField: '_id', as: 'task' }

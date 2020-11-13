@@ -2,6 +2,9 @@ const fs = require('fs');
 const sharp = require('sharp');
 const Config = require('../config.js');
 
+var FCM = require('fcm-node');
+var serverKey = 'YOURSERVERKEYHERE';
+var fcm = new FCM(serverKey);
 
 /*
  * Database CURD methods below
@@ -212,6 +215,38 @@ const GeneratePassword = (length = 16) => {
 	return result;
 }
 
+const SendPushNotification = async (tokenlist,noti_title,noti_body,noti_image) => {
+	try {
+		var message = { 
+			registration_ids: tokenlist,
+			// to: 'registration_token', 
+			collapse_key: 'your_collapse_key',
+			
+			notification: {
+				title: noti_title, 
+				body: noti_body,
+				// image: noti_image
+			},
+			
+			// data: {
+			// 	my_key: 'my value',
+			// 	my_another_key: 'my another value'
+			// }
+		};
+		fcm.send(message, function(err, response){
+			if (err) {
+				console.log("Something has gone wrong!");
+				return false;
+			} else {
+				console.log("Successfully sent with response: ", response);
+				return response;
+			}
+		});
+
+	} catch (err) {
+	}
+}
+
 /*
  * Error Handling methods below
  *
@@ -266,6 +301,7 @@ exports.FindAndUpdate = FindAndUpdate
 exports.Aggregate = Aggregate
 exports.CompressImageAndUpload = CompressImageAndUpload
 exports.DeleteFile = DeleteFile
+exports.SendPushNotification = SendPushNotification
 
 exports.ValidateEmail = ValidateEmail
 exports.PasswordStrength = PasswordStrength
