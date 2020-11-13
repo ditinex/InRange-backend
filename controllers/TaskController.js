@@ -443,6 +443,10 @@ module.exports = {
 			if (!updated)
 				return HandleError(res, 'Failed to send proposal.')
 
+			/*
+			 * Creating an event send-notification in self socket to server realtime database via socket
+			 */
+				RealtimeListener.notificationChange.emit('send-notification', {})
 			return HandleSuccess(res, updated)
 
 		} catch (err) {

@@ -16,6 +16,12 @@ inProgressTaskChange.on('connect', socket=>{
     console.log('Realtime DB Provider Table Helper Socket Connected.');
 });
 
+const notificationChange = socketIOClient('http://localhost:'+Config.port+'/realtime-notification');
+inProgressTaskChange.on('connect', socket=>{ 
+    console.log('Realtime DB Provider Table Helper Socket Connected.');
+});
+
 exports.taskChange = taskChange
 exports.providerChange = providerChange
 exports.inProgressTaskChange = inProgressTaskChange
+exports.notificationChange = notificationChange
