@@ -17,5 +17,7 @@ module.exports = (io) => {
 
     io.of('/realtime-inprogress-task').on('connection',Socket.RealtimeInprogressTask);
 
+    io.of('/realtime-notification').on('connection',Socket.RealtimeNotification);
+
 };
 

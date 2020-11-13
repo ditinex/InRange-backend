@@ -14,6 +14,7 @@ const { update } = require('../models/OtpModel.js');
 
 let realtimeTaskSocketsProviders = {}
 let realtimeConsumerSockets = {}
+let realtimeNotificationSockets = {}
 
 module.exports = {
 
@@ -460,6 +461,39 @@ module.exports = {
 
 	RealtimeNotification: async (socket) => {
 		try {
+
+			socket.on('init-notification', (user_id) => {
+				realtimeNotificationSockets[user_id] = socket.id
+			});
+
+			socket.on('send-notification', async (title, description, user_id, is_provider) => {
+
+				let data = { title, description, user_id, read: false, is_provider: is_provider }
+				let inserted = await Insert(Notification, data)
+			
+				if(inserted)
+				{
+					let socketNotificationusers = Object.keys(realtimeNotificationSockets);
+					if(socketNotificationusers.includes(user_id))
+						socket.nsp.to(realtimeNotificationSockets[user_id]).emit('new-notification',inserted)
+					else
+					{
+						// push it
+					}
+
+				}
+
+			});
+
+			socket.on('disconnect',async ()=>{
+				let arr = Object.keys(realtimeNotificationSockets)
+				for(let i=0; i<arr.length; i++){
+					if(realtimeNotificationSockets[arr[i]]==socket.id){	
+						delete realtimeNotificationSockets[arr[i]]
+						break;
+					}
+				}
+			})
 
 			
 		} catch (err) {
