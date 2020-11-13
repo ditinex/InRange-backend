@@ -11,6 +11,8 @@ const {
 	ValidateEmail, PasswordStrength, ValidateAlphanumeric, ValidateLength, ValidateMobile, isDataURL,GeneratePassword
 } = require('./BaseController');
 
+const { PushTextNotification } = require('./PushNotificationController');
+
 
 module.exports = {
     /**
@@ -553,9 +555,9 @@ module.exports = {
                 return false
 
             // push notification
-
+            await PushTextNotification(data.title, data.description);    
+            
             return true;
-
         }catch (err) {
 
         }
