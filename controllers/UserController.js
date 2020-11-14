@@ -527,16 +527,20 @@ module.exports = {
 
     GetNotificationList: async (req, res, next) => {
 		try {
-			let _id = req.user_id || ''
+			let id = req.user_id || ''
 			let validateError = ''
 
-			if (_id === '')
+			if (id === '')
 				validateError = 'This field is required.'
 
-			if (validateError)
-				return HandleError(res, validateError)
+            if (validateError)
+                return HandleError(res, validateError)
 
-			let data = await Find(Notification, { user_id: _id },{},{ createdAt: -1 })
+            const user = await IsExistsOne(User, { _id: id })
+            if (!user)
+                return HandleError(res, 'User doesn\'t exists.')
+
+			let data = await Find(Notification, { user_id: id, is_provider: user.is_switched_provider },{},{ createdAt: -1 })
 
 			if (!data)
 				return HandleError(res, 'Failed to get List.')
@@ -546,7 +550,33 @@ module.exports = {
 		} catch (err) {
 			HandleServerError(res, req, err)
 		}
-	},
+    },
+    
+    UnreadNotificationCount: async (req, res, next) => {
+        try {
+            const id = req.user_id || ''
+
+            let validateError = null
+            if (id == '')
+                validateError = 'Invalid id.'
+
+            if (validateError)
+                return HandleError(res, validateError)
+
+            const user = await IsExistsOne(User, { _id: id })
+            if (!user)
+                return HandleError(res, 'User doesn\'t exists.')
+
+            let data = await Find(Notification, { user_id: id, is_provider: user.is_switched_provider, read: false },{},{ createdAt: -1 })
+
+            if (!data.length)
+                return HandleError(res, 'Failed to fetch no of unread chat.')
+            return HandleSuccess(res, {count: data.length})
+
+        } catch (err) {
+            HandleServerError(res, req, err)
+        }
+    },
 
     SendNotification: async(data) => {
         try {

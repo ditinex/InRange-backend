@@ -338,5 +338,39 @@ module.exports = {
             HandleServerError(res, req, err)
         }
     },
+
+    UnseenChatCount: async (req, res, next) => {
+        try {
+            const id = req.user_id || ''
+
+            let validateError = null
+            if (id == '')
+                validateError = 'Invalid id.'
+
+            if (validateError)
+                return HandleError(res, validateError)
+
+            const user = await IsExistsOne(User, { _id: id })
+            if (!user)
+                return HandleError(res, 'User doesn\'t exists.')
+
+            if(user.is_switched_provider)
+                queryField = 'provider_id';
+            else
+                queryField = 'consumer_id'; 
+
+            const query = [
+                { $match: { [queryField]: Mongoose.Types.ObjectId(id), "chats": { $elemMatch: { "seen": false } } } }
+            ]
+
+            let data = await Aggregate(Chat, query)
+            if (!data.length)
+                return HandleError(res, 'Failed to fetch no of unread chat.')
+            return HandleSuccess(res, {count: data.length})
+
+        } catch (err) {
+            HandleServerError(res, req, err)
+        }
+    },
     
 }
