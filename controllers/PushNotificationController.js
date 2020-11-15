@@ -21,14 +21,16 @@ const HandleSend = (body) =>{
     .catch(err => console.error(err));
 }
 
-const PushTextNotification = async(title,description) => {
+const PushTextNotification = async(title,description,players,additionalData={}) => {
 
     try{
         const body = JSON.stringify({
             "app_id" : APP_ID,
             "headings" : {"en": title},
             "contents": {"en": description},
-            "included_segments" : ["All"],
+            "include_player_ids": players,
+            "data": additionalData,
+            "large_icon": "https://i.ibb.co/MMVSRRR/icon.png"
         })
 
         await HandleSend(body);

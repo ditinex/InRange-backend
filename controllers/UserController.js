@@ -3,10 +3,10 @@ const jwt = require('jsonwebtoken');
 const Config = require('../config.js');
 const fs = require('fs');
 const { SendSMS,RealtimeListener } = require('../services')
-const { Admin, Otp, User, Task, Mongoose, Review } = require('../models')
+const { Admin, Otp, User, Task, Mongoose, Review, Notification } = require('../models')
 
 const {
-	IsExists, Insert, Find, CompressImageAndUpload, FindAndUpdate, Delete,
+	IsExists, IsExistsOne, Insert, Find, CompressImageAndUpload, FindAndUpdate, Delete,
 	HandleSuccess, HandleError, HandleServerError, Aggregate,
 	ValidateEmail, PasswordStrength, ValidateAlphanumeric, ValidateLength, ValidateMobile, isDataURL,GeneratePassword
 } = require('./BaseController');
@@ -569,8 +569,6 @@ module.exports = {
 
             let data = await Find(Notification, { user_id: id, is_provider: user.is_switched_provider, read: false },{},{ createdAt: -1 })
 
-            if (!data.length)
-                return HandleError(res, 'Failed to fetch no of unread chat.')
             return HandleSuccess(res, {count: data.length})
 
         } catch (err) {
