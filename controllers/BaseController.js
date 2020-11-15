@@ -211,14 +211,6 @@ const GeneratePassword = (length = 16) => {
 	return result;
 }
 
-const SendPushNotification = async () => {
-	try {
-		
-
-	} catch (err) {
-	}
-}
-
 /*
  * Error Handling methods below
  *
@@ -273,7 +265,6 @@ exports.FindAndUpdate = FindAndUpdate
 exports.Aggregate = Aggregate
 exports.CompressImageAndUpload = CompressImageAndUpload
 exports.DeleteFile = DeleteFile
-exports.SendPushNotification = SendPushNotification
 
 exports.ValidateEmail = ValidateEmail
 exports.PasswordStrength = PasswordStrength

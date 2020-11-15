@@ -541,7 +541,7 @@ module.exports = {
                 return HandleError(res, 'User doesn\'t exists.')
 
 			let data = await Find(Notification, { user_id: id, is_provider: user.is_switched_provider },{},{ createdAt: -1 })
-
+            let updated = await FindAndUpdate(Notification, { user_id: id, is_provider: user.is_switched_provider, read: false },{read: true});
 			if (!data)
 				return HandleError(res, 'Failed to get List.')
 
