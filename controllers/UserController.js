@@ -3,10 +3,10 @@ const jwt = require('jsonwebtoken');
 const Config = require('../config.js');
 const fs = require('fs');
 const { SendSMS,RealtimeListener } = require('../services')
-const { Admin, Otp, User, Task, Mongoose, Review } = require('../models')
+const { Admin, Otp, User, Task, Mongoose, Review, Notification } = require('../models')
 
 const {
-	IsExists, Insert, Find, CompressImageAndUpload, FindAndUpdate, Delete,
+	IsExists, IsExistsOne,Insert, Find, CompressImageAndUpload, FindAndUpdate, Delete,
 	HandleSuccess, HandleError, HandleServerError, Aggregate,
 	ValidateEmail, PasswordStrength, ValidateAlphanumeric, ValidateLength, ValidateMobile, isDataURL,GeneratePassword
 } = require('./BaseController');
