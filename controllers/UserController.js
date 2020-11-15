@@ -569,8 +569,6 @@ module.exports = {
 
             let data = await Find(Notification, { user_id: id, is_provider: user.is_switched_provider, read: false },{},{ createdAt: -1 })
 
-            if (!data.length)
-                return HandleError(res, 'Failed to fetch no of unread chat.')
             return HandleSuccess(res, {count: data.length})
 
         } catch (err) {

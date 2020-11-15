@@ -364,8 +364,6 @@ module.exports = {
             ]
 
             let data = await Aggregate(Chat, query)
-            if (!data.length)
-                return HandleError(res, 'Failed to fetch no of unread chat.')
             return HandleSuccess(res, {count: data.length})
 
         } catch (err) {
