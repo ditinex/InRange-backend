@@ -303,7 +303,7 @@ module.exports = {
 			 * Send Notification
 			 */
 
-				Controllers.User.GetNotificationList({
+				Controllers.User.SendNotification({
 					title:	'Task Cancelled',
 					description: 'The task '+updated[0].title+' has been cancelled by the consumer.',
 					user_id: updated[0].provider,
@@ -341,7 +341,7 @@ module.exports = {
 			 * Send Notification
 			 */
 
-				Controllers.User.GetNotificationList({
+				Controllers.User.SendNotification({
 					title:	'Task Completed',
 					description: 'The task '+updated[0].title+' has been successfully completed.',
 					user_id: updated[0].consumer,
@@ -378,7 +378,7 @@ module.exports = {
 			 * Send Notification
 			 */
 
-				Controllers.User.GetNotificationList({
+				Controllers.User.SendNotification({
 					title:	'Task Almost Completed',
 					description: 'The task '+updated[0].title+' is almost complete. Please pay as soon as possible.',
 					user_id: updated[0].consumer,
@@ -482,9 +482,9 @@ module.exports = {
 			 *  Send Notification 
 			 */
 
-				Controllers.User.GetNotificationList({
+				Controllers.User.SendNotification({
 					title:	'Task Proposal Recieved',
-					description: isProviderExists[0].name+' send you a proposal for the task'+isTaskExists[0].title,
+					description: isProviderExists[0].name+' send you a proposal for the task'+isTaskExists[0].title+'.',
 					user_id: isTaskExists[0].consumer,
 					read: false,
 					is_provider: false
@@ -547,7 +547,7 @@ module.exports = {
 			 * Creating an event send-notification in self socket to server realtime database via socket
 			 */
 
-			Controllers.User.GetNotificationList({
+			Controllers.User.SendNotification({
 				title:	'Task Proposal Accepted',
 				description: 'Your Proposal has been accepted for the task'+isTaskExists[0].title,
 				user_id: isTaskExists[0].provider,
@@ -726,7 +726,7 @@ module.exports = {
 			 * Send Notification
 			 */
 
-				Controllers.User.GetNotificationList({
+				Controllers.User.SendNotification({
 					title:	'Task Reviewed',
 					description: 'Your have got '+rating+' star for the task '+isTaskExists[0].title,
 					user_id: provider,
@@ -894,7 +894,8 @@ module.exports = {
 						consumer: { "$first": "$consumer" },
 						landmark: { "$first": "$landmark" },
 						houseno: { "$first": "$houseno" },
-						proposals: { $push: "$proposals" }
+						proposals: { $push: "$proposals" },
+						createdAt: { "$first":"$createdAt" },
 					}
 				},
 			]
