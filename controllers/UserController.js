@@ -580,10 +580,7 @@ module.exports = {
         try {
             let inserted = await Insert(Notification, data)
             if (!inserted)
-                return false
-
-            // push notification
-            await PushTextNotification(data.title, data.description);    
+                return false   
             
             return true;
         }catch (err) {

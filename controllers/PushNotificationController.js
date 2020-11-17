@@ -16,12 +16,12 @@ const HandleSend = (body) =>{
     })
     .then(res => res.json())
     .then(json => {
-        console.log(json)
+        //console.log(json)
     })
     .catch(err => console.error(err));
 }
 
-const PushTextNotification = async(title,description,players,additionalData={}) => {
+const PushTextNotification = async(title,description,players) => {
 
     try{
         const body = JSON.stringify({
@@ -29,7 +29,29 @@ const PushTextNotification = async(title,description,players,additionalData={}) 
             "headings" : {"en": title},
             "contents": {"en": description},
             "include_player_ids": players,
-            "data": additionalData,
+            "data": {type: 'notification'},
+            "large_icon": "https://i.ibb.co/MMVSRRR/icon.png",
+            "android_group": "notification",
+            "android_group_message": {"en": "You have $[notif_count] new messages"},
+        })
+
+        await HandleSend(body);
+    }
+    catch (err){
+        console.log(err)
+    }
+
+}
+
+const PushMessage = async(title,description,players) => {
+
+    try{
+        const body = JSON.stringify({
+            "app_id" : APP_ID,
+            "headings" : {"en": title},
+            "contents": {"en": description},
+            "include_player_ids": players,
+            "data": {type: 'chat'},
             "large_icon": "https://i.ibb.co/MMVSRRR/icon.png"
         })
 
@@ -42,3 +64,4 @@ const PushTextNotification = async(title,description,players,additionalData={}) 
 }
 
 exports.PushTextNotification = PushTextNotification
+exports.PushMessage = PushMessage
