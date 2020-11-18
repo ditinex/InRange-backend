@@ -8,4 +8,5 @@ exports.Review = require('./ReviewModal');
 exports.Coupon = require('./CouponModel');
 exports.Chat = require('./ChatModel');
 exports.Notification = require('./NotificationModel');
+exports.Transaction = require('./TransactionModel');
 exports.Mongoose = mongoose;
