@@ -6,7 +6,7 @@ const { SendSMS,RealtimeListener } = require('../services')
 const { Admin, Otp, User, Task, Mongoose, Review, Notification } = require('../models')
 
 const {
-	IsExists, IsExistsOne,Insert, Find, CompressImageAndUpload, FindAndUpdate, Delete,
+	IsExists, IsExistsOne, Insert, Find, CompressImageAndUpload, FindAndUpdate, Delete,
 	HandleSuccess, HandleError, HandleServerError, Aggregate,
 	ValidateEmail, PasswordStrength, ValidateAlphanumeric, ValidateLength, ValidateMobile, isDataURL,GeneratePassword
 } = require('./BaseController');
@@ -580,10 +580,7 @@ module.exports = {
         try {
             let inserted = await Insert(Notification, data)
             if (!inserted)
-                return false
-
-            // push notification
-            await PushTextNotification(data.title, data.description);    
+                return false   
             
             return true;
         }catch (err) {

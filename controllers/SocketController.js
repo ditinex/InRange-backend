@@ -10,7 +10,10 @@ const {
 	HandleSuccess, HandleError, HandleServerError, Aggregate,
 	ValidateEmail, PasswordStrength, ValidateAlphanumeric, ValidateLength, ValidateMobile, isDataURL, GeneratePassword, FindOne
 } = require('./BaseController');
-const { update } = require('../models/OtpModel.js');
+
+const {
+    PushMessage
+} = require('./PushNotificationController');
 
 let realtimeTaskSocketsProviders = {}
 let realtimeConsumerSockets = {}
@@ -30,7 +33,6 @@ module.exports = {
 			 *
 			*/
 			socket.on('startchat', async function(chat_id,user_id){
-				console.log(user_id)
 				const room_name = chat_id;
 				socket.join(room_name);
 				let updated = await FindAndUpdate(Chat,{_id: chat_id,"chats.receiver_id": user_id, "chats.seen": false},{"chats.$[].seen": true});

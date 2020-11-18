@@ -489,6 +489,15 @@ module.exports = {
 					read: false,
 					is_provider: false
 				})
+			
+			/*
+			 * Push Notification
+			 */
+			Controllers.PushNotification.PushTextNotification(
+				'Task Proposal Recieved',
+				isProviderExists[0].name+' send you a proposal for the task'+isTaskExists[0].title+'.',
+				[isProviderExists[0].push_notification.push_id]
+			)
 
 
 			return HandleSuccess(res, updated)

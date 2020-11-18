@@ -11,7 +11,6 @@ const {
     ValidateEmail, PasswordStrength, ValidateAlphanumeric, ValidateLength, ValidateMobile, isDataURL, GeneratePassword, IsExistsOne
 } = require('./BaseController');
 
-
 module.exports = {
 
     /**
