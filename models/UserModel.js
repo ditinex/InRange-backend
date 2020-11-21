@@ -37,6 +37,7 @@ const UserSchema = new Schema({
 		service: { type: String, trim: true },
 		description: { type: String, trim: true },
 		verification_document: { type: String, trim: true, default: null },
+		wallet_balance: { type: Number, default: 0 }
 	}
 },{ timestamps: true })
 
