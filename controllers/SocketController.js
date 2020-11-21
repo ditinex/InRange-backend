@@ -68,18 +68,17 @@ module.exports = {
 
 				let updated = await FindAndUpdate(Chat,where,query,true)
 				if(updated){
-					if(Object.keys(io.in(room_name).adapter.sids).length > 2)
+					if(Object.keys(io.of("/chat").in(room_name).connected).length > 1)
 						socket.broadcast.to(room_name).emit('message',data);
 					else{
 						const user = await IsExists(User, { _id: receiver_id })
-						/*
-						 * Push Message
-						 */
+						
 						if(user[0].push_notification)
 						Controllers.PushNotification.PushMessage(
-							'New Message',
-							isProviderExists[0].name+' send you a proposal for the task "'+isTaskExists[0].title+'".',
-							[user[0].push_notification.push_id]
+							'1 New Message',
+							message,
+							[user[0].push_notification.push_id],
+							sender_id
 						)
 					}
 				}

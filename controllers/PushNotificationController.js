@@ -16,7 +16,7 @@ const HandleSend = (body) =>{
     })
     .then(res => res.json())
     .then(json => {
-        //console.log(json)
+        console.log(json)
     })
     .catch(err => console.error(err));
 }
@@ -32,7 +32,7 @@ const PushTextNotification = async(title,description,players) => {
             "data": {type: 'notification'},
             "large_icon": "https://i.ibb.co/MMVSRRR/icon.png",
             "android_group": "notification",
-            "android_group_message": {"en": "You have $[notif_count] new messages"},
+            "android_group_message": {"en": "You have $[notif_count] new notifications."},
         })
 
         await HandleSend(body);
@@ -43,7 +43,7 @@ const PushTextNotification = async(title,description,players) => {
 
 }
 
-const PushMessage = async(title,description,players) => {
+const PushMessage = async(title,description,players,collapseId) => {
 
     try{
         const body = JSON.stringify({
@@ -52,8 +52,13 @@ const PushMessage = async(title,description,players) => {
             "contents": {"en": description},
             "include_player_ids": players,
             "data": {type: 'chat'},
-            "large_icon": "https://i.ibb.co/MMVSRRR/icon.png"
+            "large_icon": "https://i.ibb.co/MMVSRRR/icon.png",
+            "collapse_id": collapseId,
+            "android_group": "message",
+            "android_group_message": {"en": "You have $[notif_count] new messages."},
         })
+
+        console.log(body)
 
         await HandleSend(body);
     }
