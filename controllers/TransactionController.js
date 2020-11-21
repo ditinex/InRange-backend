@@ -33,23 +33,29 @@ module.exports = {
             if (!isProviderExists)
                 return HandleError(res, 'Provider doesn\'t exists.')
             
-            let balance = isProviderExists.provider.wallet_balance
+			let balance = isProviderExists.provider.wallet_balance
+			let status;
             if(type == 'Cr')
-                balance = balance + amount
+			{	
+				balance = balance + amount
+				status = 'Completed'
+			}
             else{
                 if(balance<amount)
                     return HandleError(res, 'Balance is less than the withdraw request.')
-                else 
-                    balance = balance - amount
+                else{
+					balance = balance - amount
+					status = 'Pending'
+				}
             }
 
-			let data = { provider_id, task_id, amount, type, description }
+			let data = { provider_id, task_id, amount, type, description, status }
 
 			let inserted = await Insert(Transaction, data)
 			if (!inserted)
 				return HandleError(res, 'Failed to add transaction. Please contact system admin.')
             
-            let updated = await FindAndUpdate(Transaction, {_id: provider_id}, {'provider.wallet_balance': balance})
+            let updated = await FindAndUpdate(User, {_id: provider_id}, {'provider.wallet_balance': balance})
                 if (!updated)
                     return HandleError(res, 'Failed to add transaction. Please contact system admin.')
 			return HandleSuccess(res, inserted)

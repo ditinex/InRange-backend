@@ -29,7 +29,8 @@ const TaskSchema = new Schema({
         other_cost: { type: Number, default: 0, required: true},
         discount: { type: Number, default: 0, required: true},
         total: { type: Number, default: 0, required: true},
-        readytopay: { type: Boolean, required: true, default: false }
+        readytopay: { type: Boolean, required: true, default: false },
+        paymentmethod: { type: String }
     },
     consumer: { type: Schema.Types.ObjectId, ref: 'users' },
     provider: { type: Schema.Types.ObjectId, ref: 'users' },

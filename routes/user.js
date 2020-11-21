@@ -13,8 +13,10 @@ router.put('/editprofile',User.EditProfile);
 router.put('/updatelocation',User.UpdateLocation);
 router.get('/get-notification-list',User.GetNotificationList);
 router.get('/unread-notification-count',User.UnreadNotificationCount);
+router.get('/read-notification',User.ReadNotification);
 router.put('/update-push-token',User.UpdatePushToken);
 router.post('/add-transaction',Transaction.AddTransaction);
-router.get('/get-transactions',Transaction.GetTransactionList);
+router.post('/do-payment',User.DoPayment);
+router.get('/get-transaction-list',Transaction.GetTransactionList);
 
 module.exports = router;

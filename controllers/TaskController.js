@@ -305,8 +305,8 @@ module.exports = {
 
 				Controllers.User.SendNotification({
 					title:	'Task Cancelled',
-					description: 'The task '+updated[0].title+' has been cancelled by the consumer.',
-					user_id: updated[0].provider,
+					description: 'The task '+updated.title+' has been cancelled by the consumer.',
+					user_id: updated.provider,
 					read: false,
 					is_provider: true
 				})
@@ -317,42 +317,42 @@ module.exports = {
 		}
 	},
 
-	CompleteTask: async (req, res, next) => {
-		try {
-			let _id = (req.body.id) ? req.body.id : ''
-			let validateError = ''
+	// CompleteTask: async (req, res, next) => {
+	// 	try {
+	// 		let _id = (req.body.id) ? req.body.id : ''
+	// 		let validateError = ''
 
-			if (_id === '')
-				validateError = 'This field is required.'
+	// 		if (_id === '')
+	// 			validateError = 'This field is required.'
 
-			if (validateError)
-				return HandleError(res, validateError)
+	// 		if (validateError)
+	// 			return HandleError(res, validateError)
 
 
-			let where = { _id: _id }
-			let data = { status: 'Completed' }
+	// 		let where = { _id: _id }
+	// 		let data = { status: 'Completed' }
 
-			let updated = await FindAndUpdate(Task, where, data)
-			if (!updated)
-				return HandleError(res, 'Failed to cancel task. Please contact system admin.')
-			// Realtime change
-			RealtimeListener.inProgressTaskChange.emit('task-change',{task_id: updated._id})
-			/*
-			 * Send Notification
-			 */
+	// 		let updated = await FindAndUpdate(Task, where, data)
+	// 		if (!updated)
+	// 			return HandleError(res, 'Failed to complete task. Please contact system admin.')
+	// 		// Realtime change
+	// 		RealtimeListener.inProgressTaskChange.emit('task-change',{task_id: updated._id})
+	// 		/*
+	// 		 * Send Notification
+	// 		 */
 
-				Controllers.User.SendNotification({
-					title:	'Task Completed',
-					description: 'The task '+updated[0].title+' has been successfully completed.',
-					user_id: updated[0].consumer,
-					read: false,
-					is_provider: false
-				})
-			return HandleSuccess(res, updated);
-		} catch (err) {
-			HandleServerError(res, req, err)
-		}
-	},
+	// 			Controllers.User.SendNotification({
+	// 				title:	'Task Completed',
+	// 				description: 'The task '+updated[0].title+' has been successfully completed.',
+	// 				user_id: updated[0].consumer,
+	// 				read: false,
+	// 				is_provider: false
+	// 			})
+	// 		return HandleSuccess(res, updated);
+	// 	} catch (err) {
+	// 		HandleServerError(res, req, err)
+	// 	}
+	// },
 
 	DoneTask: async (req, res, next) => {
 		try {
@@ -380,8 +380,8 @@ module.exports = {
 
 				Controllers.User.SendNotification({
 					title:	'Task Almost Completed',
-					description: 'The task '+updated[0].title+' is almost complete. Please pay as soon as possible.',
-					user_id: updated[0].consumer,
+					description: 'The task '+updated.title+' is almost complete. Please pay as soon as possible.',
+					user_id: updated.consumer,
 					read: false,
 					is_provider: false
 				})

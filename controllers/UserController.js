@@ -10,9 +10,10 @@ const {
 	HandleSuccess, HandleError, HandleServerError, Aggregate,
 	ValidateEmail, PasswordStrength, ValidateAlphanumeric, ValidateLength, ValidateMobile, isDataURL,GeneratePassword
 } = require('./BaseController');
+const Controllers = require('../controllers')
 
 const { PushTextNotification } = require('./PushNotificationController');
-
+const stripe = require('stripe')(Config.stripe_secret_key);
 
 module.exports = {
     /**
@@ -541,8 +542,7 @@ module.exports = {
                 return HandleError(res, 'User doesn\'t exists.')
 
 			let data = await Find(Notification, { user_id: id, is_provider: user.is_switched_provider },{},{ createdAt: -1 })
-            let updated = await FindAndUpdate(Notification, { user_id: id, is_provider: user.is_switched_provider, read: false },{read: true});
-			if (!data)
+            if (!data)
 				return HandleError(res, 'Failed to get List.')
 
 			return HandleSuccess(res, data)
@@ -550,6 +550,32 @@ module.exports = {
 		} catch (err) {
 			HandleServerError(res, req, err)
 		}
+    },
+
+    ReadNotification: async (req, res, next) => {
+        try {
+            const id = req.user_id || ''
+
+            let validateError = null
+            if (id == '')
+                validateError = 'Invalid id.'
+
+            if (validateError)
+                return HandleError(res, validateError)
+
+            const user = await IsExistsOne(User, { _id: id })
+            if (!user)
+                return HandleError(res, 'User doesn\'t exists.')
+
+            let updated = await FindAndUpdate(Notification, { user_id: id, is_provider: user.is_switched_provider, read: false },{read: true});
+            if (!updated)
+                return HandleError(res, 'Failed to read the notifications.')
+
+            return HandleSuccess(res, updated)
+
+        } catch (err) {
+            HandleServerError(res, req, err)
+        }
     },
     
     UnreadNotificationCount: async (req, res, next) => {
@@ -568,7 +594,8 @@ module.exports = {
                 return HandleError(res, 'User doesn\'t exists.')
 
             let data = await Find(Notification, { user_id: id, is_provider: user.is_switched_provider, read: false },{},{ createdAt: -1 })
-
+            if (!data)
+                return HandleError(res, 'Failed to count!')
             return HandleSuccess(res, {count: data.length})
 
         } catch (err) {
@@ -585,6 +612,85 @@ module.exports = {
             return true;
         }catch (err) {
 
+        }
+    },
+
+    DoPayment: async(req, res, next) => {
+        try {
+            let task_id = (req.body.task_id) ? req.body.task_id : ''
+            let payment_method = (req.body.payment_method) ? req.body.payment_method : ''
+            let validateError = ''
+            let paid = null;
+            if (task_id === '')
+                validateError = 'This field is required.'
+
+            if (validateError)
+                return HandleError(res, validateError)
+
+            if(payment_method == 'By Cash')
+            {
+                paid = true
+            }
+            else await stripe.customers.create({
+                email: 'YOUR_EMAILtest@test.com',
+                name: 'Jenny Rosen',
+                address: {
+                    line1: '510 Townsend St',
+                    postal_code: '98140',
+                    city: 'San Francisco',
+                    state: 'CA',
+                    country: 'US',
+                },
+                source: req.body.tokenId
+              })
+            .then(async customer => {
+                const result = await stripe.charges.create({
+                  amount: req.body.amount*100,
+                  currency: 'USD',
+                  customer: customer.id,
+                  source: customer.default_source.id,
+                  description: 'Test payment',
+                })
+                if(result)
+                    paid = true
+            })
+            .catch(error => {
+                return HandleError(res, error.raw.message)
+            })
+
+            if(paid)
+                {
+                    let where = { _id: task_id }
+                    let data = { status: 'Completed', "cost.paymentmethod": payment_method }
+
+                    let updated = await FindAndUpdate(Task, where, data)
+                    if (!updated)
+                        return HandleError(res, 'Failed to complete task. Please contact system admin.')
+                    // Realtime change
+                    RealtimeListener.inProgressTaskChange.emit('task-change',{task_id: updated._id})
+                    /*
+                    * Send Notification
+                    */
+
+                        Controllers.User.SendNotification({
+                            title:	'Task Completed',
+                            description: 'The task '+updated.title+' has been successfully completed.',
+                            user_id: updated.consumer,
+                            read: false,
+                            is_provider: false
+                        })
+                        Controllers.User.SendNotification({
+                            title:	'Payment Completed',
+                            description: 'Payment for the task '+updated.title+' has been successfully completed.',
+                            user_id: updated.provider,
+                            read: false,
+                            is_provider: true
+                        })
+                    return HandleSuccess(res, updated);
+		
+            }
+        }catch (err) {
+            HandleServerError(res, req, err)
         }
     }
     
