@@ -617,7 +617,21 @@ module.exports = {
 
     DoPayment: async(req, res, next) => {
         try {
-            return stripe.customers.create({
+            let task_id = (req.body.task_id) ? req.body.task_id : ''
+            let payment_method = (req.body.payment_method) ? req.body.payment_method : ''
+            let validateError = ''
+            let paid = null;
+            if (task_id === '')
+                validateError = 'This field is required.'
+
+            if (validateError)
+                return HandleError(res, validateError)
+
+            if(payment_method == 'By Cash')
+            {
+                paid = true
+            }
+            else await stripe.customers.create({
                 email: 'YOUR_EMAILtest@test.com',
                 name: 'Jenny Rosen',
                 address: {
@@ -638,19 +652,16 @@ module.exports = {
                   description: 'Test payment',
                 })
                 if(result)
+                    paid = true
+            })
+            .catch(error => {
+                return HandleError(res, error.raw.message)
+            })
+
+            if(paid)
                 {
-                    let task_id = (req.body.task_id) ? req.body.task_id : ''
-                    let validateError = ''
-
-                    if (task_id === '')
-                        validateError = 'This field is required.'
-
-                    if (validateError)
-                        return HandleError(res, validateError)
-
-
                     let where = { _id: task_id }
-                    let data = { status: 'Completed' }
+                    let data = { status: 'Completed', "cost.paymentmethod": payment_method }
 
                     let updated = await FindAndUpdate(Task, where, data)
                     if (!updated)
@@ -668,15 +679,16 @@ module.exports = {
                             read: false,
                             is_provider: false
                         })
+                        Controllers.User.SendNotification({
+                            title:	'Payment Completed',
+                            description: 'Payment for the task '+updated.title+' has been successfully completed.',
+                            user_id: updated.provider,
+                            read: false,
+                            is_provider: true
+                        })
                     return HandleSuccess(res, updated);
 		
-                }
-            })
-            .catch(error => {
-                if(error.raw)
-                    return HandleError(res, error.raw.message)
-                return HandleError(res, error)
-            })
+            }
         }catch (err) {
             HandleServerError(res, req, err)
         }

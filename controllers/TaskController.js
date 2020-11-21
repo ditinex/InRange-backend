@@ -305,8 +305,8 @@ module.exports = {
 
 				Controllers.User.SendNotification({
 					title:	'Task Cancelled',
-					description: 'The task '+updated[0].title+' has been cancelled by the consumer.',
-					user_id: updated[0].provider,
+					description: 'The task '+updated.title+' has been cancelled by the consumer.',
+					user_id: updated.provider,
 					read: false,
 					is_provider: true
 				})
@@ -380,8 +380,8 @@ module.exports = {
 
 				Controllers.User.SendNotification({
 					title:	'Task Almost Completed',
-					description: 'The task '+updated[0].title+' is almost complete. Please pay as soon as possible.',
-					user_id: updated[0].consumer,
+					description: 'The task '+updated.title+' is almost complete. Please pay as soon as possible.',
+					user_id: updated.consumer,
 					read: false,
 					is_provider: false
 				})
