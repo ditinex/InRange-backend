@@ -483,8 +483,8 @@ module.exports = {
 			 */
 
 				Controllers.User.SendNotification({
-					title:	'Task Proposal Recieved',
-					description: isProviderExists[0].name+' send you a proposal for the task'+isTaskExists[0].title+'.',
+					title:	'New Task Proposal',
+					description: isProviderExists[0].name+' send you a proposal for the task "'+isTaskExists[0].title+'".',
 					user_id: isTaskExists[0].consumer,
 					read: false,
 					is_provider: false
@@ -494,8 +494,8 @@ module.exports = {
 			 * Push Notification
 			 */
 			Controllers.PushNotification.PushTextNotification(
-				'Task Proposal Recieved',
-				isProviderExists[0].name+' send you a proposal for the task'+isTaskExists[0].title+'.',
+				'New Task Proposal',
+				isProviderExists[0].name+' send you a proposal for the task "'+isTaskExists[0].title+'".',
 				[isProviderExists[0].push_notification.push_id]
 			)
 
@@ -553,12 +553,12 @@ module.exports = {
 			RealtimeListener.providerChange.emit('provider_change', provider_id)
 
 			/*
-			 * Creating an event send-notification in self socket to server realtime database via socket
+			 * Creating an event send-notification 
 			 */
 
 			Controllers.User.SendNotification({
 				title:	'Task Proposal Accepted',
-				description: 'Your Proposal has been accepted for the task'+isTaskExists[0].title,
+				description: 'Your Proposal has been accepted for the task '+isTaskExists[0].title,
 				user_id: isTaskExists[0].provider,
 				read: false,
 				is_provider: true
@@ -905,8 +905,9 @@ module.exports = {
 						houseno: { "$first": "$houseno" },
 						proposals: { $push: "$proposals" },
 						createdAt: { "$first":"$createdAt" },
-					}
+					},
 				},
+				{ $sort: { createdAt: -1 } }
 			]
 			let data = await Aggregate(Task, query)
 

@@ -13,7 +13,7 @@ module.exports = (io) => {
 
     io.of('/realtime-provider').on('connection',Socket.RealtimeProvider);
     
-    io.of('/chat').on('connection',Socket.Chat);
+    io.of('/chat').on('connection',(socket)=>Socket.Chat(socket,io));
 
     io.of('/realtime-inprogress-task').on('connection',Socket.RealtimeInprogressTask);
 
