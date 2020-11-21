@@ -22,5 +22,6 @@ module.exports = {
 	max_map_range: 10000, //10 KM
 	environment: process.env.ENVIRONMENT,
 	onsignal_apikey: process.env.ONESIGNAL_API_KEY,
-	onsignal_appid: process.env.ONESIGNAL_APP_ID 
+	onsignal_appid: process.env.ONESIGNAL_APP_ID,
+	stripe_secret_key: process.env.STRIPE_SECRET_KEY
 }

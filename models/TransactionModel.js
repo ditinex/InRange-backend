@@ -6,7 +6,8 @@ const TransactionSchema=new Schema({
     task_id: { type: Schema.Types.ObjectId, ref: 'tasks' },
     amount: { type: Number, required: true },
     type: { type: String, required: true, enum: ['Cr', 'Dr']},
-    description: { type: String}
+    description: { type: String},
+    status: { type: String, required: true, enum: ['Pending', 'Completed', 'Cancelled'] }
 },{ timestamps: true })
 
 const TransactionModel = mongoose.model('transactions', TransactionSchema)
