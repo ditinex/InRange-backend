@@ -4,6 +4,7 @@ const Config = require('../config.js');
 const fs = require('fs');
 const { RealtimeListener } = require('../services')
 const { Admin, Otp, User, Task, Mongoose, Review, Chat } = require('../models')
+const Controllers = require('../controllers')
 
 const {
 	IsExists, Insert, Find, CompressImageAndUpload, FindAndUpdate, Delete,
@@ -20,7 +21,7 @@ let realtimeConsumerSockets = {}
 
 module.exports = {
 
-	Chat: async (socket) => {
+	Chat: async (socket,io) => {
 		try {
 
 			/**
@@ -66,8 +67,22 @@ module.exports = {
 				const query = { $push: { chats: data}}
 
 				let updated = await FindAndUpdate(Chat,where,query,true)
-				if(updated)
-					socket.broadcast.to(room_name).emit('message',data);
+				if(updated){
+					if(Object.keys(io.in(room_name).adapter.sids).length > 2)
+						socket.broadcast.to(room_name).emit('message',data);
+					else{
+						const user = await IsExists(User, { _id: receiver_id })
+						/*
+						 * Push Message
+						 */
+						if(user[0].push_notification)
+						Controllers.PushNotification.PushMessage(
+							'New Message',
+							isProviderExists[0].name+' send you a proposal for the task "'+isTaskExists[0].title+'".',
+							[user[0].push_notification.push_id]
+						)
+					}
+				}
 			});
 
 			/**
