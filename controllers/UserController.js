@@ -71,72 +71,136 @@ module.exports = {
 
 	EditProfile: async (req, res, next) => {
 		try {
-            const { name = '',gender = '' ,mobile = '', otp = '' } = req.body
+            const { name = '',gender = '' ,description='' ,service='' ,dp='', document='' } = req.body
 			const id = req.user_id || ''
 
 			let validateError = null
-			if (!ValidateMobile(mobile.trim()))
-                validateError = 'Please enter a valid mobile number with ISD code i.e 1990xxxxx05.'
-            else if (!ValidateAlphanumeric(name.trim()) || !ValidateLength(name.trim()))
+            if (!ValidateAlphanumeric(name.trim()) || !ValidateLength(name.trim()))
 				validateError = 'Please enter a valid name without any special character and less than 25 character.'
 			else if (gender.trim() == '')
                 validateError = 'Please select gender.'
             else if (id == '')
-				validateError = 'Give a valid id.'
+				validateError = 'Invalid id.'
 
 			if (validateError)
-				return HandleError(res, validateError)
+                return HandleError(res, validateError)
 
-            let userdata = await Find(User,{_id: id});
-            if(!userdata)
+            let data = {name,gender}
+
+            if(dp){
+                isUploaded = await CompressImageAndUpload(dp)
+                if(!isUploaded)
+                    return HandleError(res,"Failed to upload profile picture.")
+                data.profile_picture = isUploaded.path
+            }
+                
+            let isUserExists = await IsExists(User, { _id: id })
+            let providerdata = isUserExists
+
+            if(!providerdata)
                 return HandleError(res,"User not found.")
 
-            if(userdata[0].mobile === mobile)
+            if(providerdata[0].is_switched_provider)
             {
-                let updated = await FindAndUpdate(User, {_id: id}, {name: name ,gender: gender})
+                let data = providerdata[0]
+                data.provider.description = description
+                //checking for service if it is taxi or truck
+                if(providerdata[0].provider.service!==service && (service === 'Taxi' || service === 'Truck'))
+                {
+                    data.status = 'pending'
+                    if(!verification_document)
+                        return HandleError(res,"You should give a verification document.")
+                }
+                data.provider.service = service
+                
+                if(document){
+                    data.status = 'pending'
+                    isUploaded = await CompressImageAndUpload(document)
+                    if(!isUploaded)
+                        return HandleError(res,"Failed to upload verification document.")
+                    data.provider.verification_document = isUploaded.path
+                }
+            }
+            if(isUserExists[0].name!=name)
+            {
+                let user = {... isUserExists[0]}
+                data.active_session_refresh_token = GeneratePassword()
+                data.access_token = jwt.sign({ id: user._id, mobile: user.mobile, name: name }, Config.secret, {
+                    expiresIn: Config.tokenExpiryLimit // 86400 expires in 24 hours -- It should be 1 hour in production
+                });
+            }
+
+            let updated = await FindAndUpdate(User, {_id: id}, {data})
                 if(!updated)
                     return HandleError(res, 'Failed to update profile.')
-			    return HandleSuccess(res, updated)
-            }
-            //if mobile no is different
-			let expiry = new Date ();
-			expiry.setMinutes ( expiry.getMinutes() - Config.otpExpiryLimit );
-
-			if (otp) {
-				//check if otp exist
-				let isOtpExists = await IsExists(Otp, { mobile: mobile, otp: otp, createdAt: { $gt: expiry } })
-				if(!isOtpExists)
-                    return HandleError(res, 'Failed to verify OTP.')
+                return HandleSuccess(res, updated)
                 
-                Delete(Otp,{ mobile: mobile })
-				const active_session_refresh_token = GeneratePassword()
-				const access_token = jwt.sign({ id: id, mobile: mobile, name: name }, Config.secret, {
-					expiresIn: Config.tokenExpiryLimit // 86400 expires in 24 hours -- It should be 1 hour in production
-				});
-		
-				let updated = await FindAndUpdate(User, {_id: id}, {name: name ,gender: gender ,mobile: mobile ,access_token: access_token, active_session_refresh_token: active_session_refresh_token})
-				if(!updated)
-                    return HandleError(res, 'Failed to generate access token.')
-                    
-				return HandleSuccess(res, updated)
-			}
-			// Send OTP
-			let isOtpExists = await IsExists(Otp, { mobile: mobile, createdAt: { $gt: expiry } })
-			if(isOtpExists)
-				return HandleError(res, 'Too many OTP requests. Please try after sometime.')
-
-			const otpValue = Math.floor(1000 + Math.random() * 9000);
-			const smsStatus = await SendSMS('+'+mobile,'Your InRangeIt One Time Password is '+otpValue)
-			const inserted = await Insert(Otp,{otp: otpValue, mobile: mobile})
-			if(!inserted)
-				return HandleError(res, 'Failed to send OTP.')
-			return HandleSuccess(res, { otp: otpValue })
-
-
 		} catch (err) {
 			HandleServerError(res, req, err)
 		}
 
+    },
+
+    ChangeMobile: async (req, res, next) => {
+		try {
+			const { oldMobile = '', newMobile='',otp = '' } = req.body
+            
+            let validateError = null
+            
+			if (!ValidateMobile(newMobile.trim()))
+                validateError = 'Please enter a valid mobile number with ISD code i.e 1990xxxxx05.'
+                
+			if (validateError)
+                return HandleError(res, validateError)
+                
+                let expiry = new Date ();
+                expiry.setMinutes ( expiry.getMinutes() - Config.otpExpiryLimit );
+    
+                if (otp) {
+                    //Validate OTP and Login
+                    let isOtpExists = await IsExists(Otp, { mobile: newMobile, otp: otp, createdAt: { $gt: expiry } })
+                    let isUserExists = await IsExists(User, { mobile: oldMobile })
+                    if(!isOtpExists)
+                        return HandleError(res, 'Failed to verify OTP.')
+                    else if(isOtpExists && isUserExists){
+                        Delete(Otp,{ mobile: newMobile })
+                        let user = {... isUserExists[0]}
+                        const active_session_refresh_token = GeneratePassword()
+                        const access_token = jwt.sign({ id: user._id, mobile: newMobile, name: user.name }, Config.secret, {
+                            expiresIn: Config.tokenExpiryLimit // 86400 expires in 24 hours -- It should be 1 hour in production
+                        });
+            
+                        let updated = await FindAndUpdate(User, {_id: user._id}, {mobile: newMobile, access_token: access_token, active_session_refresh_token: active_session_refresh_token})
+                        if(!updated)
+                            return HandleError(res, 'Failed to generate access token.')
+                        user.access_token = access_token
+                        user.active_session_refresh_token = active_session_refresh_token
+                        user.isUserExists = true
+                        return HandleSuccess(res, user)
+                    }
+    
+                    //If no user found
+                    return HandleSuccess(res, { isUserExists: false })
+                }
+                // Send OTP
+                let isOtpExists = await IsExists(Otp, { mobile: newMobile, createdAt: { $gt: expiry } })
+                if(isOtpExists)
+                    return HandleError(res, 'Too many OTP requests. Please try after sometime.')
+    
+                const otpValue = Math.floor(1000 + Math.random() * 9000);
+                let smsStatus = null
+                if(Config.plivo_authid)
+                    smsStatus = await SendSMS('+'+newMobile,'Your InRangeIt One Time Password is '+otpValue)
+                if(smsStatus && smsStatus.errorMessage)
+                    return HandleError(res, 'Failed to send OTP. Please contact system admin.')
+                const inserted = await Insert(Otp,{otp: otpValue, mobile: newMobile})
+                if(!inserted)
+                    return HandleError(res, 'Failed to send OTP.')
+                return HandleSuccess(res, { otp: otpValue })
+
+		} catch (err) {
+			HandleServerError(res, req, err)
+		}
     },
 
     /**
