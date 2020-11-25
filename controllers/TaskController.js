@@ -945,7 +945,6 @@ module.exports = {
 			
 			const query = [
 				{ $match: { provider: Mongoose.Types.ObjectId(user_id) } },
-				{ $sort: { createdAt: -1 } },
                 {
                     $lookup:
                         { from: 'users', localField: 'provider', foreignField: '_id', as: 'provider_details' }
@@ -953,7 +952,8 @@ module.exports = {
 				{
                     $lookup:
                         { from: 'users', localField: 'consumer', foreignField: '_id', as: 'consumer_details' }
-				}
+				},
+				{ $sort: { createdAt: -1 } }
             ]
 
 			let data = await Aggregate(Task, query)

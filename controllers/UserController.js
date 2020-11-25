@@ -71,7 +71,7 @@ module.exports = {
 
 	EditProfile: async (req, res, next) => {
 		try {
-            const { name = '',gender = '' ,description='' ,service='' ,dp='', document='' } = req.body
+            const { name = '',gender = '' ,description='' ,service='' ,dp='', verification_document='' } = req.body
 			const id = req.user_id || ''
 
 			let validateError = null
@@ -113,9 +113,9 @@ module.exports = {
                 }
                 data.provider.service = service
                 
-                if(document){
+                if(verification_document){
                     data.status = 'pending'
-                    isUploaded = await CompressImageAndUpload(document)
+                    isUploaded = await CompressImageAndUpload(verification_document)
                     if(!isUploaded)
                         return HandleError(res,"Failed to upload verification document.")
                     data.provider.verification_document = isUploaded.path
@@ -129,11 +129,11 @@ module.exports = {
                     expiresIn: Config.tokenExpiryLimit // 86400 expires in 24 hours -- It should be 1 hour in production
                 });
             }
-
-            let updated = await FindAndUpdate(User, {_id: id}, {data})
-                if(!updated)
-                    return HandleError(res, 'Failed to update profile.')
-                return HandleSuccess(res, updated)
+            let updated = await FindAndUpdate(User, {_id: id}, data)
+            if(!updated)
+                return HandleError(res, 'Failed to update profile.')
+            updated.isUserExists = true
+            return HandleSuccess(res, updated)
                 
 		} catch (err) {
 			HandleServerError(res, req, err)
@@ -155,10 +155,11 @@ module.exports = {
                 
                 let expiry = new Date ();
                 expiry.setMinutes ( expiry.getMinutes() - Config.otpExpiryLimit );
-    
+                
                 if (otp) {
                     //Validate OTP and Login
                     let isOtpExists = await IsExists(Otp, { mobile: newMobile, otp: otp, createdAt: { $gt: expiry } })
+ 
                     let isUserExists = await IsExists(User, { mobile: oldMobile })
                     if(!isOtpExists)
                         return HandleError(res, 'Failed to verify OTP.')
@@ -184,8 +185,8 @@ module.exports = {
                 }
                 // Send OTP
                 let isOtpExists = await IsExists(Otp, { mobile: newMobile, createdAt: { $gt: expiry } })
-                if(isOtpExists)
-                    return HandleError(res, 'Too many OTP requests. Please try after sometime.')
+                // if(isOtpExists)
+                    // return HandleError(res, 'Too many OTP requests. Please try after sometime.')
     
                 const otpValue = Math.floor(1000 + Math.random() * 9000);
                 let smsStatus = null

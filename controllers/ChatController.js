@@ -119,6 +119,7 @@ module.exports = {
                         lastchat: { $slice: ["$chats", -1] },
                         task: { _id: 1, title: 1, status: 1 },
                         average_rating: { $avg: '$reviews.rating' },
+                        updatedAt: 1,
                         consumer: {
                             _id: 1,
                             name: 1,
@@ -135,7 +136,8 @@ module.exports = {
                             profile_picture: 1
                         }
                     }
-                }
+                },
+				{ $sort: { updatedAt: -1 } }
             ]
 
             let data = await Aggregate(Chat, query)
