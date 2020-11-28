@@ -6,7 +6,7 @@ const { SendSMS,RealtimeListener } = require('../services')
 const { Admin, Otp, User, Task, Mongoose, Review, Notification } = require('../models')
 
 const {
-	IsExists, IsExistsOne, Insert, Find, CompressImageAndUpload, FindAndUpdate, Delete,
+	IsExists, IsExistsOne, Insert, Find, CompressImageAndUpload, FindAndUpdate, UpdateMany, Delete,
 	HandleSuccess, HandleError, HandleServerError, Aggregate,
 	ValidateEmail, PasswordStrength, ValidateAlphanumeric, ValidateLength, ValidateMobile, isDataURL,GeneratePassword
 } = require('./BaseController');
@@ -87,7 +87,14 @@ module.exports = {
 			if (validateError)
                 return HandleError(res, validateError)
 
-            let data = {name,gender}
+            let isUserExists = await IsExists(User, { _id: id })
+            let providerdata = isUserExists
+            let data = providerdata[0]
+            data.name = name
+            data.gender = gender    
+
+            if(!providerdata)
+                return HandleError(res,"User not found.")
 
             if(profile_picture){
                 isUploaded = await CompressImageAndUpload(profile_picture)
@@ -95,16 +102,9 @@ module.exports = {
                     return HandleError(res,"Failed to upload profile picture.")
                 data.profile_picture = isUploaded.path
             }
-                
-            let isUserExists = await IsExists(User, { _id: id })
-            let providerdata = isUserExists
-
-            if(!providerdata)
-                return HandleError(res,"User not found.")
 
             if(providerdata[0].is_switched_provider)
             {
-                let data = providerdata[0]
                 data.provider.description = description
                 //checking for service if it is taxi or truck
                 if(providerdata[0].provider.service!==service && (service === 'Taxi' || service === 'Truck'))
@@ -116,7 +116,6 @@ module.exports = {
                 data.provider.service = service
                 
                 if(verification_document){
-                    data.status = 'pending'
                     isUploaded = await CompressImageAndUpload(verification_document)
                     if(!isUploaded)
                         return HandleError(res,"Failed to upload verification document.")
@@ -627,9 +626,9 @@ module.exports = {
             if (!user)
                 return HandleError(res, 'User doesn\'t exists.')
 
-            let updated = await FindAndUpdate(Notification, { user_id: id, is_provider: user.is_switched_provider, read: false },{read: true});
-            if (!updated)
-                return HandleError(res, 'Failed to read the notifications.')
+            let updated = await UpdateMany(Notification, { user_id: id, is_provider: user.is_switched_provider, read: false },{read: true});
+            // if (!updated)
+                // return HandleError(res, 'Failed to read the notifications.')
 
             return HandleSuccess(res, updated)
 
@@ -668,6 +667,14 @@ module.exports = {
             let inserted = await Insert(Notification, data)
             if (!inserted)
                 return false   
+            /*
+			 * Push Notification
+			 */
+			Controllers.PushNotification.PushTextNotification(
+				data.title,
+                data.description,
+                [data.push_id]
+			)
             
             return true;
         }catch (err) {

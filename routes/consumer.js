@@ -17,5 +17,6 @@ router.put('/acceptproposal',Task.AcceptProposal);
 router.get('/getcouponbycode',Admin.GetCouponByCode);
 router.put('/startinterview',Chat.StartInterview);
 router.get('/inprogress-order',Task.GetOrderDetailsInProgress);
+router.put('/invite-task',Task.InviteTask);
 
 module.exports = router;

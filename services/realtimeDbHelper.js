@@ -13,7 +13,7 @@ providerChange.on('connect', socket=>{
 
 const inProgressTaskChange = socketIOClient('http://localhost:'+Config.port+'/realtime-inprogress-task');
 inProgressTaskChange.on('connect', socket=>{ 
-    console.log('Realtime DB Provider Table Helper Socket Connected.');
+    console.log('Realtime DB In Progress Task Table Helper Socket Connected.');
 });
 
 exports.taskChange = taskChange

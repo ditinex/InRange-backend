@@ -481,24 +481,16 @@ module.exports = {
 			/*
 			 *  Send Notification 
 			 */
+				const isConsumerExists = await IsExists(User, { _id: isTaskExists[0].consumer })
 
 				Controllers.User.SendNotification({
 					title:	'New Task Proposal',
 					description: isProviderExists[0].name+' send you a proposal for the task "'+isTaskExists[0].title+'".',
 					user_id: isTaskExists[0].consumer,
 					read: false,
-					is_provider: false
+					is_provider: false,
+					push_id: isConsumerExists[0].push_notification.push_id
 				})
-			
-			/*
-			 * Push Notification
-			 */
-			Controllers.PushNotification.PushTextNotification(
-				'New Task Proposal',
-				isProviderExists[0].name+' send you a proposal for the task "'+isTaskExists[0].title+'".',
-				[isProviderExists[0].push_notification.push_id]
-			)
-
 
 			return HandleSuccess(res, updated)
 
@@ -905,6 +897,7 @@ module.exports = {
 						houseno: { "$first": "$houseno" },
 						proposals: { $push: "$proposals" },
 						createdAt: { "$first":"$createdAt" },
+						updatedAt: { "$first":"$updatedAt" }
 					},
 				},
 				{ $sort: { createdAt: -1 } }
@@ -1204,5 +1197,37 @@ module.exports = {
 		}
 	},
 
+	InviteTask: async (req, res, next) => {
+		try {
+			const { provider_id = '' } = req.body
+            const id = req.user_id || ''
+
+			const isTaskExists = await IsExists(Task, { consumer: id, status: 'Hiring' })
+
+			// if (!isTaskExists)
+				// return HandleError(res, 'You Have No Opened Task Available.')
+
+			/*
+			 * Send Notification
+			 */
+			const isProviderExists = await IsExists(User, { _id: provider_id })
+
+			if (!isProviderExists)
+				return HandleError(res, 'Provider Not Exists.')
+
+			Controllers.User.SendNotification({
+				title:	'Task Invitation',
+				description: 'A task is available near you. You are invited to send proposal!',
+				user_id: provider_id,
+				read: false,
+				is_provider: true,
+				push_id: isProviderExists[0].push_notification.push_id
+			})
+
+			return HandleSuccess(res, {})
+		} catch (err) {
+			HandleServerError(res, req, err)
+		}
+	},
 
 }

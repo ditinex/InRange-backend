@@ -107,6 +107,23 @@ const FindAndUpdate = async (model, filter, update, manual = null) => {
 	}
 }
 
+const UpdateMany = async (model, filter, update, manual = null) => {
+	try {
+		let query = model.updateMany(filter, { $set: update })
+		if (manual)
+			query = model.updateMany(filter, update)
+		let doc = await query.exec()
+		if (doc)
+			return doc
+		else
+			return false
+	}
+	catch (e) {
+		console.log(e)
+		return false
+	}
+}
+
 const Aggregate = async (model, data) => {
 	try {
 		let query = model.aggregate(data)
@@ -262,6 +279,7 @@ exports.Find = Find
 exports.FindOne = FindOne
 exports.Delete = Delete
 exports.FindAndUpdate = FindAndUpdate
+exports.UpdateMany = UpdateMany
 exports.Aggregate = Aggregate
 exports.CompressImageAndUpload = CompressImageAndUpload
 exports.DeleteFile = DeleteFile
