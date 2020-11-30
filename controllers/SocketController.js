@@ -163,7 +163,7 @@ module.exports = {
 			 * @apiParam {ObjectId} task_id Id of the task.
 			 *
 			*/
-			socket.on('task_change', async (task_id) => {
+			socket.on('task_change', async (task_id,type) => {
 				let task = await IsExists(Task, { _id: task_id })
 				if (task) {
 					task = task[0]
@@ -182,7 +182,19 @@ module.exports = {
 					if(nearbyProviders){
 						nearbyProviders = nearbyProviders.map(items=>items._id+'')
 						nearbyProviders = nearbyProviders.filter(value => socketProviders.includes(value))
-						nearbyProviders.forEach(element => {
+						
+						nearbyProviders.forEach(async element => {
+							const isProviderExists = await IsExists(User, { _id: element })
+							if(isProviderExists && type!=='cancel')
+								Controllers.User.SendNotification({
+									title:	'Available Task Nearby!',
+									description: 'Check Your Dashboard To Catch It!',
+									user_id: element,
+									read: false,
+									is_provider: true,
+									push_id: isProviderExists[0].push_notification.push_id
+								})
+
 							socket.nsp.to(realtimeTaskSocketsProviders[element]).emit('task_change',task)
 						});
 					}

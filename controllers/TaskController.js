@@ -219,6 +219,10 @@ module.exports = {
 			if (!updated)
 				return HandleError(res, 'Failed to create task. Please contact system admin.')
 
+			/*
+			 * Creating an event task_change in self socket to server realtime database via socket
+			 */
+			RealtimeListener.taskChange.emit('task_change', updated._id)
 			return HandleSuccess(res, inserted)
 
 		} catch (err) {
@@ -299,20 +303,26 @@ module.exports = {
 				return HandleError(res, 'Failed to cancel task. Please contact system admin.')
 			// Realtime change
 			RealtimeListener.inProgressTaskChange.emit('task-change',{task_id: updated._id})
+			RealtimeListener.taskChange.emit('task_change', updated._id,'cancel')
+
 			/*
 			 * Send Notification
 			 */
 
+			 if(updated.provider)
+			 {
 				const isProviderExists = await IsExists(User, { _id: updated.provider })
+				if(isProviderExists)
+					Controllers.User.SendNotification({
+						title:	'Task Cancelled',
+						description: 'The task '+updated.title+' has been cancelled by the consumer.',
+						user_id: updated.provider,
+						read: false,
+						is_provider: true,
+						push_id: isProviderExists[0].push_notification.push_id
+					})
 
-				Controllers.User.SendNotification({
-					title:	'Task Cancelled',
-					description: 'The task '+updated.title+' has been cancelled by the consumer.',
-					user_id: updated.provider,
-					read: false,
-					is_provider: true,
-					push_id: isProviderExists[0].push_notification.push_id
-				})
+			 }
 
 			return HandleSuccess(res, updated);
 		} catch (err) {
@@ -382,15 +392,16 @@ module.exports = {
 			 */
 
 				const isProviderExists = await IsExists(User, { _id: updated.provider })
-
-				Controllers.User.SendNotification({
-					title:	'Task Almost Completed',
-					description: 'The task '+updated.title+' is almost complete. Please pay as soon as possible.',
-					user_id: updated.consumer,
-					read: false,
-					is_provider: false,
-					push_id: isProviderExists[0].push_notification.push_id
-				})
+				
+				if(isProviderExists)
+					Controllers.User.SendNotification({
+						title:	'Task Almost Completed',
+						description: 'The task '+updated.title+' is almost complete. Please pay as soon as possible.',
+						user_id: updated.consumer,
+						read: false,
+						is_provider: false,
+						push_id: isProviderExists[0].push_notification.push_id
+					})
 			return HandleSuccess(res, updated);
 		} catch (err) {
 			HandleServerError(res, req, err)
@@ -488,15 +499,15 @@ module.exports = {
 			 *  Send Notification 
 			 */
 				const isConsumerExists = await IsExists(User, { _id: isTaskExists[0].consumer })
-
-				Controllers.User.SendNotification({
-					title:	'New Task Proposal',
-					description: isProviderExists[0].name+' send you a proposal for the task "'+isTaskExists[0].title+'".',
-					user_id: isTaskExists[0].consumer,
-					read: false,
-					is_provider: false,
-					push_id: isConsumerExists[0].push_notification.push_id
-				})
+				if(isConsumerExists)
+					Controllers.User.SendNotification({
+						title:	'New Task Proposal',
+						description: isProviderExists[0].name+' send you a proposal for the task "'+isTaskExists[0].title+'".',
+						user_id: isTaskExists[0].consumer,
+						read: false,
+						is_provider: false,
+						push_id: isConsumerExists[0].push_notification.push_id
+					})
 
 			return HandleSuccess(res, updated)
 
