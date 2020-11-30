@@ -739,19 +739,24 @@ module.exports = {
                     * Send Notification
                     */
 
+			        const isProviderExists = await IsExists(User, { _id: updated.provider })
+                    const isConsumerExists = await IsExists(User, { _id: isTaskExists[0].consumer })
+
                         Controllers.User.SendNotification({
                             title:	'Task Completed',
                             description: 'The task '+updated.title+' has been successfully completed.',
                             user_id: updated.consumer,
                             read: false,
-                            is_provider: false
+                            is_provider: false,
+					        push_id: isConsumerExists[0].push_notification.push_id
                         })
                         Controllers.User.SendNotification({
                             title:	'Payment Completed',
                             description: 'Payment for the task '+updated.title+' has been successfully completed.',
                             user_id: updated.provider,
                             read: false,
-                            is_provider: true
+                            is_provider: true,
+				            push_id: isProviderExists[0].push_notification.push_id
                         })
                     return HandleSuccess(res, updated);
 		

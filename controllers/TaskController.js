@@ -303,12 +303,15 @@ module.exports = {
 			 * Send Notification
 			 */
 
+				const isProviderExists = await IsExists(User, { _id: updated.provider })
+
 				Controllers.User.SendNotification({
 					title:	'Task Cancelled',
 					description: 'The task '+updated.title+' has been cancelled by the consumer.',
 					user_id: updated.provider,
 					read: false,
-					is_provider: true
+					is_provider: true,
+					push_id: isProviderExists[0].push_notification.push_id
 				})
 
 			return HandleSuccess(res, updated);
@@ -378,12 +381,15 @@ module.exports = {
 			 * Send Notification
 			 */
 
+				const isProviderExists = await IsExists(User, { _id: updated.provider })
+
 				Controllers.User.SendNotification({
 					title:	'Task Almost Completed',
 					description: 'The task '+updated.title+' is almost complete. Please pay as soon as possible.',
 					user_id: updated.consumer,
 					read: false,
-					is_provider: false
+					is_provider: false,
+					push_id: isProviderExists[0].push_notification.push_id
 				})
 			return HandleSuccess(res, updated);
 		} catch (err) {
@@ -548,12 +554,15 @@ module.exports = {
 			 * Creating an event send-notification 
 			 */
 
+			const isProviderExists = await IsExists(User, { _id: updated.provider })
+			 
 			Controllers.User.SendNotification({
 				title:	'Task Proposal Accepted',
 				description: 'Your Proposal has been accepted for the task '+isTaskExists[0].title,
 				user_id: isTaskExists[0].provider,
 				read: false,
-				is_provider: true
+				is_provider: true,
+				push_id: isProviderExists[0].push_notification.push_id
 			})
 
 			// return HandleSuccess(res, updated)
@@ -732,7 +741,8 @@ module.exports = {
 					description: 'Your have got '+rating+' star for the task '+isTaskExists[0].title,
 					user_id: provider,
 					read: false,
-					is_provider: true
+					is_provider: true,
+					push_id: isProviderExists[0].push_notification.push_id
 				})
 
 			return HandleSuccess(res, inserted)
@@ -1204,8 +1214,8 @@ module.exports = {
 
 			const isTaskExists = await IsExists(Task, { consumer: id, status: 'Hiring' })
 
-			// if (!isTaskExists)
-				// return HandleError(res, 'You Have No Opened Task Available.')
+			if (!isTaskExists)
+				return HandleError(res, 'You Have No Opened Task Available.')
 
 			/*
 			 * Send Notification
