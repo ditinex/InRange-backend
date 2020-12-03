@@ -301,10 +301,14 @@ module.exports = {
 			if (!updated)
 				return HandleError(res, 'Failed to cancel task. Please contact system admin.')
 			
-			let completed = await FindAndUpdate(User, { _id: updated.provider }, { is_available: true })
-			if (!completed)
-				return HandleError(res, 'Failed to cancel task. Please contact system admin.')
-	
+			if(updated.provider)
+			{
+				let completed = await FindAndUpdate(User, { _id: updated.provider }, { is_available: true })
+				if (!completed)
+					return HandleError(res, 'Failed to cancel task. Please contact system admin.')
+
+			}
+			
 			// Realtime change
 			RealtimeListener.inProgressTaskChange.emit('task-change',{task_id: updated._id})
 			RealtimeListener.taskChange.emit('task_change', updated._id, updated.service,'cancel')

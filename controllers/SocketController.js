@@ -54,7 +54,8 @@ module.exports = {
 			 *
 			*/
 
-			socket.on('message', async({chat_id,sender_id,receiver_id,message}) => {
+			socket.on('send_message', async({chat_id,sender_id,receiver_id,message}) => {
+				console.log(sender_id)
 				const room_name = chat_id;
 				let data = {
 					sender_id: sender_id,
@@ -96,7 +97,7 @@ module.exports = {
 			 *
 			*/
 
-			socket.on('image', async({chat_id,sender_id,receiver_id,image_path}) => {
+			socket.on('send_image', async({chat_id,sender_id,receiver_id,image_path}) => {
 				//Upload the image via api call first then send socket data with image id
 				const room_name = chat_id;
 
@@ -111,8 +112,21 @@ module.exports = {
 				const query = { $push: { chats: data}}
 
 				let updated = await FindAndUpdate(Chat,where,query,true)
-				if(updated)
-					socket.broadcast.to(room_name).emit('updatechat',data);
+				if(updated){
+					if(Object.keys(io.of("/chat").in(room_name).connected).length > 1)
+						socket.broadcast.to(room_name).emit('message',data);
+					else{
+						const user = await IsExists(User, { _id: receiver_id })
+						
+						if(user[0].push_notification)
+						Controllers.PushNotification.PushMessage(
+							'1 New Image',
+							"",
+							[user[0].push_notification.push_id],
+							sender_id
+						)
+					}
+				}
 			});
 
 			/**
