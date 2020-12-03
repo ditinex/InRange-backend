@@ -785,7 +785,7 @@ module.exports = {
             
 			const query = [
                 { $match: { provider: Mongoose.Types.ObjectId(user_id) } },
-                { $lookup: { from: 'users', localField: 'provider', foreignField: '_id', as: 'user_details' } },
+                { $lookup: { from: 'users', localField: 'consumer', foreignField: '_id', as: 'user_details' } },
                 { $sort: { createdAt: -1 } },
                 { $project:
                     { 

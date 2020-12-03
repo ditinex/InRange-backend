@@ -1155,7 +1155,7 @@ module.exports = {
 
 			if (task_id == '')
 				return HandleError(res, 'Invalid task id.')
-			else if (service_cost == 0)
+			else if (service_cost && service_cost == 0)
 				return HandleError(res, 'Service cost can not be zero.')
 
 			const isTaskExists = await IsExists(Task, { _id: task_id })
@@ -1163,7 +1163,7 @@ module.exports = {
 			if (!isTaskExists)
 				return HandleError(res, 'Task doesn\'t exists.')
 
-			const total = parseInt(service_cost) + parseInt(other_cost) - parseInt(discount);
+			const total = parseInt(service_cost || 0) + parseInt(other_cost || 0) - parseInt(discount || 0);
 			const where = { _id: task_id }
 			const query = { 'cost.service_cost': service_cost, 'cost.other_cost': other_cost, 'cost.total': total  }
 
