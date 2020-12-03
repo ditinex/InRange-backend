@@ -58,7 +58,7 @@ const PushMessage = async(title,description,players,collapseId) => {
             "android_group_message": {"en": "You have $[notif_count] new messages."},
         })
 
-        console.log(body)
+        // console.log(body)
 
         await HandleSend(body);
     }
