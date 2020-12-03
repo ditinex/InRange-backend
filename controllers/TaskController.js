@@ -130,7 +130,7 @@ module.exports = {
 			/*
 			 * Creating an event task_change in self socket to server realtime database via socket
 			 */
-			RealtimeListener.taskChange.emit('task_change', inserted._id)
+			RealtimeListener.taskChange.emit('task_change', inserted._id, inserted.service)
 
 			return HandleSuccess(res, inserted)
 
@@ -222,7 +222,7 @@ module.exports = {
 			/*
 			 * Creating an event task_change in self socket to server realtime database via socket
 			 */
-			RealtimeListener.taskChange.emit('task_change', updated._id)
+			RealtimeListener.taskChange.emit('task_change', updated._id, updated.service)
 			return HandleSuccess(res, inserted)
 
 		} catch (err) {
@@ -307,7 +307,7 @@ module.exports = {
 	
 			// Realtime change
 			RealtimeListener.inProgressTaskChange.emit('task-change',{task_id: updated._id})
-			RealtimeListener.taskChange.emit('task_change', updated._id,'cancel')
+			RealtimeListener.taskChange.emit('task_change', updated._id, updated.service,'cancel')
 
 			/*
 			 * Send Notification

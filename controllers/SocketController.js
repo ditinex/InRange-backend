@@ -163,7 +163,7 @@ module.exports = {
 			 * @apiParam {ObjectId} task_id Id of the task.
 			 *
 			*/
-			socket.on('task_change', async (task_id,type) => {
+			socket.on('task_change', async (task_id,task_service,type) => {
 				let task = await IsExists(Task, { _id: task_id })
 				if (task) {
 					task = task[0]
@@ -177,7 +177,8 @@ module.exports = {
 									coordinates: [task.location.coordinates[0], task.location.coordinates[1]]
 								}
 							}
-						}
+						},
+						"provider.service": task_service,
 					},'_id')
 					if(nearbyProviders){
 						nearbyProviders = nearbyProviders.map(items=>items._id+'')
