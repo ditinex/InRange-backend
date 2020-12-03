@@ -361,7 +361,7 @@ module.exports = {
                 queryField = 'consumer_id'; 
 
             const query = [
-                { $match: { [queryField]: Mongoose.Types.ObjectId(id), "chats": { $elemMatch: { "seen": false } } } }
+                { $match: { [queryField]: Mongoose.Types.ObjectId(id), "chats": { $elemMatch: { "seen": false, "receiver_id":  Mongoose.Types.ObjectId(id)} } } }
             ]
 
             let data = await Aggregate(Chat, query)

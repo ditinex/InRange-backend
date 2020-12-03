@@ -55,7 +55,6 @@ module.exports = {
 			*/
 
 			socket.on('send_message', async({chat_id,sender_id,receiver_id,message}) => {
-				console.log(sender_id)
 				const room_name = chat_id;
 				let data = {
 					sender_id: sender_id,
