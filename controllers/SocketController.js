@@ -112,6 +112,11 @@ module.exports = {
 					seen: false
 				}
 
+				if(Object.keys(io.of("/chat").in(room_name).connected).length > 1)
+				{
+					data.seen = true
+				}
+
 				const where = { _id: chat_id }
 				const query = { $push: { chats: data}}
 
