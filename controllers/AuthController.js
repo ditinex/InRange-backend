@@ -8,7 +8,7 @@ const { RealtimeListener } = require('../services')
 
 const {
 	IsExists, Insert, Find, CompressImageAndUpload, FindAndUpdate, Delete,
-	HandleSuccess, HandleError, HandleServerError,
+	HandleSuccess, HandleError, HandleServerError,Aggregate,
 	ValidateEmail, PasswordStrength, ValidateAlphanumeric, ValidateLength, ValidateMobile, GeneratePassword
 } = require('./BaseController');
 
@@ -93,6 +93,20 @@ module.exports = {
 					let updated = await FindAndUpdate(User, {_id: user._id}, {access_token: access_token, active_session_refresh_token: active_session_refresh_token})
 					if(!updated)
 						return HandleError(res, 'Failed to generate access token.')
+					
+						const query = [
+							{ $match: { _id: user._id }},
+							{ $lookup : 
+								{ from: 'reviews', localField: '_id', foreignField: 'provider', as: 'reviews' }
+							},
+							{ $project:
+								{
+									rating: {$avg: '$reviews.rating'}
+								}
+							}
+						]
+						let findrating = await Aggregate(User,query)
+						user.rating = findrating[0].rating
 					user.access_token = access_token
 					user.active_session_refresh_token = active_session_refresh_token
 					user.isUserExists = true
@@ -244,14 +258,29 @@ module.exports = {
 			let updated = await FindAndUpdate(User, {_id: inserted._id}, {access_token: access_token})
 			if(!updated)
 				return HandleError(res, 'Failed to update access token.')
-
+			
+			let user = {... updated._doc}
+				const query = [
+					{ $match: { _id: inserted._id }},
+					{ $lookup : 
+						{ from: 'reviews', localField: '_id', foreignField: 'provider', as: 'reviews' }
+					},
+					{ $project:
+						{
+							rating: {$avg: '$reviews.rating'}
+						}
+					}
+				]
+	
+				let findrating = await Aggregate(User,query)
+				user.rating = findrating[0].rating
 			/*
             * Creating an event provider_change in self socket to server realtime database via socket
             */
 			if(updated.is_switched_provider)
 			   RealtimeListener.providerChange.emit('provider_change',updated._id)
 			
-			return HandleSuccess(res, updated)
+			return HandleSuccess(res, user)
 
 		} catch (err) {
 			HandleServerError(res, req, err)
@@ -370,6 +399,19 @@ module.exports = {
 				return HandleError(res, 'Failed to generate access token.')
 
 			let user = {... updated._doc}
+				const query = [
+					{ $match: { _id: isUserExists[0]._id }},
+					{ $lookup : 
+						{ from: 'reviews', localField: '_id', foreignField: 'provider', as: 'reviews' }
+					},
+					{ $project:
+						{
+							rating: {$avg: '$reviews.rating'}
+						}
+					}
+				]
+				let findrating = await Aggregate(User,query)
+				user.rating = findrating[0].rating
 			user.isUserExists = true
 			return HandleSuccess(res, user)
 

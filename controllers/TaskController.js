@@ -293,14 +293,18 @@ module.exports = {
 
 			if (validateError)
 				return HandleError(res, validateError)
-
-
+				
 			let where = { _id: _id }
 			let data = { status: 'Cancelled'}
 
 			let updated = await FindAndUpdate(Task, where, data)
 			if (!updated)
 				return HandleError(res, 'Failed to cancel task. Please contact system admin.')
+			
+			let completed = await FindAndUpdate(User, { _id: updated.provider }, { is_available: true })
+			if (!completed)
+				return HandleError(res, 'Failed to cancel task. Please contact system admin.')
+	
 			// Realtime change
 			RealtimeListener.inProgressTaskChange.emit('task-change',{task_id: updated._id})
 			RealtimeListener.taskChange.emit('task_change', updated._id,'cancel')
@@ -384,23 +388,23 @@ module.exports = {
 
 			let updated = await FindAndUpdate(Task, where, data)
 			if (!updated)
-				return HandleError(res, 'Failed to cancel task. Please contact system admin.')
+				return HandleError(res, 'Failed to done task. Please contact system admin.')
 			// Realtime change
 			RealtimeListener.inProgressTaskChange.emit('task-change',{task_id: updated._id})
 			/*
 			 * Send Notification
 			 */
 
-				const isProviderExists = await IsExists(User, { _id: updated.provider })
+				const isConsumerExists = await IsExists(User, { _id: updated.consumer })
 				
-				if(isProviderExists)
+				if(isConsumerExists)
 					Controllers.User.SendNotification({
 						title:	'Task Almost Completed',
 						description: 'The task '+updated.title+' is almost complete. Please pay as soon as possible.',
 						user_id: updated.consumer,
 						read: false,
 						is_provider: false,
-						push_id: isProviderExists[0].push_notification.push_id
+						push_id: isConsumerExists[0].push_notification.push_id
 					})
 			return HandleSuccess(res, updated);
 		} catch (err) {
@@ -567,14 +571,15 @@ module.exports = {
 
 			const isProviderExists = await IsExists(User, { _id: updated.provider })
 			 
-			Controllers.User.SendNotification({
-				title:	'Task Proposal Accepted',
-				description: 'Your Proposal has been accepted for the task '+isTaskExists[0].title,
-				user_id: isTaskExists[0].provider,
-				read: false,
-				is_provider: true,
-				push_id: isProviderExists[0].push_notification.push_id
-			})
+			if(isProviderExists)
+				Controllers.User.SendNotification({
+					title:	'Task Proposal Accepted',
+					description: 'Your Proposal has been accepted for the task '+isTaskExists[0].title,
+					user_id: updated.provider,
+					read: false,
+					is_provider: true,
+					push_id: isProviderExists[0].push_notification.push_id
+				})
 
 			// return HandleSuccess(res, updated)
 			let query2 = [
@@ -746,7 +751,8 @@ module.exports = {
 			/*
 			 * Send Notification
 			 */
-
+				const isTaskExists = await IsExists(Task, { _id: task_id })
+				
 				Controllers.User.SendNotification({
 					title:	'Task Reviewed',
 					description: 'Your have got '+rating+' star for the task '+isTaskExists[0].title,

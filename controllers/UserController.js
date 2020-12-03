@@ -567,7 +567,7 @@ module.exports = {
 	UpdatePushToken: async (req, res, next) => {
 		try {
 			const { push_token='', push_id='' } = req.body
-			// console.log(req.body)
+			console.log(req.body)
 			const id = req.user_id || ''
 			if(!push_token.trim() || !push_id.trim())
 				return HandleError(res, 'Invalid id or token.')
@@ -733,6 +733,12 @@ module.exports = {
                     let updated = await FindAndUpdate(Task, where, data)
                     if (!updated)
                         return HandleError(res, 'Failed to complete task. Please contact system admin.')
+                    let completed = await FindAndUpdate(User, { _id: updated.provider }, { is_available: true })
+                    if (!completed)
+                        return HandleError(res, 'Failed to complete task. Please contact system admin.')
+                    
+                    Controllers.Transaction.AddTransaction(updated.provider,updated._id,updated.cost.total,'Cr','Paid '+payment_method+' for the task '+updated.title)
+                    
                     // Realtime change
                     RealtimeListener.inProgressTaskChange.emit('task-change',{task_id: updated._id})
                     /*
@@ -740,7 +746,7 @@ module.exports = {
                     */
 
 			        const isProviderExists = await IsExists(User, { _id: updated.provider })
-                    const isConsumerExists = await IsExists(User, { _id: isTaskExists[0].consumer })
+                    const isConsumerExists = await IsExists(User, { _id: updated.consumer })
 
                         Controllers.User.SendNotification({
                             title:	'Task Completed',
@@ -764,7 +770,44 @@ module.exports = {
         }catch (err) {
             HandleServerError(res, req, err)
         }
-    }
+    },
+
+    GetReviewList: async (req, res, next) => {
+		try {
+			const user_id = req.user_id || ''
+			let validateError = ''
+
+			if (user_id === '')
+				validateError = 'This field is required.'
+
+			if (validateError)
+				return HandleError(res, validateError)
+            
+			const query = [
+                { $match: { provider: Mongoose.Types.ObjectId(user_id) } },
+                { $lookup: { from: 'users', localField: 'provider', foreignField: '_id', as: 'user_details' } },
+                { $sort: { createdAt: -1 } },
+                { $project:
+                    { 
+                        username: 1,
+                        rating: 1,
+                        feedback: 1,
+                        user_profile_picture: '$user_details.profile_picture',
+                        createdAt: 1
+                    }
+                }
+            ]
+
+			let data = await Aggregate(Review, query)
+			if (!data.length)
+				return HandleSuccess(res, [])
+
+			return HandleSuccess(res, data)
+
+		} catch (err) {
+			HandleServerError(res, req, err)
+		}
+	},
     
 }
 

@@ -3,7 +3,6 @@ const router = express.Router();
 
 const Controllers = require('../controllers')
 const User = Controllers.User
-const Chat = Controllers.Chat
 const Transaction = Controllers.Transaction
 
 router.put('/changeprofilepic',User.ChangeProfilePic);

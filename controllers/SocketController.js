@@ -185,7 +185,7 @@ module.exports = {
 						
 						nearbyProviders.forEach(async element => {
 							const isProviderExists = await IsExists(User, { _id: element })
-							if(isProviderExists && type!=='cancel')
+							if(isProviderExists && isProviderExists[0].push_notification && type!=='cancel')
 								Controllers.User.SendNotification({
 									title:	'Available Task Nearby!',
 									description: 'Check Your Dashboard To Catch It!',

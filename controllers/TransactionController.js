@@ -14,10 +14,8 @@ const {
 
 module.exports = {
 
-    AddTransaction: async (req, res, next) => {
+    AddTransaction: async ( provider_id, task_id, amount, type, description) => {
 		try {
-			const { provider_id = '', task_id = '', amount = 0, type = '', description = '' } = req.body
-
 			let validateError = null
 			if (provider_id == '' || task_id == '')
 				validateError = 'Invalid id.'
@@ -27,11 +25,11 @@ module.exports = {
                 validateError = 'Type can not be blank.'
 
 			if (validateError)
-                return HandleError(res, validateError)
+                return false
                 
             const isProviderExists = await IsExistsOne(User, { _id: provider_id })
             if (!isProviderExists)
-                return HandleError(res, 'Provider doesn\'t exists.')
+                return false
             
 			let balance = isProviderExists.provider.wallet_balance
 			let status;
@@ -53,15 +51,15 @@ module.exports = {
 
 			let inserted = await Insert(Transaction, data)
 			if (!inserted)
-				return HandleError(res, 'Failed to add transaction. Please contact system admin.')
+				return false
             
             let updated = await FindAndUpdate(User, {_id: provider_id}, {'provider.wallet_balance': balance})
                 if (!updated)
-                    return HandleError(res, 'Failed to add transaction. Please contact system admin.')
-			return HandleSuccess(res, inserted)
+                    return false
+			return true
 
 		} catch (err) {
-			HandleServerError(res, req, err)
+			return false
 		}
     },
     
