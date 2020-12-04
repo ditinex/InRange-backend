@@ -18,5 +18,6 @@ router.put('/update-push-token',User.UpdatePushToken);
 router.post('/add-transaction',Transaction.AddTransaction);
 router.post('/do-payment',User.DoPayment);
 router.get('/get-transaction-list',Transaction.GetTransactionList);
+router.post('/get-user-data',User.GetUserData);
 
 module.exports = router;

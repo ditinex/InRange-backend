@@ -324,7 +324,10 @@ module.exports = {
 
 	SwitchProfile: async (req, res, next) => {
 		try {
+			const verification_document = req.files? req.files.verification_document : null
             const id = req.user_id || ''
+            const service = req.body? req.body.service : ''
+            const description = req.body? req.body.description : ''
 
 			//Check service & verifydoc form submission in frontend
             let validateError = null
@@ -352,15 +355,30 @@ module.exports = {
 
             if(data.length==0)
             {
-                let updated = await FindAndUpdate(User, {_id: id}, {is_switched_provider: !userdata[0].is_switched_provider})
+                let user = {is_switched_provider: !userdata[0].is_switched_provider}
+                if(service)
+                {
+                    user.provider = { service: service, description: description }
+                    if(service=='Taxi' || service=='Truck')
+					user.status = 'pending'
+                }
+
+                if(verification_document){
+                    isUploaded = await CompressImageAndUpload(verification_document)
+                    if(!isUploaded)
+                        return HandleError(res,"Failed to upload verification document.")
+                    user.provider.verification_document = isUploaded.path
+                }
+
+                let updated = await FindAndUpdate(User, {_id: id}, user)
                 if(!updated)
                     return HandleError(res, 'Failed to switch provider.')
                 
                 /*
                 * Creating an event provider_change in self socket to server realtime database via socket
                 */
-                if(updated.is_switched_provider)
-                    RealtimeListener.providerChange.emit('provider_change',updated._id)
+                
+                RealtimeListener.providerChange.emit('provider_change',updated._id)
 
 			    return HandleSuccess(res, updated)
             }
@@ -807,7 +825,44 @@ module.exports = {
 		} catch (err) {
 			HandleServerError(res, req, err)
 		}
-	},
+    },
+    
+    GetUserData: async (req, res, next) => {
+        try {
+            const id = req.user_id || ''
+
+            let validateError = null
+            if (id == '')
+                validateError = 'Invalid id.'
+
+            if (validateError)
+                return HandleError(res, validateError)
+
+            const user = await FindAndUpdate(User, { _id: id })
+            if (!user)
+                return HandleError(res, 'User doesn\'t exists.')
+
+            let data = {... user._doc}
+				const query = [
+					{ $match: { _id: user._id }},
+					{ $lookup : 
+						{ from: 'reviews', localField: '_id', foreignField: 'provider', as: 'reviews' }
+					},
+					{ $project:
+						{
+							rating: {$avg: '$reviews.rating'}
+						}
+					}
+				]
+				let findrating = await Aggregate(User,query)
+				data.rating = findrating[0].rating
+			data.isUserExists = true
+			return HandleSuccess(res, data)
+
+        } catch (err) {
+            HandleServerError(res, req, err)
+        }
+    },
     
 }
 
