@@ -62,8 +62,9 @@ module.exports = {
 					message: message,
 					seen: false
 				}
+				const room_length = Object.keys(io.of("/chat").in(room_name).connected).length
 
-				if(Object.keys(io.of("/chat").in(room_name).connected).length > 1)
+				if(room_length > 1)
 				{
 					data.seen = true
 				}
@@ -73,7 +74,7 @@ module.exports = {
 
 				let updated = await FindAndUpdate(Chat,where,query,true)
 				if(updated){
-					if(Object.keys(io.of("/chat").in(room_name).connected).length > 1)
+					if(room_length > 1)
 						socket.broadcast.to(room_name).emit('message',data);
 					else{
 						const user = await IsExists(User, { _id: receiver_id })
@@ -112,7 +113,9 @@ module.exports = {
 					seen: false
 				}
 
-				if(Object.keys(io.of("/chat").in(room_name).connected).length > 1)
+				const room_length = Object.keys(io.of("/chat").in(room_name).connected).length
+
+				if( room_length > 1)
 				{
 					data.seen = true
 				}
@@ -122,7 +125,7 @@ module.exports = {
 
 				let updated = await FindAndUpdate(Chat,where,query,true)
 				if(updated){
-					if(Object.keys(io.of("/chat").in(room_name).connected).length > 1)
+					if(room_length > 1)
 						socket.broadcast.to(room_name).emit('message',data);
 					else{
 						const user = await IsExists(User, { _id: receiver_id })
@@ -202,6 +205,7 @@ module.exports = {
 							}
 						},
 						"provider.service": task_service,
+						status: 'approved'
 					},'_id')
 					if(nearbyProviders){
 						nearbyProviders = nearbyProviders.map(items=>items._id+'')
@@ -411,8 +415,8 @@ module.exports = {
 							location: 1,
 							'provider.service': 1,
 							'provider.description': 1,
-							reviews: {feedback: 1,username: 1},
-							rating: {$avg: '$reviews.rating'},
+							reviews: {feedback: 1,username: 1,rating: 1},
+							average_rating: {$avg: '$reviews.rating'},
 							distance: 1,
 							pastTask: {title: 1 ,updatedAt: 1},
 							total_completed_task: 1

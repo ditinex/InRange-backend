@@ -567,7 +567,6 @@ module.exports = {
 	UpdatePushToken: async (req, res, next) => {
 		try {
 			const { push_token='', push_id='' } = req.body
-			console.log(req.body)
 			const id = req.user_id || ''
 			if(!push_token.trim() || !push_id.trim())
 				return HandleError(res, 'Invalid id or token.')

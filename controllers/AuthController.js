@@ -243,7 +243,7 @@ module.exports = {
 				isUploaded = await CompressImageAndUpload(verification_document)
 				if(!isUploaded)
 					return HandleError(res,"Failed to upload verification document.")
-				data.provider.verificationDocument = isUploaded.path
+				data.provider.verification_document = isUploaded.path
 			}
 
 			let inserted = await Insert(User, data)
