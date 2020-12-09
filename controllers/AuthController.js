@@ -3,17 +3,30 @@ const jwt = require('jsonwebtoken')
 const Config = require('../config.js')
 const fs = require('fs')
 const { SendSMS } = require('../services')
-const { Admin, Otp, User } = require('../models')
+const { Admin, Otp, User, App } = require('../models')
 const { RealtimeListener } = require('../services')
 
 const {
 	IsExists, Insert, Find, CompressImageAndUpload, FindAndUpdate, Delete,
 	HandleSuccess, HandleError, HandleServerError,Aggregate,
-	ValidateEmail, PasswordStrength, ValidateAlphanumeric, ValidateLength, ValidateMobile, GeneratePassword
+	ValidateEmail, PasswordStrength, ValidateAlphanumeric, ValidateLength, ValidateMobile, GeneratePassword, IsExistsOne
 } = require('./BaseController');
 
 
 module.exports = {
+
+	GetAppInfo: async (req, res, next) => {
+		try {
+			const appInfo = await Find(App)
+			if(!appInfo)
+				return HandleError(res, 'App doesn\'t exists.')
+
+			return HandleSuccess(res, appInfo[0])
+
+		} catch (err) {
+			HandleServerError(res, req, err)
+		}
+	},
 
 	/**
 	 * @api {post} /auth/login Login to user account
@@ -399,19 +412,19 @@ module.exports = {
 				return HandleError(res, 'Failed to generate access token.')
 
 			let user = {... updated._doc}
-				const query = [
-					{ $match: { _id: isUserExists[0]._id }},
-					{ $lookup : 
-						{ from: 'reviews', localField: '_id', foreignField: 'provider', as: 'reviews' }
-					},
-					{ $project:
-						{
-							rating: {$avg: '$reviews.rating'}
-						}
+			const query = [
+				{ $match: { _id: isUserExists[0]._id }},
+				{ $lookup : 
+					{ from: 'reviews', localField: '_id', foreignField: 'provider', as: 'reviews' }
+				},
+				{ $project:
+					{
+						rating: {$avg: '$reviews.rating'}
 					}
-				]
-				let findrating = await Aggregate(User,query)
-				user.rating = findrating[0].rating
+				}
+			]
+			let findrating = await Aggregate(User,query)
+			user.rating = findrating[0].rating
 			user.isUserExists = true
 			return HandleSuccess(res, user)
 
