@@ -133,7 +133,23 @@ module.exports = {
             let updated = await FindAndUpdate(User, {_id: id}, data)
             if(!updated)
                 return HandleError(res, 'Failed to update profile.')
-            return HandleSuccess(res, updated)
+            
+            let user = {... updated._doc}
+            const query = [
+                { $match: { _id: updated._id }},
+                { $lookup : 
+                    { from: 'reviews', localField: '_id', foreignField: 'provider', as: 'reviews' }
+                },
+                { $project:
+                    {
+                        rating: {$avg: '$reviews.rating'}
+                    }
+                }
+            ]
+            let findrating = await Aggregate(User,query)
+            user.rating = findrating[0].rating
+            user.isUserExists = true
+            return HandleSuccess(res, user)
                 
 		} catch (err) {
 			HandleServerError(res, req, err)
@@ -379,8 +395,24 @@ module.exports = {
                 */
                 
                 RealtimeListener.providerChange.emit('provider_change',updated._id)
+                
+                user = {... updated._doc}
+                const query = [
+                    { $match: { _id: updated._id }},
+                    { $lookup : 
+                        { from: 'reviews', localField: '_id', foreignField: 'provider', as: 'reviews' }
+                    },
+                    { $project:
+                        {
+                            rating: {$avg: '$reviews.rating'}
+                        }
+                    }
+                ]
+                let findrating = await Aggregate(User,query)
+                user.rating = findrating[0].rating
+                user.isUserExists = true
 
-			    return HandleSuccess(res, updated)
+			    return HandleSuccess(res, user)
             }
             else HandleError(res, 'All pending tasks should be completed to switch profile.')
 		
