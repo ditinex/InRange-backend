@@ -175,13 +175,16 @@ module.exports = {
                 if (otp) {
                     //Validate OTP and Login
                     let isOtpExists = await IsExists(Otp, { mobile: newMobile, otp: otp, createdAt: { $gt: expiry } })
- 
                     let isUserExists = await IsExists(User, { mobile: oldMobile })
+
                     if(!isOtpExists)
                         return HandleError(res, 'Failed to verify OTP.')
                     else if(isOtpExists && isUserExists){
                         Delete(Otp,{ mobile: newMobile })
                         let user = {... isUserExists[0]}
+                        let isNewMobileUnique = await IsExists(User, { mobile: newMobile })
+                        if(isNewMobileUnique)
+                            return HandleError(res, 'Mobile no belongs to another user.')
                         const active_session_refresh_token = GeneratePassword()
                         const access_token = jwt.sign({ id: user._id, mobile: newMobile, name: user.name }, Config.secret, {
                             expiresIn: Config.tokenExpiryLimit // 86400 expires in 24 hours -- It should be 1 hour in production
@@ -189,7 +192,7 @@ module.exports = {
             
                         let updated = await FindAndUpdate(User, {_id: user._id}, {mobile: newMobile, access_token: access_token, active_session_refresh_token: active_session_refresh_token})
                         if(!updated)
-                            return HandleError(res, 'Failed to generate access token.')
+                            return HandleError(res, 'Failed to change mobile.')
                         return HandleSuccess(res, updated)
                     }
                 }
