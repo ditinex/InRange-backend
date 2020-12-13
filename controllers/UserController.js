@@ -621,7 +621,7 @@ module.exports = {
 		try {
             const { push_token='' } = req.body
 			const id = req.user_id || ''
-			if(!push_token.trim() || !push_id.trim())
+			if(!push_token.trim())
 				return HandleError(res, 'Invalid configuration. Please restart your app!')
 
 			let updated = await FindAndUpdate(User, { _id: id }, { push_token: push_token })
