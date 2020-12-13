@@ -619,14 +619,12 @@ module.exports = {
 
 	UpdatePushToken: async (req, res, next) => {
 		try {
-            const { push_token='', push_id='' } = req.body
+            const { push_token='' } = req.body
 			const id = req.user_id || ''
 			if(!push_token.trim() || !push_id.trim())
 				return HandleError(res, 'Invalid configuration. Please restart your app!')
 
-			const push = { push_token: push_token, push_id: push_id }
-
-			let updated = await FindAndUpdate(User, { _id: id }, { push_notification: push })
+			let updated = await FindAndUpdate(User, { _id: id }, { push_token: push_token })
 			if (!updated)
 				return HandleError(res, 'Failed to set notification token.')
 
