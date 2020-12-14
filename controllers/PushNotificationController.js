@@ -1,41 +1,54 @@
-const fetch = require('node-fetch');
-const Config = require('../config.js');
+var admin = require('firebase-admin');
+var serviceAccount = require("../inrange-firebase-adminsdk-4t531-7cc25340a1.json");
 
-const APP_ID = Config.onsignal_appid;
+admin.initializeApp({
+  credential: admin.credential.cert(serviceAccount),
+  databaseURL: "https://inrange.firebaseio.com"
+});
 
-const headers = {
-    "Content-Type": "application/json; charset=utf-8",
-    "Authorization": "Basic " + Config.onsignal_apikey
-};
-
-const HandleSend = (body) =>{
-    fetch('https://onesignal.com/api/v1/notifications', {
-        method: "POST",
-        body: body,
-        headers: headers,
-    })
-    .then(res => res.json())
-    .then(json => {
-        // console.log(json)
-    })
-    .catch(err => console.error(err));
+const HandleSend = (message) =>{ 
+    admin.messaging()
+        .send(message)
+        .then(response => {
+            return;
+        })
+        .catch(error => {
+          console.log(error);
+        });
 }
 
-const PushTextNotification = async(title,description,players) => {
+const PushTextNotification = async(title,description,tokens,image_url) => {
 
     try{
-        const body = JSON.stringify({
-            "app_id" : APP_ID,
-            "headings" : {"en": title},
-            "contents": {"en": description},
-            "include_player_ids": players,
-            "data": {type: 'notification'},
-            "large_icon": "https://i.ibb.co/MMVSRRR/icon.png",
-            "android_group": "notification",
-            "android_group_message": {"en": "You have $[notif_count] new notifications."},
-        })
+        const message = {
+            tokens: tokens,
+            notification: {
+              body: description,
+              title: title,
+            },
+            data: {type: 'notification'},
+            android: {
+              notification: {
+                image: image_url,
+              },
+              icon: "https://i.ibb.co/MMVSRRR/icon.png",
+              priority: "high",
+              restrictedPackageName: "com.inrangeit"
+            },
+            apns: {
+              payload: {
+                aps: {
+                  'mutable-content': 1,
+                },
+              },
+              fcm_options: {
+                image: image_url,
+              },
+            }
+        };
 
-        await HandleSend(body);
+        await HandleSend(message);
+        
     }
     catch (err){
         console.log(err)
@@ -43,24 +56,32 @@ const PushTextNotification = async(title,description,players) => {
 
 }
 
-const PushMessage = async(title,description,players,collapseId) => {
+const PushMessage = async(title,description,tokens,collapseId) => {
 
     try{
-        const body = JSON.stringify({
-            "app_id" : APP_ID,
-            "headings" : {"en": title},
-            "contents": {"en": description},
-            "include_player_ids": players,
-            "data": {type: 'chat'},
-            "large_icon": "https://i.ibb.co/MMVSRRR/icon.png",
-            "collapse_id": collapseId,
-            "android_group": "message",
-            "android_group_message": {"en": "You have $[notif_count] new messages."},
-        })
+        const message = {
+            tokens: tokens,
+            notification: {
+              body: description,
+              title: title,
+            },
+            data: {type: 'notification'},
+            android: {
+              icon: "https://i.ibb.co/MMVSRRR/icon.png",
+              priority: "high",
+              restrictedPackageName: "com.inrangeit",
+              collapseKey: collapseId
+            },
+            apns: {
+              payload: {
+                aps: {
+                  'mutable-content': 1,
+                },
+              }
+            }
+        };
 
-        // console.log(body)
-
-        await HandleSend(body);
+        await HandleSend(message);
     }
     catch (err){
         console.log(err)

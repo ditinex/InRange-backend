@@ -21,7 +21,5 @@ module.exports = {
 	plivo_number: process.env.PLIVO_NUMBER,
 	max_map_range: 10000, //10 KM
 	environment: process.env.ENVIRONMENT,
-	onsignal_apikey: process.env.ONESIGNAL_API_KEY,
-	onsignal_appid: process.env.ONESIGNAL_APP_ID,
 	stripe_secret_key: process.env.STRIPE_SECRET_KEY
 }
