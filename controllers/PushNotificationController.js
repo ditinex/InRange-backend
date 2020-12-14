@@ -71,8 +71,8 @@ const PushMessage = async(title,description,tokens,collapseId) => {
           collapseKey: 'collapseId',
           priority: 'high',
           restrictedPackageName: "com.inrangeit",
-          'mutable-content': true,
-          contentAvailable: true
+          // 'mutable-content': true,
+          // contentAvailable: false
         };
 
         await admin.messaging()
