@@ -64,6 +64,7 @@ const PushMessage = async(title,description,tokens,collapseId) => {
               body: description,
               title: title, 
               icon: "https://i.ibb.co/MMVSRRR/icon.png",
+              tag: collapseId
             },
             data: {type: 'chat'},
         };
