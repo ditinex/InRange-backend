@@ -38,7 +38,7 @@ const PushTextNotification = async(title,description,tokens,image_url) => {
             apns: {
               payload: {
                 aps: {
-                  'mutable-content': 1,
+                  'mutable-content': true,
                 },
               },
               fcm_options: {
@@ -59,32 +59,30 @@ const PushTextNotification = async(title,description,tokens,image_url) => {
 const PushMessage = async(title,description,tokens,collapseId) => {
 
     try{
-        const message = {
-            token: tokens[0],
+        const payload = {
             notification: {
               body: description,
-              title: title,
+              title: title, 
+              icon: "https://i.ibb.co/MMVSRRR/icon.png",
             },
             data: {type: 'chat'},
-            android: {
-              notification: {
-                icon: "https://i.ibb.co/MMVSRRR/icon.png",
-              },
-              priority: "high",
-              restrictedPackageName: "com.inrangeit",
-              collapseKey: 'collapseId'
-            },
-            collapseKey: 'collapseId',
-            apns: {
-              payload: {
-                aps: {
-                  'mutable-content': 1,
-                },
-              }
-            }
+        };
+        const options = {
+          collapseKey: collapseId,
+          priority: 'high',
+          restrictedPackageName: "com.inrangeit",
+          'mutable-content': true,
+          contentAvailable: true
         };
 
-        await HandleSend(message);
+        await admin.messaging()
+        .sendToDevice(tokens,payload,options)
+        .then(response => {
+            console.log(response)
+        })
+        .catch(error => {
+          console.log(error);
+        });
     }
     catch (err){
         console.log(err)
