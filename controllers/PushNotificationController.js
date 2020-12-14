@@ -69,8 +69,8 @@ const PushMessage = async(title,description,tokens,collapseId) => {
         };
         const options = {
           collapseKey: 'collapseId',
-          priority: 'high',
-          restrictedPackageName: "com.inrangeit",
+          // priority: 'high',
+          // restrictedPackageName: "com.inrangeit",
           // 'mutable-content': true,
           // contentAvailable: false
         };
