@@ -72,8 +72,9 @@ const PushMessage = async(title,description,tokens,collapseId) => {
               },
               priority: "high",
               restrictedPackageName: "com.inrangeit",
-              collapseKey: collapseId
+              collapseKey: 'collapseId'
             },
+            collapseKey: 'collapseId',
             apns: {
               payload: {
                 aps: {
