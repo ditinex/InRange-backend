@@ -79,7 +79,7 @@ module.exports = {
 					else{
 						const user = await IsExists(User, { _id: receiver_id })
 						
-						if(user[0].push_notification)
+						if(user[0].push_token)
 						Controllers.PushNotification.PushMessage(
 							'1 New Message',
 							message,
@@ -130,7 +130,7 @@ module.exports = {
 					else{
 						const user = await IsExists(User, { _id: receiver_id })
 						
-						if(user[0].push_notification)
+						if(user[0].push_token)
 						Controllers.PushNotification.PushMessage(
 							'1 New Image',
 							"",
