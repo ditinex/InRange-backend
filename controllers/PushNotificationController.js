@@ -10,7 +10,7 @@ const HandleSend = (message) =>{
     admin.messaging()
         .send(message)
         .then(response => {
-            return;
+            console.log(response)
         })
         .catch(error => {
           console.log(error);
@@ -21,7 +21,7 @@ const PushTextNotification = async(title,description,tokens,image_url) => {
 
     try{
         const message = {
-            tokens: tokens,
+            token: tokens[0],
             notification: {
               body: description,
               title: title,
@@ -30,8 +30,8 @@ const PushTextNotification = async(title,description,tokens,image_url) => {
             android: {
               notification: {
                 image: image_url,
+                icon: "https://i.ibb.co/MMVSRRR/icon.png",
               },
-              icon: "https://i.ibb.co/MMVSRRR/icon.png",
               priority: "high",
               restrictedPackageName: "com.inrangeit"
             },
@@ -60,14 +60,16 @@ const PushMessage = async(title,description,tokens,collapseId) => {
 
     try{
         const message = {
-            tokens: tokens,
+            token: tokens[0],
             notification: {
               body: description,
               title: title,
             },
             data: {type: 'notification'},
             android: {
-              icon: "https://i.ibb.co/MMVSRRR/icon.png",
+              notification: {
+                icon: "https://i.ibb.co/MMVSRRR/icon.png",
+              },
               priority: "high",
               restrictedPackageName: "com.inrangeit",
               collapseKey: collapseId
