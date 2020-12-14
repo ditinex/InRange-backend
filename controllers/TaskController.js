@@ -327,7 +327,7 @@ module.exports = {
 						user_id: updated.provider,
 						read: false,
 						is_provider: true,
-						push_id: isProviderExists[0].push_notification.push_id
+						push_id: isProviderExists[0].push_token
 					})
 
 			 }
@@ -337,43 +337,6 @@ module.exports = {
 			HandleServerError(res, req, err)
 		}
 	},
-
-	// CompleteTask: async (req, res, next) => {
-	// 	try {
-	// 		let _id = (req.body.id) ? req.body.id : ''
-	// 		let validateError = ''
-
-	// 		if (_id === '')
-	// 			validateError = 'This field is required.'
-
-	// 		if (validateError)
-	// 			return HandleError(res, validateError)
-
-
-	// 		let where = { _id: _id }
-	// 		let data = { status: 'Completed' }
-
-	// 		let updated = await FindAndUpdate(Task, where, data)
-	// 		if (!updated)
-	// 			return HandleError(res, 'Failed to complete task. Please contact system admin.')
-	// 		// Realtime change
-	// 		RealtimeListener.inProgressTaskChange.emit('task-change',{task_id: updated._id})
-	// 		/*
-	// 		 * Send Notification
-	// 		 */
-
-	// 			Controllers.User.SendNotification({
-	// 				title:	'Task Completed',
-	// 				description: 'The task '+updated[0].title+' has been successfully completed.',
-	// 				user_id: updated[0].consumer,
-	// 				read: false,
-	// 				is_provider: false
-	// 			})
-	// 		return HandleSuccess(res, updated);
-	// 	} catch (err) {
-	// 		HandleServerError(res, req, err)
-	// 	}
-	// },
 
 	DoneTask: async (req, res, next) => {
 		try {
@@ -408,7 +371,7 @@ module.exports = {
 						user_id: updated.consumer,
 						read: false,
 						is_provider: false,
-						push_id: isConsumerExists[0].push_notification.push_id
+						push_id: isConsumerExists[0].push_token
 					})
 			return HandleSuccess(res, updated);
 		} catch (err) {
@@ -514,7 +477,7 @@ module.exports = {
 						user_id: isTaskExists[0].consumer,
 						read: false,
 						is_provider: false,
-						push_id: isConsumerExists[0].push_notification.push_id
+						push_id: isConsumerExists[0].push_token
 					})
 
 			return HandleSuccess(res, updated)
@@ -582,7 +545,7 @@ module.exports = {
 					user_id: updated.provider,
 					read: false,
 					is_provider: true,
-					push_id: isProviderExists[0].push_notification.push_id
+					push_id: isProviderExists[0].push_token
 				})
 
 			// return HandleSuccess(res, updated)
@@ -763,7 +726,7 @@ module.exports = {
 					user_id: provider,
 					read: false,
 					is_provider: true,
-					push_id: isProviderExists[0].push_notification.push_id
+					push_id: isProviderExists[0].push_token
 				})
 
 			return HandleSuccess(res, inserted)
@@ -1252,7 +1215,7 @@ module.exports = {
 				user_id: provider_id,
 				read: false,
 				is_provider: true,
-				push_id: isProviderExists[0].push_notification.push_id
+				push_id: isProviderExists[0].push_token
 			})
 
 			return HandleSuccess(res, {})

@@ -83,7 +83,7 @@ module.exports = {
 						Controllers.PushNotification.PushMessage(
 							'1 New Message',
 							message,
-							[user[0].push_notification.push_id],
+							[user[0].push_token],
 							sender_id
 						)
 					}
@@ -134,7 +134,7 @@ module.exports = {
 						Controllers.PushNotification.PushMessage(
 							'1 New Image',
 							"",
-							[user[0].push_notification.push_id],
+							[user[0].push_token],
 							sender_id
 						)
 					}
@@ -220,7 +220,7 @@ module.exports = {
 									user_id: element,
 									read: false,
 									is_provider: true,
-									push_id: isProviderExists[0].push_notification.push_id
+									push_id: isProviderExists[0].push_token
 								})
 
 							socket.nsp.to(realtimeTaskSocketsProviders[element]).emit('task_change',task)

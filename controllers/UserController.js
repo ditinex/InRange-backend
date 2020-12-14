@@ -804,7 +804,7 @@ module.exports = {
                             user_id: updated.consumer,
                             read: false,
                             is_provider: false,
-					        push_id: isConsumerExists[0].push_notification.push_id
+					        push_id: isConsumerExists[0].push_token
                         })
                         Controllers.User.SendNotification({
                             title:	'Payment Completed',
@@ -812,7 +812,7 @@ module.exports = {
                             user_id: updated.provider,
                             read: false,
                             is_provider: true,
-				            push_id: isProviderExists[0].push_notification.push_id
+				            push_id: isProviderExists[0].push_token
                         })
                     return HandleSuccess(res, updated);
 		
