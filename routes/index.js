@@ -23,6 +23,9 @@ router.get('/', (req, res) => {
   res.json({ status: 'success', message: 'API Server Running.' });
 });
 
+//Test APIs for debugging
+router.use('/test', require('./test'));
+
 
 //Import APIs
 router.use('/admins', require('./admins'));
