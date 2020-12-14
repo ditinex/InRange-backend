@@ -30,7 +30,7 @@ const PushTextNotification = async(title,description,tokens,image_url) => {
             android: {
               notification: {
                 image: image_url,
-                icon: "https://i.ibb.co/MMVSRRR/icon.png",
+                icon: "https://i.ibb.co/whw04F9/Icon.png",
               },
               priority: "high",
               restrictedPackageName: "com.inrangeit"
@@ -69,7 +69,7 @@ const PushMessage = async(title,description,tokens,collapseId) => {
         android: {
           notification: {
             image: image_url,
-            icon: "https://i.ibb.co/MMVSRRR/icon.png",
+            icon: "https://i.ibb.co/whw04F9/Icon.png",
           },
           priority: "high",
           restrictedPackageName: "com.inrangeit",
