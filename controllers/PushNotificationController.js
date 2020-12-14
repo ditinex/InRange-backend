@@ -62,8 +62,6 @@ const PushMessage = async(title,description,tokens,collapseId) => {
         const payload = {
             notification: {
               body: description,
-              title: title, 
-              icon: "https://i.ibb.co/MMVSRRR/icon.png",
             },
             data: {type: 'chat'},
         };
