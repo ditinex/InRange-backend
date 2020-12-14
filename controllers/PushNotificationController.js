@@ -64,12 +64,11 @@ const PushMessage = async(title,description,tokens,collapseId) => {
               body: description,
               title: title, 
               icon: "https://i.ibb.co/MMVSRRR/icon.png",
-              tag: collapseId
             },
             data: {type: 'chat'},
         };
         const options = {
-          collapseKey: collapseId,
+          collapseKey: 'collapseId',
           priority: 'high',
           restrictedPackageName: "com.inrangeit",
           'mutable-content': true,
