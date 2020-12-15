@@ -65,7 +65,7 @@ const PushMessage = async(title,description,tokens,collapseId) => {
           body: description,
           title: title,
         },
-        data: {type: 'notification'},
+        data: {type: 'chat'},
         android: {
           notification: {
             icon: "https://i.ibb.co/whw04F9/Icon.png",
