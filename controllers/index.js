@@ -1,5 +1,6 @@
 exports.Auth = require('./AuthController');
 exports.Task = require('./TaskController');
+exports.Test = require('./TestController');
 exports.Admin = require('./AdminController');
 exports.User = require('./UserController');
 exports.Chat = require('./ChatController');
