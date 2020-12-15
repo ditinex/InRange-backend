@@ -68,7 +68,6 @@ const PushMessage = async(title,description,tokens,collapseId) => {
         data: {type: 'notification'},
         android: {
           notification: {
-            image: image_url,
             icon: "https://i.ibb.co/whw04F9/Icon.png",
           },
           priority: "high",
@@ -80,10 +79,7 @@ const PushMessage = async(title,description,tokens,collapseId) => {
             aps: {
               'mutable-content': true,
             },
-          },
-          fcm_options: {
-            image: image_url,
-          },
+          }
         }
     };
 
