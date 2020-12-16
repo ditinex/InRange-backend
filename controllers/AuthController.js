@@ -104,6 +104,8 @@ module.exports = {
 					});
 		
 					let updated = await FindAndUpdate(User, {_id: user._id}, {access_token: access_token, active_session_refresh_token: active_session_refresh_token})
+					let userData = {... updated._doc}
+					
 					if(!updated)
 						return HandleError(res, 'Failed to generate access token.')
 					
@@ -119,11 +121,11 @@ module.exports = {
 							}
 						]
 						let findrating = await Aggregate(User,query)
-						user.rating = findrating[0].rating
-					user.access_token = access_token
-					user.active_session_refresh_token = active_session_refresh_token
-					user.isUserExists = true
-					return HandleSuccess(res, user)
+					userData.rating = findrating[0].rating
+					userData.access_token = access_token
+					userData.active_session_refresh_token = active_session_refresh_token
+					userData.isUserExists = true
+					return HandleSuccess(res, userData)
 				}
 
 				//If no user found
