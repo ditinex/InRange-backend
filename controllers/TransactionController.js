@@ -33,8 +33,10 @@ module.exports = {
             
 			let balance = isProviderExists.provider.wallet_balance
 			let status;
+			if(!balance)
+				balance = 0
             if(type == 'Cr')
-			{	
+			{
 				balance = balance + amount
 				status = 'Completed'
 			}
