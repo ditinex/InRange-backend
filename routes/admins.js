@@ -11,6 +11,7 @@ router.get('/stats',Admin.GetStats);
 // admin
 router.post('/signup',Admin.AdminSignup);
 router.post('/login',Admin.AdminLogin);
+router.post('/update-profile',Admin.AdminUpdateProfile);
 router.get('/getalladmin',Admin.GetAllAdmins);
 router.delete('/deleteadmin',Admin.DeleteAdmin);
 
