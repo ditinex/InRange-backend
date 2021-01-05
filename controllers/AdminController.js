@@ -141,6 +141,45 @@ module.exports = {
 
 	},
 
+	AdminUpdateProfile: async (req, res, next) => {
+		try {
+			let name = req.body.name || ''
+			let email = req.body.email || ''
+			let password = req.body.password || ''
+			email = email.toLowerCase()
+			let validateError = null
+			if (!ValidateEmail(email))
+				validateError = 'Please enter a valid email.'
+			else if (!ValidateAlphanumeric(name) || !ValidateLength(name))
+				validateError = 'Please enter a valid name without any special character and less than 25 character.'
+			else if (password && !PasswordStrength(password))
+				validateError = 'Please enter a password containing atleast one number, one capital alphabet, one small alphabet, one special character and between 8-24 character.'
+			if (validateError)
+				return HandleError(res, validateError)
+
+			let salt = await bcrypt.genSalt(12);
+
+			const data = { name: name }
+			if(password)
+			{
+				password = await bcrypt.hash(password, salt);
+				data.password = password
+			}
+
+			const where = { email: email }
+
+			let updated = await FindAndUpdate(Admin, where, data)
+			if (!updated)
+				return HandleError(res, 'Failed to update profile.')
+			
+			return HandleSuccess(res, updated)
+
+		} catch (err) {
+			HandleServerError(res, req, err)
+		}
+
+	},
+
 	/**
 	 * @api {get} /admins/listalladmin List All Admins
 	 * @apiName List All Admins
