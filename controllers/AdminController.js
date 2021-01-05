@@ -478,7 +478,7 @@ module.exports = {
 					provider_task: { _id: 1, title: 1, cost: {total: 1}, createdAt: 1, status: 1 },
 					consumer_task: { _id: 1, title: 1, cost: {total: 1}, createdAt: 1, status: 1 },
 					reviews: {rating: 1,feedback: 1,username: 1},
-					provider: {service: 1, description: 1}
+					provider: {service: 1, description: 1, verification_document: 1}
                 } }
             ]
 
