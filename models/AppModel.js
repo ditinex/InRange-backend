@@ -7,7 +7,8 @@ const FaqSchema=new Schema({
 })
 
 const AppSchema=new Schema({
-    version: { type: Number },
+    android_version: { type: String },
+    ios_version: { type: String },
     is_in_maintenance: { type: Boolean, require: true, default: false },
     maintenance_time: { type: Date },
     faqs: [FaqSchema],

@@ -81,7 +81,7 @@ module.exports = {
 
 			let validateError = null
 			if (!ValidateMobile(mobile.trim()))
-				validateError = 'Please enter a valid mobile number with ISD code i.e 1990xxxxx05.'
+				validateError = 'Please enter a valid mobile number without ISD code i.e 990xxxxx05.'
 
 			if (validateError)
 				return HandleError(res, validateError)
@@ -138,10 +138,12 @@ module.exports = {
 
 			const otpValue = Math.floor(1000 + Math.random() * 9000);
 			let smsStatus = null
+			if(Config.environment !== 'DEV'){
 			if(Config.plivo_authid)
 				smsStatus = await SendSMS('+'+mobile,'Your InRangeIt One Time Password is '+otpValue)
 			if(smsStatus && smsStatus.errorMessage)
 				return HandleError(res, 'Failed to send OTP. Please contact system admin.')
+			}
 			const inserted = await Insert(Otp,{otp: otpValue, mobile: mobile})
 			if(!inserted)
 				return HandleError(res, 'Failed to send OTP.')
