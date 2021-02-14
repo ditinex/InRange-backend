@@ -237,12 +237,13 @@ module.exports = {
 			let coordinates = {}
 			try {
 				coordinates = JSON.parse(location)
+				console.log(coordinates)
 			}
 			catch (e) {
 				return HandleError(res, 'Invalid location cooridnates.')
 			}
 
-			let data = { name, gender, mobile, address, status: 'approved', location: { type: 'Point', coordinates: [coordinates.longitude, coordinates.lattitude] }, provider: { service: service, description: description } }
+			let data = { name, gender, mobile, address, status: 'approved', location: { type: 'Point', coordinates: [coordinates.longitude, coordinates.latitude] }, provider: { service: service, description: description } }
 			data.active_session_refresh_token = GeneratePassword()
 
 			if (service) {

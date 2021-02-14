@@ -5,7 +5,7 @@ const UserSchema = new Schema({
 	mobile: { type: String, required: true, unique: true, trim: true },
 	name: { type: String, required: true, trim: true },
 	profile_picture: { type: String, required: true, trim: true },
-	gender: { type: String, required: true, enum: ['male', 'female'], trim: true },
+	gender: { type: String, required: true, enum: ['Male', 'Female'], trim: true },
 	status: { type: String, required: true, trim: true, enum: ['pending', 'approved', 'suspended'] },
 	is_switched_provider: { type: Boolean, required: true, default: false },
 	address: { type: String },
