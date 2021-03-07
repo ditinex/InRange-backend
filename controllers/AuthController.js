@@ -78,7 +78,7 @@ module.exports = {
 	Login: async (req, res, next) => {
 		try {
 			const { mobile = '', otp = '' } = req.body
-
+			console.log(mobile,otp)
 			let validateError = null
 			if (!ValidateMobile(mobile.trim()))
 				validateError = 'Please enter a valid mobile number without ISD code i.e 990xxxxx05.'
