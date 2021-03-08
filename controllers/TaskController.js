@@ -80,7 +80,7 @@ module.exports = {
 			const name = req.body.name ? req.body.name.trim() : ''
 			const title = req.body.title ? req.body.title.trim() : ''
 			const user_id = req.user_id || ''
-			const images = req.files ? req.files.images : null
+			const images = req.files ? Array.isArray(req.files.images) ? req.files.images : [req.files.images] : null
 
 			let validateError = null
 			if (!ValidateAlphanumeric(name) || !ValidateLength(name))
