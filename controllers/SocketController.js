@@ -445,7 +445,7 @@ module.exports = {
 		}
 	},
 
-	RealtimeInprogressTask: async (socket) => {
+	RealtimeInprogressTask: async (socket,io) => {
 		try {
 
 			/**
@@ -472,7 +472,7 @@ module.exports = {
 				const data = await Aggregate(Task, getAddressQuery)
 
 				const locationData = {provider_coordinates: data[0].provider[0].location.coordinates}
-				socket.to(task_id).emit('provider-location',locationData);
+				io.of('/realtime-inprogress-task').in(task_id).emit('provider-location',locationData);
 			});
 
 			/**

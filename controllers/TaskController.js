@@ -1128,7 +1128,7 @@ module.exports = {
 
 			const total = parseInt(service_cost || 0) + parseInt(other_cost || 0) - parseInt(discount || 0);
 			const where = { _id: task_id }
-			const query = { 'cost.service_cost': service_cost, 'cost.other_cost': other_cost, 'cost.total': total  }
+			const query = { 'cost.service_cost': service_cost, 'cost.other_cost': other_cost, 'cost.total': total, 'cost.readytopay': true }
 
 			let updated = await FindAndUpdate(Task, where, query)
 			if (!updated)
